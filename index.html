@@ -1521,17 +1521,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── ENVÍO A GOOGLE SHEETS ─────────────────────────────────
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxzIXG40-tpJ6nhuTHR6DqIME6ijbV33q6p_AfU-ctLrAEljTyqD0SjfOeqPVAFbHhBhg/exec';
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzRDknNwNC_J3TBKEF_pY-XYFi2LoO2V6RHtOf5d4fUaTrEl_zgEhHRwKmJiJH1-6F3Cg/exec';
 
 async function enviarASheets(data) {
   if (!navigator.onLine) return false;
   try {
-    const resp = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
+    // Usamos GET con payload en parámetro — funciona con no-cors en Apps Script
+    const payload = encodeURIComponent(JSON.stringify(data));
+    const url = WEBHOOK_URL + '?data=' + payload;
+    await fetch(url, { method: 'GET', mode: 'no-cors' });
     return true;
   } catch(err) {
     console.log('Error enviando a Sheets:', err);
