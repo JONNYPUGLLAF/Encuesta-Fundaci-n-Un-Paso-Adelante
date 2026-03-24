@@ -1113,10 +1113,8 @@ function renderNinos() {
         <input type="text" placeholder="Ej: 5a" value="${n.edad}" oninput="ninos[${i}].edad=this.value;autoSave()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px"></div>
         <div style="flex:0 0 80px"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Cédula</label>
         <input type="text" placeholder="Opcional" value="${n.cedula}" 
-          list="listCedulasNinos"
           oninput="ninos[${i}].cedula=this.value;autoSave()" 
-          style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px">
-        <datalist id="listCedulasNinos"></datalist></div>
+          style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px"></div>
         <div style="flex:1"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Sexo</label>
         <div style="display:flex;gap:5px">
           <button onclick="ninos[${i}].sexo='M';renderNinos();autoSave()" style="flex:1;padding:8px;border-radius:7px;border:1.5px solid ${n.sexo==='M'?'#3B82F6':' var(--border)'};background:${n.sexo==='M'?'#DBEAFE':'white'};color:${n.sexo==='M'?'#1D4ED8':'var(--mid)'};font-weight:700;font-size:13px;cursor:pointer">M</button>
@@ -1137,7 +1135,7 @@ function removeNino(i) {
 
 // ── FAMILY TABLE ──────────────────────────────────────────────────────
 let famRows = [];
-const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Hija','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
+const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Nieto/a','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
 
 function addFamRow() {
   famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', nivel:'' });
@@ -1192,7 +1190,7 @@ function renderFamTable() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
   }
   // ── AUTO-CHAIN: hijos/as → sección niños ──
-  const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
+  const _rolesH = ['Hijo/a','Hija','Hijo','Nieto/a','Nieto','Nieta'];
   const _hijos = famRows.filter(r =>
     r.nombre && r.nombre.trim() &&
     r.miembro && _rolesH.some(rol => r.miembro.toLowerCase().includes(rol)) &&
