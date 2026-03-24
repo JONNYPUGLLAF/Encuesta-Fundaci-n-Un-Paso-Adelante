@@ -1140,13 +1140,13 @@ function addFamRow() {
 function autoFillPadreMadre() {
   const padre = famRows.find(r => r.miembro === 'Padre');
   const madre = famRows.find(r => r.miembro === 'Madre');
-  if (padre) {
+  if (padre && padre.nombre) {
     const np = document.getElementById('nombrePadre');
-    if (np && !np.value && padre.nombre) np.value = padre.nombre;
+    if (np) np.value = padre.nombre;
   }
-  if (madre) {
+  if (madre && madre.nombre) {
     const nm = document.getElementById('nombreMadre');
-    if (nm && !nm.value && madre.nombre) nm.value = madre.nombre;
+    if (nm) nm.value = madre.nombre;
   }
 }
 
@@ -1218,11 +1218,16 @@ function onCuidadorSelect() {
 // ── SYNC NIÑOS DESDE COMPOSICIÓN FAMILIAR ─────────────────────────────
 function syncNinosFromFamilia() {
   // Roles que se consideran niños/as menores de 18
-  const rolesNinos = ['Hijo/a', 'Hija', 'Hijo', 'Nieto/a', 'Nieto', 'Nieta'];
+  const rolesNinos = ['Hijo/a', 'Hija', 'Hijo', 'Nieto/a', 'Nieto', 'Nieta', 'hijo/a', 'hija', 'hijo'];
   const desdeTabla = famRows.filter(r => 
     r.nombre && r.nombre.trim() !== '' && 
-    rolesNinos.some(rol => r.miembro && r.miembro.toLowerCase().includes(rol.toLowerCase())) &&
-    (r.edad === '' || parseInt(r.edad) < 18)
+    r.miembro && (
+      r.miembro.toLowerCase().includes('hijo') || 
+      r.miembro.toLowerCase().includes('hija') || 
+      r.miembro.toLowerCase().includes('nieto') || 
+      r.miembro.toLowerCase().includes('nieta')
+    ) &&
+    (r.edad === '' || r.edad === undefined || parseInt(r.edad) < 18)
   );
   if (desdeTabla.length === 0) return; // No hay hijos en la tabla, dejar como está
 
@@ -1550,6 +1555,7 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(autoFillPadreMadre, 500);
   buildPerception();
   // Add initial family rows
   for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',nivel:''});
