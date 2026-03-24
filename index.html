@@ -1686,17 +1686,25 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // ── SIEMPRE INICIAR LIMPIO ──
+  localStorage.removeItem('ficha_draft_v2');
+  // Reset all text/number/tel inputs except encuestador
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
+    if (el.id !== 'encuestador') el.value = '';
+  });
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
+  document.querySelectorAll('select:not(#encuestador)').forEach(el => el.selectedIndex = 0);
+
   buildPerception();
-  // Add initial family rows
-  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',nivel:''});
+  // Add initial family rows with tel field
+  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
   renderFamTable();
   // Set today's date
   const today = new Date().toISOString().slice(0,10);
   const fe = document.getElementById('fechaVisita');
-  if (fe && !fe.value) fe.value = today;
+  if (fe) fe.value = today;
   showFichasGuardadas();
-  // Siempre iniciar limpio — borrar borrador anterior
-  localStorage.removeItem('ficha_draft_v2');
   buildChildTabs();
 });
 
