@@ -599,6 +599,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="card">
     <div class="card-lbl" id="ninoEducLabel">Miembro: —</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="asiste" value="Sí, de manera regular"><span>✅ Sí, regular</span></label>
       <label class="opt warn"><input type="radio" name="asiste" value="Sí, de forma irregular"><span>⚠️ Sí, irregular</span></label>
@@ -1136,6 +1137,19 @@ function addFamRow() {
   autoSave();
 }
 
+function autoFillPadreMadre() {
+  const padre = famRows.find(r => r.miembro === 'Padre');
+  const madre = famRows.find(r => r.miembro === 'Madre');
+  if (padre) {
+    const np = document.getElementById('nombrePadre');
+    if (np && !np.value && padre.nombre) np.value = padre.nombre;
+  }
+  if (madre) {
+    const nm = document.getElementById('nombreMadre');
+    if (nm && !nm.value && madre.nombre) nm.value = madre.nombre;
+  }
+}
+
 function renderFamTable() {
   const tbl = document.getElementById('famTable');
   // Keep header row, remove rest
@@ -1144,8 +1158,8 @@ function renderFamTable() {
     const tr = tbl.insertRow();
     tr.innerHTML = `
       <td class="fam-num">${i+1}</td>
-      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoSave()"></td>
-      <td><select onchange="famRows[${i}].miembro=this.value;autoSave()">
+      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoFillPadreMadre();autoSave()"></td>
+      <td><select onchange="famRows[${i}].miembro=this.value;autoFillPadreMadre();updateCuidadorOptions();autoSave()">
         <option value="">--</option>
         ${MIEMBRO_OPTS.map(o=>`<option${r.miembro===o?' selected':''}>${o}</option>`).join('')}
       </select></td>
@@ -1183,7 +1197,18 @@ function onCuidadorSelect() {
     const fam = famRows.find(r => r.nombre === val);
     if (fam) {
       document.getElementById('edadCuidador').value = fam.edad || '';
-      if (!document.getElementById('parentescoCuidador').value) document.getElementById('parentescoCuidador').value = fam.miembro || '';
+      if (!document.getElementById('parentescoCuidador').value) 
+        document.getElementById('parentescoCuidador').value = fam.miembro || '';
+      // Auto-fill cédula y teléfono del cuidador desde padre/madre si aplica
+      const cedEl = document.getElementById('cedulaCuidador');
+      const telEl = document.getElementById('telCuidador');
+      if (fam.miembro === 'Padre') {
+        if (cedEl && !cedEl.value) cedEl.value = document.getElementById('cedulaPadre')?.value || '';
+        if (telEl && !telEl.value) telEl.value = document.getElementById('telPadre')?.value || '';
+      } else if (fam.miembro === 'Madre') {
+        if (cedEl && !cedEl.value) cedEl.value = document.getElementById('cedulaMadre')?.value || '';
+        if (telEl && !telEl.value) telEl.value = document.getElementById('telMadre')?.value || '';
+      }
     }
   }
 }
@@ -1526,7 +1551,6 @@ const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzRDknNwNC_J3TBKEF_
 async function enviarASheets(data) {
   if (!navigator.onLine) return false;
   try {
-    // Usamos GET con payload en parámetro — funciona con no-cors en Apps Script
     const payload = encodeURIComponent(JSON.stringify(data));
     const url = WEBHOOK_URL + '?data=' + payload;
     await fetch(url, { method: 'GET', mode: 'no-cors' });
