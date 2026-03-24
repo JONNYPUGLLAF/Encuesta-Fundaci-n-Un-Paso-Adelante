@@ -1176,7 +1176,10 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
+        <option value="">--</option>
+        ${['Inicial','Primaria','Secundaria','Universidad','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
+      </select></td>`;
   });
   // ── AUTO-CHAIN: padre/madre → campos abajo ──
   const _p = famRows.find(r => r.miembro === 'Padre');
@@ -1190,7 +1193,7 @@ function renderFamTable() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
   }
   // ── AUTO-CHAIN: hijos/as → sección niños ──
-  const _rolesH = ['Hijo/a','Hija','Hijo','Nieto/a','Nieto','Nieta'];
+  const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
   const _hijos = famRows.filter(r =>
     r.nombre && r.nombre.trim() &&
     r.miembro && _rolesH.some(rol => r.miembro.toLowerCase().includes(rol)) &&
@@ -1352,7 +1355,7 @@ function onCuidadorSelect() {
 // ── SYNC NIÑOS DESDE COMPOSICIÓN FAMILIAR ─────────────────────────────
 function syncNinosFromFamilia() {
   // Roles que se consideran niños/as menores de 18
-  const rolesNinos = ['Hijo/a', 'Hija', 'Hijo', 'Nieto/a', 'Nieto', 'Nieta'];
+  const rolesNinos = ['hijo/a', 'hija', 'hijo', 'nieto/a', 'nieto', 'nieta'];
   const desdeTabla = famRows.filter(r => 
     r.nombre && r.nombre.trim() !== '' && 
     rolesNinos.some(rol => r.miembro && r.miembro.toLowerCase().includes(rol.toLowerCase())) &&
