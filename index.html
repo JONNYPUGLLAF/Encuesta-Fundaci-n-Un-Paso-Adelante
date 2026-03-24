@@ -1178,7 +1178,7 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;autoSave()" style="width:95px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;renderFamTable();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;renderFamTable();autoSave()" style="width:95px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
   });
   // ── AUTO-CHAIN: padre/madre → campos abajo ──
   const _p = famRows.find(r => r.miembro === 'Padre');
@@ -1334,7 +1334,6 @@ function onCuidadorSelect() {
   if (val && val !== 'Otro') {
     const fam = famRows.find(r => r.nombre === val);
     if (fam) {
-      // Siempre actualiza los 4 campos desde famRows
       document.getElementById('edadCuidador').value = fam.edad || '';
       document.getElementById('parentescoCuidador').value = fam.miembro || '';
       const cedEl = document.getElementById('cedulaCuidador');
