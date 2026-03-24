@@ -288,7 +288,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <th style="width:100px">Miembro familiar</th>
           <th style="width:42px">Edad</th>
           <th style="width:44px">M / F</th>
-          <th style="width:110px">Nivel educativo</th>
+          <th style="width:90px">Cédula</th><th style="width:110px">Nivel educativo</th>
         </tr>
       </table>
       <button onclick="addFamRow()" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;border:1.5px dashed var(--green);background:white;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;">+ Agregar persona</button>
@@ -1132,7 +1132,7 @@ let famRows = [];
 const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Hija','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
 
 function addFamRow() {
-  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', nivel:'' });
+  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', nivel:'' });
   renderFamTable();
   autoSave();
 }
@@ -1170,16 +1170,43 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
   });
-  // Auto-fill padre/madre names
+  // ── AUTO-CHAIN: padre/madre → campos abajo ──
   const _p = famRows.find(r => r.miembro === 'Padre');
   const _m = famRows.find(r => r.miembro === 'Madre');
-  const _np = document.getElementById('nombrePadre');
-  const _nm = document.getElementById('nombreMadre');
-  if (_p && _p.nombre && _np) _np.value = _p.nombre;
-  if (_m && _m.nombre && _nm) _nm.value = _m.nombre;
+  if (_p) {
+    if (_p.nombre) { const el = document.getElementById('nombrePadre'); if(el) el.value = _p.nombre; }
+    if (_p.cedula) { const el = document.getElementById('cedulaPadre'); if(el) el.value = _p.cedula; }
+  }
+  if (_m) {
+    if (_m.nombre) { const el = document.getElementById('nombreMadre'); if(el) el.value = _m.nombre; }
+    if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
+  }
+  // ── AUTO-CHAIN: hijos/as → sección niños ──
+  const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
+  const _hijos = famRows.filter(r =>
+    r.nombre && r.nombre.trim() &&
+    r.miembro && _rolesH.some(rol => r.miembro.toLowerCase().includes(rol)) &&
+    (r.edad === '' || r.edad === undefined || parseInt(r.edad) < 18)
+  );
+  if (_hijos.length > 0) {
+    const _prev = [...ninos];
+    ninos = _hijos.map(fam => {
+      const ex = _prev.find(n => n.nombre && n.nombre.toLowerCase() === fam.nombre.toLowerCase());
+      return {
+        nombre: fam.nombre.trim(),
+        edad: fam.edad ? String(fam.edad) + 'a' : '',
+        sexo: fam.sexo || '',
+        cedula: fam.cedula || (ex ? ex.cedula || '' : ''),
+        fechaNac: ex ? ex.fechaNac || '' : '',
+        grupoEdad: ex ? ex.grupoEdad || '' : ''
+      };
+    });
+    renderNinos();
+  }
 }
+
 
 function updateCuidadorOptions() {
   const sel = document.getElementById('cuidadorSelect');
