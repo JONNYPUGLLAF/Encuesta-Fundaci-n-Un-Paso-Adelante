@@ -317,7 +317,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos del padre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombrePadre" placeholder="Nombre y apellidos"></div>
+        <div class="fg"><label>Nombre completo</label><input type="text" id="nombrePadre" placeholder="Nombre y apellidos" list="listPadre" oninput="onNombrePadreInput()"><datalist id="listPadre"></datalist></div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaPadre" placeholder="Opcional"></div>
       </div>
       <div class="fg"><label>Teléfono</label><input type="tel" id="telPadre" placeholder="0987654321"></div>
@@ -328,7 +328,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos de la madre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombreMadre" placeholder="Nombre y apellidos"></div>
+        <div class="fg"><label>Nombre completo</label><input type="text" id="nombreMadre" placeholder="Nombre y apellidos" list="listMadre" oninput="onNombreMadreInput()"><datalist id="listMadre"></datalist></div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaMadre" placeholder="Opcional"></div>
       </div>
       <div class="fg"><label>Teléfono</label><input type="tel" id="telMadre" placeholder="0987654321"></div>
@@ -1010,7 +1010,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
     <button class="btn btn-success" onclick="guardarFicha()">💾 Guardar Ficha</button>
-    <button class="btn btn-secondary" onclick="nuevaFicha()" style="background:#6B7280;color:white;border:none">🗑️ Nueva Ficha</button>
   </div>
   <div style="height:14px"></div>
   <div class="card">
@@ -1103,13 +1102,21 @@ function renderNinos() {
       </div>
       <div style="display:flex;gap:6px;margin-bottom:6px">
         <div style="flex:1"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Nombre completo *</label>
-        <input type="text" placeholder="Nombre y apellidos" value="${n.nombre}" oninput="ninos[${i}].nombre=this.value;updateChildTabs();autoSave()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px"></div>
+        <input type="text" placeholder="Nombre y apellidos" value="${n.nombre}" 
+          list="listNinos" 
+          oninput="ninos[${i}].nombre=this.value;onNinoNombreInput(${i});updateChildTabs();autoSave()" 
+          style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px">
+        <datalist id="listNinos"></datalist></div>
       </div>
       <div style="display:flex;gap:6px">
         <div style="flex:0 0 72px"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Edad</label>
         <input type="text" placeholder="Ej: 5a" value="${n.edad}" oninput="ninos[${i}].edad=this.value;autoSave()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px"></div>
         <div style="flex:0 0 80px"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Cédula</label>
-        <input type="text" placeholder="Opcional" value="${n.cedula}" oninput="ninos[${i}].cedula=this.value;autoSave()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px"></div>
+        <input type="text" placeholder="Opcional" value="${n.cedula}" 
+          list="listCedulasNinos"
+          oninput="ninos[${i}].cedula=this.value;autoSave()" 
+          style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px">
+        <datalist id="listCedulasNinos"></datalist></div>
         <div style="flex:1"><label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Sexo</label>
         <div style="display:flex;gap:5px">
           <button onclick="ninos[${i}].sexo='M';renderNinos();autoSave()" style="flex:1;padding:8px;border-radius:7px;border:1.5px solid ${n.sexo==='M'?'#3B82F6':' var(--border)'};background:${n.sexo==='M'?'#DBEAFE':'white'};color:${n.sexo==='M'?'#1D4ED8':'var(--mid)'};font-weight:700;font-size:13px;cursor:pointer">M</button>
@@ -1206,8 +1213,102 @@ function renderFamTable() {
     });
     renderNinos();
   }
+  updateNinosDatalist();
 }
 
+function updateNinosDatalist() {
+  const rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
+  const hijos = famRows.filter(r => r.nombre && r.nombre.trim() && r.miembro &&
+    rolesH.some(rol => r.miembro.toLowerCase().includes(rol)));
+  ['listNinos'].forEach(id => {
+    const dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = '';
+    hijos.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.nombre;
+      o.label = (r.miembro||'') + (r.cedula ? ' · '+r.cedula : '') + (r.edad ? ' · '+r.edad+'a' : '');
+      dl.appendChild(o);
+    });
+  });
+  ['listCedulasNinos'].forEach(id => {
+    const dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = '';
+    hijos.filter(r=>r.cedula).forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.cedula;
+      o.label = r.nombre||'';
+      dl.appendChild(o);
+    });
+  });
+  // padre/madre datalists
+  ['listPadre','listMadre'].forEach(id => {
+    const dl = document.getElementById(id);
+    if (!dl) return;
+    dl.innerHTML = '';
+    famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.nombre;
+      o.label = (r.miembro||'') + (r.cedula ? ' · '+r.cedula : '');
+      dl.appendChild(o);
+    });
+  });
+}
+
+function onNinoNombreInput(idx) {
+  const val = ninos[idx] ? ninos[idx].nombre : '';
+  const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === val.toLowerCase());
+  if (fam) {
+    if (fam.cedula) ninos[idx].cedula = fam.cedula;
+    if (fam.sexo) ninos[idx].sexo = fam.sexo;
+    renderNinos();
+  }
+}
+
+function onNombrePadreInput() {
+  const val = document.getElementById('nombrePadre').value;
+  const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === val.toLowerCase());
+  if (fam) {
+    const cp = document.getElementById('cedulaPadre');
+    if (fam.cedula && cp) cp.value = fam.cedula;
+  }
+}
+
+function onNombreMadreInput() {
+  const val = document.getElementById('nombreMadre').value;
+  const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === val.toLowerCase());
+  if (fam) {
+    const cm = document.getElementById('cedulaMadre');
+    if (fam.cedula && cm) cm.value = fam.cedula;
+  }
+}
+
+function onSelectPadre() {
+  const sel = document.getElementById('selectPadre');
+  const val = sel ? sel.value : '';
+  if (!val) return;
+  const fam = famRows.find(r => r.nombre === val);
+  if (fam) {
+    const np = document.getElementById('nombrePadre');
+    const cp = document.getElementById('cedulaPadre');
+    if (np) np.value = fam.nombre || '';
+    if (fam.cedula && cp) cp.value = fam.cedula;
+  }
+}
+
+function onSelectMadre() {
+  const sel = document.getElementById('selectMadre');
+  const val = sel ? sel.value : '';
+  if (!val) return;
+  const fam = famRows.find(r => r.nombre === val);
+  if (fam) {
+    const nm = document.getElementById('nombreMadre');
+    const cm = document.getElementById('cedulaMadre');
+    if (nm) nm.value = fam.nombre || '';
+    if (fam.cedula && cm) cm.value = fam.cedula;
+  }
+}
 
 function updateCuidadorOptions() {
   const sel = document.getElementById('cuidadorSelect');
@@ -1524,34 +1625,6 @@ function collectAllData() {
 }
 
 // ── SAVE FICHA ────────────────────────────────────────────────────────
-function nuevaFicha() {
-  if (!confirm('¿Iniciar una nueva ficha? Se borrarán los datos actuales del formulario.')) return;
-  localStorage.removeItem('ficha_draft_v2');
-  // Reset all variables
-  famRows = [];
-  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',nivel:''});
-  ninos = [];
-  childData = {};
-  percVals = {};
-  // Reset all inputs
-  document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
-    if (el.id !== 'encuestador') el.value = '';
-  });
-  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
-  document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
-  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-  // Reset date to today
-  const today = new Date().toISOString().slice(0,10);
-  if(document.getElementById('fecha')) document.getElementById('fecha').value = today;
-  // Reset counter
-  document.getElementById('numEncuesta').value = '001';
-  renderFamTable();
-  renderNinos();
-  buildChildTabs();
-  goTo(0);
-  alert('✅ Nueva ficha iniciada');
-}
-
 function guardarFicha() {
   const data = collectAllData();
   const sc = calcScore();
