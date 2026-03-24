@@ -347,7 +347,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(0)">← Atrás</button>
-    <button class="btn btn-primary" onclick="buildChildTabs();goTo(2)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="syncNinosFromFamilia();buildChildTabs();goTo(2)">Siguiente →</button>
   </div>
 </div>
 
@@ -1214,6 +1214,39 @@ function onCuidadorSelect() {
 }
 
 // ── CHILD TABS ────────────────────────────────────────────────────────
+
+// ── SYNC NIÑOS DESDE COMPOSICIÓN FAMILIAR ─────────────────────────────
+function syncNinosFromFamilia() {
+  // Roles que se consideran niños/as menores de 18
+  const rolesNinos = ['Hijo/a', 'Hija', 'Hijo', 'Nieto/a', 'Nieto', 'Nieta'];
+  const desdeTabla = famRows.filter(r => 
+    r.nombre && r.nombre.trim() !== '' && 
+    rolesNinos.some(rol => r.miembro && r.miembro.toLowerCase().includes(rol.toLowerCase())) &&
+    (r.edad === '' || parseInt(r.edad) < 18)
+  );
+  if (desdeTabla.length === 0) return; // No hay hijos en la tabla, dejar como está
+
+  // Mantener datos ya ingresados si el nombre coincide
+  desdeTabla.forEach(fam => {
+    const existe = ninos.find(n => n.nombre && n.nombre.toLowerCase() === fam.nombre.toLowerCase());
+    if (!existe) {
+      ninos.push({
+        nombre: fam.nombre.trim(),
+        edad: fam.edad ? fam.edad + 'a' : '',
+        sexo: fam.sexo || '',
+        cedula: '',
+        fechaNac: '',
+        grupoEdad: ''
+      });
+    } else {
+      // Actualizar edad y sexo si estaban vacíos
+      if (!existe.edad && fam.edad) existe.edad = fam.edad + 'a';
+      if (!existe.sexo && fam.sexo) existe.sexo = fam.sexo;
+    }
+  });
+  renderNinos();
+}
+
 function buildChildTabs() {
   updateCuidadorOptions();
   updateChildNavs();
