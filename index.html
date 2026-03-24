@@ -317,7 +317,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos del padre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombrePadre" placeholder="Nombre y apellidos"></div>
+        <div class="fg"><label>Nombre completo</label>
+          <select id="nombrePadreSelect" onchange="onPadreSelect()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white">
+            <option value="">Seleccionar de la familia...</option>
+          </select>
+          <input type="text" id="nombrePadre" placeholder="O escribir manualmente" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;margin-top:4px">
+        </div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaPadre" placeholder="Opcional"></div>
       </div>
       <div class="fg"><label>Teléfono</label><input type="tel" id="telPadre" placeholder="0987654321"></div>
@@ -328,7 +333,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos de la madre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombreMadre" placeholder="Nombre y apellidos"></div>
+        <div class="fg"><label>Nombre completo</label>
+          <select id="nombreMadreSelect" onchange="onMadreSelect()" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white">
+            <option value="">Seleccionar de la familia...</option>
+          </select>
+          <input type="text" id="nombreMadre" placeholder="O escribir manualmente" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;margin-top:4px">
+        </div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaMadre" placeholder="Opcional"></div>
       </div>
       <div class="fg"><label>Teléfono</label><input type="tel" id="telMadre" placeholder="0987654321"></div>
@@ -1172,16 +1182,35 @@ function renderFamTable() {
       </td>
       <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
   });
-  // ── AUTO-CHAIN: padre/madre → campos abajo ──
+  // ── AUTO-CHAIN: padre/madre → dropdowns + campos ──
   const _p = famRows.find(r => r.miembro === 'Padre');
   const _m = famRows.find(r => r.miembro === 'Madre');
-  if (_p) {
-    if (_p.nombre) { const el = document.getElementById('nombrePadre'); if(el) el.value = _p.nombre; }
-    if (_p.cedula) { const el = document.getElementById('cedulaPadre'); if(el) el.value = _p.cedula; }
+  // Update padre select options from famRows
+  const _selP = document.getElementById('nombrePadreSelect');
+  const _selM = document.getElementById('nombreMadreSelect');
+  if (_selP) {
+    const curP = _selP.value;
+    _selP.innerHTML = '<option value="">Seleccionar de la familia...</option>';
+    famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.nombre;
+      o.textContent = r.nombre + (r.miembro ? ' (' + r.miembro + ')' : '');
+      _selP.appendChild(o);
+    });
+    if (_p && _p.nombre) { _selP.value = _p.nombre; onPadreSelect(); }
+    else if (curP) _selP.value = curP;
   }
-  if (_m) {
-    if (_m.nombre) { const el = document.getElementById('nombreMadre'); if(el) el.value = _m.nombre; }
-    if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
+  if (_selM) {
+    const curM = _selM.value;
+    _selM.innerHTML = '<option value="">Seleccionar de la familia...</option>';
+    famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.nombre;
+      o.textContent = r.nombre + (r.miembro ? ' (' + r.miembro + ')' : '');
+      _selM.appendChild(o);
+    });
+    if (_m && _m.nombre) { _selM.value = _m.nombre; onMadreSelect(); }
+    else if (curM) _selM.value = curM;
   }
   // ── AUTO-CHAIN: hijos/as → sección niños ──
   const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
@@ -1222,6 +1251,36 @@ function updateCuidadorOptions() {
   });
   const otherOpt = document.createElement('option'); otherOpt.value = 'Otro'; otherOpt.textContent = 'Otro (escribir manualmente)'; sel.appendChild(otherOpt);
   if (current) sel.value = current;
+}
+
+function onPadreSelect() {
+  const sel = document.getElementById('nombrePadreSelect');
+  const val = sel ? sel.value : '';
+  if (val) {
+    const fam = famRows.find(r => r.nombre === val);
+    const np = document.getElementById('nombrePadre');
+    const cp = document.getElementById('cedulaPadre');
+    const tp = document.getElementById('telPadre');
+    if (np) np.value = val;
+    if (fam) {
+      if (fam.cedula && cp) cp.value = fam.cedula;
+    }
+  }
+}
+
+function onMadreSelect() {
+  const sel = document.getElementById('nombreMadreSelect');
+  const val = sel ? sel.value : '';
+  if (val) {
+    const fam = famRows.find(r => r.nombre === val);
+    const nm = document.getElementById('nombreMadre');
+    const cm = document.getElementById('cedulaMadre');
+    const tm = document.getElementById('telMadre');
+    if (nm) nm.value = val;
+    if (fam) {
+      if (fam.cedula && cm) cm.value = fam.cedula;
+    }
+  }
 }
 
 function onCuidadorSelect() {
