@@ -317,14 +317,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos del padre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg">
-          <label>Seleccionar de la familia</label>
-          <select id="selectPadre" onchange="onSelectPadre()" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white;color:var(--text)">
-            <option value="">— Seleccionar miembro —</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow" style="margin-top:6px">
         <div class="fg"><label>Nombre completo</label><input type="text" id="nombrePadre" placeholder="Nombre y apellidos"></div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaPadre" placeholder="Opcional"></div>
       </div>
@@ -336,14 +328,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl">Datos de la madre / cabeza de hogar (si aplica)</div>
     <div class="card-body">
       <div class="frow">
-        <div class="fg">
-          <label>Seleccionar de la familia</label>
-          <select id="selectMadre" onchange="onSelectMadre()" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white;color:var(--text)">
-            <option value="">— Seleccionar miembro —</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow" style="margin-top:6px">
         <div class="fg"><label>Nombre completo</label><input type="text" id="nombreMadre" placeholder="Nombre y apellidos"></div>
         <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaMadre" placeholder="Opcional"></div>
       </div>
@@ -1026,6 +1010,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
     <button class="btn btn-success" onclick="guardarFicha()">💾 Guardar Ficha</button>
+    <button class="btn btn-secondary" onclick="nuevaFicha()" style="background:#6B7280;color:white;border:none">🗑️ Nueva Ficha</button>
   </div>
   <div style="height:14px"></div>
   <div class="card">
@@ -1188,34 +1173,16 @@ function renderFamTable() {
       </td>
       <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
   });
-  // ── AUTO-CHAIN: poblar selects padre/madre ──
+  // ── AUTO-CHAIN: padre/madre → campos abajo ──
   const _p = famRows.find(r => r.miembro === 'Padre');
   const _m = famRows.find(r => r.miembro === 'Madre');
-  const _selP = document.getElementById('selectPadre');
-  const _selM = document.getElementById('selectMadre');
-  if (_selP) {
-    const prevP = _selP.value;
-    _selP.innerHTML = '<option value="">— Seleccionar miembro —</option>';
-    famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
-      const o = document.createElement('option');
-      o.value = r.nombre;
-      o.textContent = r.nombre + (r.miembro ? ' (' + r.miembro + ')' : '') + (r.cedula ? ' · ' + r.cedula : '');
-      _selP.appendChild(o);
-    });
-    if (_p && _p.nombre) { _selP.value = _p.nombre; onSelectPadre(); }
-    else if (prevP) _selP.value = prevP;
+  if (_p) {
+    if (_p.nombre) { const el = document.getElementById('nombrePadre'); if(el) el.value = _p.nombre; }
+    if (_p.cedula) { const el = document.getElementById('cedulaPadre'); if(el) el.value = _p.cedula; }
   }
-  if (_selM) {
-    const prevM = _selM.value;
-    _selM.innerHTML = '<option value="">— Seleccionar miembro —</option>';
-    famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
-      const o = document.createElement('option');
-      o.value = r.nombre;
-      o.textContent = r.nombre + (r.miembro ? ' (' + r.miembro + ')' : '') + (r.cedula ? ' · ' + r.cedula : '');
-      _selM.appendChild(o);
-    });
-    if (_m && _m.nombre) { _selM.value = _m.nombre; onSelectMadre(); }
-    else if (prevM) _selM.value = prevM;
+  if (_m) {
+    if (_m.nombre) { const el = document.getElementById('nombreMadre'); if(el) el.value = _m.nombre; }
+    if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
   }
   // ── AUTO-CHAIN: hijos/as → sección niños ──
   const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
@@ -1256,28 +1223,6 @@ function updateCuidadorOptions() {
   });
   const otherOpt = document.createElement('option'); otherOpt.value = 'Otro'; otherOpt.textContent = 'Otro (escribir manualmente)'; sel.appendChild(otherOpt);
   if (current) sel.value = current;
-}
-
-function onSelectPadre() {
-  const sel = document.getElementById('selectPadre');
-  const val = sel.value;
-  if (!val) return;
-  const fam = famRows.find(r => r.nombre === val);
-  if (fam) {
-    document.getElementById('nombrePadre').value = fam.nombre || '';
-    document.getElementById('cedulaPadre').value = fam.cedula || '';
-  }
-}
-
-function onSelectMadre() {
-  const sel = document.getElementById('selectMadre');
-  const val = sel.value;
-  if (!val) return;
-  const fam = famRows.find(r => r.nombre === val);
-  if (fam) {
-    document.getElementById('nombreMadre').value = fam.nombre || '';
-    document.getElementById('cedulaMadre').value = fam.cedula || '';
-  }
 }
 
 function onCuidadorSelect() {
@@ -1579,6 +1524,34 @@ function collectAllData() {
 }
 
 // ── SAVE FICHA ────────────────────────────────────────────────────────
+function nuevaFicha() {
+  if (!confirm('¿Iniciar una nueva ficha? Se borrarán los datos actuales del formulario.')) return;
+  localStorage.removeItem('ficha_draft_v2');
+  // Reset all variables
+  famRows = [];
+  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',nivel:''});
+  ninos = [];
+  childData = {};
+  percVals = {};
+  // Reset all inputs
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
+    if (el.id !== 'encuestador') el.value = '';
+  });
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  // Reset date to today
+  const today = new Date().toISOString().slice(0,10);
+  if(document.getElementById('fecha')) document.getElementById('fecha').value = today;
+  // Reset counter
+  document.getElementById('numEncuesta').value = '001';
+  renderFamTable();
+  renderNinos();
+  buildChildTabs();
+  goTo(0);
+  alert('✅ Nueva ficha iniciada');
+}
+
 function guardarFicha() {
   const data = collectAllData();
   const sc = calcScore();
