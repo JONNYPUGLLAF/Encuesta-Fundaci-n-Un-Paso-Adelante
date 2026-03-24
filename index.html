@@ -288,7 +288,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <th style="width:100px">Miembro familiar</th>
           <th style="width:42px">Edad</th>
           <th style="width:44px">M / F</th>
-          <th style="width:90px">Cédula</th><th style="width:100px">Teléfono</th><th style="width:110px">Nivel educativo</th>
+          <th style="width:90px">Cédula</th><th style="width:110px">Nivel educativo</th>
         </tr>
       </table>
       <button onclick="addFamRow()" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;border:1.5px dashed var(--green);background:white;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;">+ Agregar persona</button>
@@ -1140,7 +1140,7 @@ let famRows = [];
 const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Hija','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
 
 function addFamRow() {
-  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', tel:'', nivel:'' });
+  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', nivel:'' });
   renderFamTable();
   autoSave();
 }
@@ -1178,7 +1178,7 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;renderFamTable();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;renderFamTable();autoSave()" style="width:95px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;autoSave()" style="width:85px"></td><td><input type="text" value="${r.nivel}" placeholder="Ej: 3er grado" oninput="famRows[${i}].nivel=this.value;autoSave()"></td>`;
   });
   // ── AUTO-CHAIN: padre/madre → campos abajo ──
   const _p = famRows.find(r => r.miembro === 'Padre');
@@ -1186,12 +1186,10 @@ function renderFamTable() {
   if (_p) {
     if (_p.nombre) { const el = document.getElementById('nombrePadre'); if(el) el.value = _p.nombre; }
     if (_p.cedula) { const el = document.getElementById('cedulaPadre'); if(el) el.value = _p.cedula; }
-    if (_p.tel) { const el = document.getElementById('telPadre'); if(el) el.value = _p.tel; }
   }
   if (_m) {
     if (_m.nombre) { const el = document.getElementById('nombreMadre'); if(el) el.value = _m.nombre; }
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
-    if (_m.tel) { const el = document.getElementById('telMadre'); if(el) el.value = _m.tel; }
   }
   // ── AUTO-CHAIN: hijos/as → sección niños ──
   const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
@@ -1335,11 +1333,18 @@ function onCuidadorSelect() {
     const fam = famRows.find(r => r.nombre === val);
     if (fam) {
       document.getElementById('edadCuidador').value = fam.edad || '';
-      document.getElementById('parentescoCuidador').value = fam.miembro || '';
+      if (!document.getElementById('parentescoCuidador').value) 
+        document.getElementById('parentescoCuidador').value = fam.miembro || '';
+      // Auto-fill cédula y teléfono del cuidador desde padre/madre si aplica
       const cedEl = document.getElementById('cedulaCuidador');
       const telEl = document.getElementById('telCuidador');
-      if (cedEl) cedEl.value = fam.cedula || '';
-      if (telEl) telEl.value = fam.tel || '';
+      if (fam.miembro === 'Padre') {
+        if (cedEl && !cedEl.value) cedEl.value = document.getElementById('cedulaPadre')?.value || '';
+        if (telEl && !telEl.value) telEl.value = document.getElementById('telPadre')?.value || '';
+      } else if (fam.miembro === 'Madre') {
+        if (cedEl && !cedEl.value) cedEl.value = document.getElementById('cedulaMadre')?.value || '';
+        if (telEl && !telEl.value) telEl.value = document.getElementById('telMadre')?.value || '';
+      }
     }
   }
 }
@@ -1690,22 +1695,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const fe = document.getElementById('fechaVisita');
   if (fe && !fe.value) fe.value = today;
   showFichasGuardadas();
-  // Restore draft
-  const draft = localStorage.getItem('ficha_draft_v2');
-  if (draft) {
-    try {
-      const d = JSON.parse(draft);
-      if (d.ninos) { ninos = d.ninos; renderNinos(); }
-      if (d.famRows) { famRows = d.famRows; renderFamTable(); }
-      if (d.childData) childData = d.childData;
-      if (d.percVals) { Object.keys(d.percVals).forEach(k => { if(d.percVals[k]) percVals[k]=d.percVals[k]; }); }
-      ['numEncuesta','comunidad','fechaVisita','fechaVisita','totalPersonas','habitaciones',
-       'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre','obsPrivadas','obsGenerales'].forEach(id => {
-        const el = document.getElementById(id); if (el && d[id]) el.value = d[id];
-      });
-      if (d.encuestador) { const el = document.getElementById('encuestador'); if(el) el.value = d.encuestador; }
-    } catch(e) { console.log('Draft restore error:', e); }
-  }
+  // Siempre iniciar limpio — borrar borrador anterior
+  localStorage.removeItem('ficha_draft_v2');
   buildChildTabs();
 });
 
