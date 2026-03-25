@@ -1357,7 +1357,7 @@ function syncPadreMadreFields() {
   ninos.forEach((n, idx) => {
     const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === n.nombre.toLowerCase());
     if (fam) {
-      if (fam.cedula && !n.cedula) { ninos[idx].cedula = fam.cedula; }
+      if (fam.cedula) { ninos[idx].cedula = fam.cedula; }
     }
   });
   if (ninos.some(n => !n.cedula)) renderNinos();
