@@ -452,14 +452,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card">
       <div class="card-lbl">Situación de los abuelos directos</div>
-      <div class="card-body" style="padding:6px;overflow-x:auto;">
-        <table class="ab-tbl">
-          <tr><th>Abuelo/a</th><th>Vive</th><th>Fallec.</th><th>Desc.</th><th>Convive</th><th>A cargo</th><th>Edad</th></tr>
-          <tr><td>Abuelo paterno</td><td><input type="checkbox" name="ab_pp_v"></td><td><input type="checkbox" name="ab_pp_f"></td><td><input type="checkbox" name="ab_pp_d"></td><td><input type="checkbox" name="ab_pp_c"></td><td><input type="checkbox" name="ab_pp_a"></td><td><input type="text" name="ab_pp_e" placeholder="__"></td></tr>
-          <tr><td>Abuela paterna</td><td><input type="checkbox" name="ab_pa_v"></td><td><input type="checkbox" name="ab_pa_f"></td><td><input type="checkbox" name="ab_pa_d"></td><td><input type="checkbox" name="ab_pa_c"></td><td><input type="checkbox" name="ab_pa_a"></td><td><input type="text" name="ab_pa_e" placeholder="__"></td></tr>
-          <tr><td>Abuelo materno</td><td><input type="checkbox" name="ab_mp_v"></td><td><input type="checkbox" name="ab_mp_f"></td><td><input type="checkbox" name="ab_mp_d"></td><td><input type="checkbox" name="ab_mp_c"></td><td><input type="checkbox" name="ab_mp_a"></td><td><input type="text" name="ab_mp_e" placeholder="__"></td></tr>
-          <tr><td>Abuela materna</td><td><input type="checkbox" name="ab_ma_v"></td><td><input type="checkbox" name="ab_ma_f"></td><td><input type="checkbox" name="ab_ma_d"></td><td><input type="checkbox" name="ab_ma_c"></td><td><input type="checkbox" name="ab_ma_a"></td><td><input type="text" name="ab_ma_e" placeholder="__"></td></tr>
-        </table>
+      <div class="card-body" style="padding:6px">
+        <div id="abuelosContainer"></div>
       </div>
     </div>
   </div>
@@ -1339,6 +1333,14 @@ function renderFamTable() {
   }
   updateNinosDatalist();
   updateMiembroSignosOptions();
+  // ── AUTO-ACTUALIZAR total de personas y menores de 18 ──
+  const totalEl = document.getElementById('totalPersonas');
+  const menoresEl = document.getElementById('menores18');
+  if (totalEl) totalEl.value = famRows.filter(r => r.nombre && r.nombre.trim()).length || '';
+  if (menoresEl) {
+    const menores = famRows.filter(r => r.nombre && r.nombre.trim() && r.edad !== '' && Number(r.edad) < 18);
+    menoresEl.value = menores.length || '';
+  }
 }
 
 function updateNinosDatalist() {
@@ -1537,6 +1539,7 @@ function selectChild(idx) {
   saveCurrentChildData();
   currentNino = idx;
   loadChildData(idx);
+  renderAbuelos(idx);
   updateChildNavs();
 }
 
@@ -1577,15 +1580,16 @@ function saveCurrentChildData() {
     const el = document.getElementById(id);
     if (el) childData[currentNino][id] = el.value;
   });
-  // Abuelos
-  ['pp','pa','mp','ma'].forEach(ab => {
-    ['v','f','d','c','a'].forEach(col => {
-      const el = document.querySelector(`input[name="ab_${ab}_${col}"]`);
-      if (el) childData[currentNino][`ab_${ab}_${col}`] = el.checked;
-    });
-    const e = document.querySelector(`input[name="ab_${ab}_e"]`);
-    if (e) childData[currentNino][`ab_${ab}_e`] = e.value;
-  });
+  // Abuelos — guardar desde abData
+  if (abData[currentNino]) {
+    childData[currentNino]['_abData'] = JSON.parse(JSON.stringify(abData[currentNino]));
+  }
+  // haySignos
+  const haySignosEl = document.querySelector('input[name="haySignos"]:checked');
+  childData[currentNino]['haySignos'] = haySignosEl ? haySignosEl.value : '';
+  // Religión otro texto
+  const rotEl = document.getElementById('religionOtroTexto');
+  if (rotEl) childData[currentNino]['religionOtroTexto'] = rotEl.value;
   // Cuidador
   ['cuidadorSelect','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
     const el = document.getElementById(id);
@@ -1595,15 +1599,27 @@ function saveCurrentChildData() {
 
 function loadChildData(idx) {
   const d = childData[idx] || {};
-  // Clear all child-specific radios/checkboxes
+  // ── Limpiar TODOS los campos de secciones por niño ──
   document.querySelectorAll('#sec2 input[type=radio],#sec2 input[type=checkbox],#sec5 input[type=radio],#sec5 input[type=checkbox],#sec6 input[type=radio],#sec6 input[type=checkbox]')
-    .forEach(el => el.checked = false);
+    .forEach(el => { el.checked = false; });
   document.querySelectorAll('#sec2 .opt,#sec5 .opt,#sec6 .opt').forEach(el => el.classList.remove('sel'));
-  // Restore radios/checkboxes
+  // Limpiar todos los text/number inputs de sec2, sec5, sec6
+  document.querySelectorAll('#sec2 input[type=text],#sec2 input[type=number],#sec2 select,#sec5 input[type=text],#sec5 input[type=number],#sec5 select,#sec6 input[type=text],#sec6 input[type=number],#sec6 textarea')
+    .forEach(el => { if(el.id !== 'cuidadorSelect') el.value = ''; });
+  // Limpiar IMC
+  const resultNutri = document.getElementById('resultNutri');
+  const notaOMS = document.getElementById('notaOMS');
+  if (resultNutri) resultNutri.style.display = 'none';
+  if (notaOMS) notaOMS.style.display = 'none';
+  // Limpiar signos de riesgo
+  document.getElementById('signosRiesgoDetalles') && (document.getElementById('signosRiesgoDetalles').style.display='none');
+  // Limpiar religión otro
+  document.getElementById('religionOtroCard') && (document.getElementById('religionOtroCard').style.display='none');
+
+  // ── Restaurar radios/checkboxes ──
   Object.keys(d).forEach(key => {
     const val = d[key];
     if (typeof val === 'string' && val) {
-      // Try radio
       val.split('; ').forEach(v => {
         const el = document.querySelector(`input[name="${key}"][value="${v}"]`);
         if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
@@ -1613,31 +1629,29 @@ function loadChildData(idx) {
       if (el) el.checked = val;
     }
   });
-  // Text inputs
-  ['institucion','gradoAnio','condSalud','cuandoBrigada','cuidadorSelect','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
+  // ── Text inputs ──
+  ['institucion','gradoAnio','condSalud','cuidadorSelect','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
     const el = document.getElementById(id);
     if (el && d[id] !== undefined) el.value = d[id];
   });
-  // Peso y talla — limpiar primero, luego restaurar si hay datos
+  // ── Peso y talla ──
   const pesoEl = document.getElementById('pesoNino');
   const tallaEl = document.getElementById('tallaNino');
   if (pesoEl) pesoEl.value = d['pesoNino'] || '';
   if (tallaEl) tallaEl.value = d['tallaNino'] || '';
-  // Limpiar resultado IMC y recalcular si hay datos
-  const resultNutri = document.getElementById('resultNutri');
-  const notaOMS = document.getElementById('notaOMS');
-  if (resultNutri) resultNutri.style.display = 'none';
-  if (notaOMS) notaOMS.style.display = 'none';
   if (d['pesoNino'] && d['tallaNino']) calcNutri();
-  // Abuelos
-  ['pp','pa','mp','ma'].forEach(ab => {
-    ['v','f','d','c','a'].forEach(col => {
-      const el = document.querySelector(`input[name="ab_${ab}_${col}"]`);
-      if (el && d[`ab_${ab}_${col}`] !== undefined) el.checked = d[`ab_${ab}_${col}`];
-    });
-    const e = document.querySelector(`input[name="ab_${ab}_e"]`);
-    if (e && d[`ab_${ab}_e`] !== undefined) e.value = d[`ab_${ab}_e`];
-  });
+  // ── Restaurar signos si había ──
+  if (d['haySignos']) {
+    const el = document.querySelector(`input[name="haySignos"][value="${d['haySignos']}"]`);
+    if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); toggleSignosRiesgo(d['haySignos']==='Existen signos de riesgo'); }
+  }
+  // ── Restaurar religión otro ──
+  if (d['religion'] === 'Otro') toggleReligionOtro(true);
+  if (d['religionOtroTexto']) { const el = document.getElementById('religionOtroTexto'); if(el) el.value = d['religionOtroTexto']; }
+  // ── Abuelos ──
+  if (d['_abData']) abData[idx] = JSON.parse(JSON.stringify(d['_abData']));
+  else abData[idx] = {};
+  renderAbuelos(idx);
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────
@@ -1656,6 +1670,7 @@ function goTo(idx) {
   const tabs = document.getElementById('tabsBar');
   tabs.querySelectorAll('.tab')[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   if (idx === 10) calcScore();
+  if (idx === 2) renderAbuelos(currentNino);
   autoSave();
 }
 
@@ -1953,7 +1968,128 @@ function sugerirPrioridad(score) {
   }
 }
 
-// ── POBLAR SELECTOR SIGNOS DE RIESGO ─────────────────────────────────
+// ── ABUELOS ───────────────────────────────────────────────────────────
+const AB_KEYS = [
+  {key:'pp', label:'Abuelo paterno'},
+  {key:'pa', label:'Abuela paterna'},
+  {key:'mp', label:'Abuelo materno'},
+  {key:'ma', label:'Abuela materna'}
+];
+
+// Estado de abuelos por niño
+let abData = {}; // {ninoIdx: {pp:{estado:'',nombre:'',edad:'',convive:false,aCargo:false}, ...}}
+
+function getAbData(ninoIdx, key) {
+  if (!abData[ninoIdx]) abData[ninoIdx] = {};
+  if (!abData[ninoIdx][key]) abData[ninoIdx][key] = {estado:'',nombre:'',edad:'',convive:false,aCargo:false};
+  return abData[ninoIdx][key];
+}
+
+function renderAbuelos(ninoIdx) {
+  const c = document.getElementById('abuelosContainer');
+  if (!c) return;
+  c.innerHTML = '';
+  // Obtener lista de abuelos de la tabla familiar
+  const abuelosEnFamilia = famRows.filter(r => r.nombre && r.nombre.trim() && r.miembro && r.miembro.toLowerCase().includes('abuelo'));
+
+  AB_KEYS.forEach(({key, label}) => {
+    const d = getAbData(ninoIdx, key);
+    const div = document.createElement('div');
+    div.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:#FAFAFA';
+
+    const esFallecidoDesc = d.estado === 'Fallecido' || d.estado === 'Desconocido';
+
+    // Dropdown de abuelos de la familia para nombre
+    const abOptions = abuelosEnFamilia.map(r =>
+      `<option value="${r.nombre}" ${d.nombre===r.nombre?'selected':''}>${r.nombre}${r.edad?' ('+r.edad+'a)':''}</option>`
+    ).join('');
+    const hasAbOptions = abuelosEnFamilia.length > 0;
+
+    div.innerHTML = `
+      <div style="font-weight:700;font-size:12px;color:var(--blue);margin-bottom:8px">${label}</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:${esFallecidoDesc?'0':'8px'}">
+        <button onclick="setAbEstado(${ninoIdx},'${key}','Vive')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Vive'?'#166534':'var(--border)'};background:${d.estado==='Vive'?'#DCFCE7':'white'};color:${d.estado==='Vive'?'#166534':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">✅ Vive</button>
+        <button onclick="setAbEstado(${ninoIdx},'${key}','Fallecido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Fallecido'?'#991B1B':'var(--border)'};background:${d.estado==='Fallecido'?'#FEE2E2':'white'};color:${d.estado==='Fallecido'?'#991B1B':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">⚫ Fallecido/a</button>
+        <button onclick="setAbEstado(${ninoIdx},'${key}','Desconocido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Desconocido'?'#6B7280':'var(--border)'};background:${d.estado==='Desconocido'?'#F3F4F6':'white'};color:${d.estado==='Desconocido'?'#374151':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">❓ Desconocido/a</button>
+      </div>
+      ${!esFallecidoDesc ? `
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px">
+          <label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Nombre</label>
+          ${hasAbOptions
+            ? `<select onchange="setAbNombre(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:white">
+                <option value="">— Seleccionar —</option>
+                ${abOptions}
+                <option value="__manual__" ${!abuelosEnFamilia.find(r=>r.nombre===d.nombre)&&d.nombre?'selected':''}>Otro (escribir)</option>
+               </select>`
+            : `<input type="text" value="${d.nombre}" placeholder="Nombre del abuelo/a" oninput="setAbNombreManual(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px">`
+          }
+        </div>
+        <div style="flex:0 0 70px">
+          <label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Edad</label>
+          <input type="number" min="40" max="120" value="${d.edad}" placeholder="Edad" oninput="setAbEdad(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;padding-top:16px">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+            <input type="checkbox" ${d.convive?'checked':''} onchange="setAbConvive(${ninoIdx},'${key}',this.checked)" style="width:14px;height:14px"> Convive
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+            <input type="checkbox" ${d.aCargo?'checked':''} onchange="setAbACargo(${ninoIdx},'${key}',this.checked)" style="width:14px;height:14px"> A cargo
+          </label>
+        </div>
+      </div>
+      ${hasAbOptions && (!abuelosEnFamilia.find(r=>r.nombre===d.nombre)) && d.nombre ? `
+      <input type="text" value="${d.nombre}" placeholder="Escribir nombre manualmente" oninput="setAbNombreManual(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;margin-top:6px">
+      ` : ''}
+      ` : `<div style="font-size:11px;color:#6B7280;padding:4px 0;font-style:italic">${d.estado==='Fallecido'?'Fallecido/a — no se registran más datos':'Desconocido/a — no se registran más datos'}</div>`}
+    `;
+    c.appendChild(div);
+  });
+}
+
+function setAbEstado(ninoIdx, key, estado) {
+  const d = getAbData(ninoIdx, key);
+  d.estado = estado;
+  // Si fallecido o desconocido, limpiar nombre/edad/convive/aCargo
+  if (estado === 'Fallecido' || estado === 'Desconocido') {
+    d.nombre = ''; d.edad = ''; d.convive = false; d.aCargo = false;
+  }
+  renderAbuelos(ninoIdx);
+  autoSave();
+}
+
+function setAbNombre(ninoIdx, key, val) {
+  const d = getAbData(ninoIdx, key);
+  if (val === '__manual__') { d.nombre = ''; }
+  else {
+    d.nombre = val;
+    // Auto-rellenar edad desde tabla familiar
+    const fam = famRows.find(r => r.nombre === val);
+    if (fam && fam.edad) d.edad = fam.edad;
+  }
+  renderAbuelos(ninoIdx);
+  autoSave();
+}
+
+function setAbNombreManual(ninoIdx, key, val) {
+  getAbData(ninoIdx, key).nombre = val;
+  autoSave();
+}
+
+function setAbEdad(ninoIdx, key, val) {
+  getAbData(ninoIdx, key).edad = val;
+  autoSave();
+}
+
+function setAbConvive(ninoIdx, key, val) {
+  getAbData(ninoIdx, key).convive = val;
+  autoSave();
+}
+
+function setAbACargo(ninoIdx, key, val) {
+  getAbData(ninoIdx, key).aCargo = val;
+  autoSave();
+}
 function updateMiembroSignosOptions() {
   const sel = document.getElementById('miembroSignos');
   if (!sel) return;
