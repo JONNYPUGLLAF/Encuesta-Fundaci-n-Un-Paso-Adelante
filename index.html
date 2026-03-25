@@ -1286,7 +1286,7 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncPadreMadreFields();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncPadreMadreFields();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncPadreMadreFields();autoSave()" onblur="renderNinos()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncPadreMadreFields();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">--</option>
         ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel','Cuarto nivel','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
       </select></td>`;
@@ -1353,37 +1353,20 @@ function syncPadreMadreFields() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
     if (_m.tel)    { const el = document.getElementById('telMadre');    if(el) el.value = _m.tel; }
   }
-  // Sincronizar cédula y sexo en niños — solo DOM directo, sin re-renderizar
-  const cards = document.querySelectorAll('#childrenList .nino-card');
+  // Sincronizar cédula y sexo en niños — actualiza dato y re-renderiza solo si cambió algo
+  let changed = false;
   ninos.forEach((n, idx) => {
     const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === n.nombre.toLowerCase());
     if (!fam) return;
-    // Sincronizar cédula
-    if (fam.cedula && fam.cedula !== n.cedula) {
-      ninos[idx].cedula = fam.cedula;
-      if (cards[idx]) {
-        const cedInput = cards[idx].querySelector('input[placeholder="Opcional"]');
-        if (cedInput && document.activeElement !== cedInput) cedInput.value = fam.cedula;
-      }
-    }
-    // Sincronizar sexo
-    if (fam.sexo && fam.sexo !== n.sexo) {
-      ninos[idx].sexo = fam.sexo;
-      if (cards[idx]) {
-        const btnM = cards[idx].querySelectorAll('button')[0];
-        const btnF = cards[idx].querySelectorAll('button')[1];
-        if (btnM && btnF) {
-          const esM = fam.sexo === 'M';
-          btnM.style.background = esM ? '#DBEAFE' : 'white';
-          btnM.style.borderColor = esM ? '#3B82F6' : 'var(--border)';
-          btnM.style.color = esM ? '#1D4ED8' : 'var(--mid)';
-          btnF.style.background = !esM ? '#FCE7F3' : 'white';
-          btnF.style.borderColor = !esM ? '#EC4899' : 'var(--border)';
-          btnF.style.color = !esM ? '#BE185D' : 'var(--mid)';
-        }
-      }
-    }
+    if (fam.cedula && fam.cedula !== n.cedula) { ninos[idx].cedula = fam.cedula; changed = true; }
+    if (fam.sexo  && fam.sexo  !== n.sexo)   { ninos[idx].sexo  = fam.sexo;   changed = true; }
   });
+  if (changed) {
+    // Solo re-renderizar si el foco NO está en la tabla familiar (evita perder foco al escribir)
+    const focused = document.activeElement;
+    const enTabla = focused && focused.closest && focused.closest('#famTableBody');
+    if (!enTabla) renderNinos();
+  }
 }
 
 
