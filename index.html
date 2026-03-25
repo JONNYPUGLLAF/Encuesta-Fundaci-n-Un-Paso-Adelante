@@ -401,13 +401,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt"><input type="checkbox" name="convive" value="Ambos padres"><span>Ambos padres</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Solo la madre"><span>Solo la madre</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Solo el padre"><span>Solo el padre</span></label>
+        <label class="opt"><input type="checkbox" name="convive" value="Padrastro/madrastra"><span>Padrastro / madrastra</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Abuelos maternos"><span>Abuelos maternos</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Abuelos paternos"><span>Abuelos paternos</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Tíos/tías"><span>Tíos / tías</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Hermanos mayores"><span>Hermanos mayores</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Otros familiares"><span>Otros familiares</span></label>
         <label class="opt"><input type="checkbox" name="convive" value="Vive solo/a"><span>Vive solo/a</span></label>
-        <label class="opt"><input type="checkbox" name="convive" value="Institución/albergue"><span>Institución / albergue</span></label>
       </div>
     </div>
     <div class="card">
@@ -459,7 +459,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(1)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(3)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="validarYAvanzarSec2()">Siguiente →</button>
   </div>
 </div>
 
@@ -1310,11 +1310,10 @@ function renderFamTable() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
     if (_m.tel) { const el = document.getElementById('telMadre'); if(el) el.value = _m.tel; }
   }
-  // ── AUTO-CHAIN: hijos/as → sección niños ──
-  const _rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
+  // ── AUTO-CHAIN: cualquier miembro menor de 18 → sección niños ──
   const _hijos = famRows.filter(r =>
     r.nombre && r.nombre.trim() &&
-    r.miembro && _rolesH.some(rol => r.miembro.toLowerCase().includes(rol))
+    r.edad !== '' && Number(r.edad) < 18
   );
   if (_hijos.length > 0) {
     const _prev = [...ninos];
@@ -1501,13 +1500,12 @@ function onCuidadorSelect() {
 
 // ── SYNC NIÑOS DESDE COMPOSICIÓN FAMILIAR ─────────────────────────────
 function syncNinosFromFamilia() {
-  // Roles que se consideran niños/as menores de 18
-  const rolesNinos = ['hijo/a', 'hija', 'hijo', 'nieto/a', 'nieto', 'nieta'];
+  // Cualquier miembro menor de 18 años va a la sección niños
   const desdeTabla = famRows.filter(r => 
     r.nombre && r.nombre.trim() !== '' && 
-    rolesNinos.some(rol => r.miembro && r.miembro.toLowerCase().includes(rol.toLowerCase()))
+    r.edad !== '' && Number(r.edad) < 18
   );
-  if (desdeTabla.length === 0) return; // No hay hijos en la tabla, dejar como está
+  if (desdeTabla.length === 0) return;
 
   // Mantener datos ya ingresados si el nombre coincide
   desdeTabla.forEach(fam => {
@@ -2118,6 +2116,28 @@ function setAbACargo(ninoIdx, key, val) {
   getAbData(ninoIdx, key).aCargo = val;
   autoSave();
 }
+function validarYAvanzarSec2() {
+  if (ninos.length === 0) { goTo(3); return; }
+  saveCurrentChildData();
+  const incompletos = [];
+  ninos.forEach((n, idx) => {
+    const d = childData[idx] || {};
+    if (!d.estadoPadre && !d.estadoMadre) {
+      incompletos.push(n.nombre || 'Niño/a ' + (idx+1));
+    }
+  });
+  if (incompletos.length > 0) {
+    alert('⚠️ Por favor completa la información familiar de:\n\n• ' + incompletos.join('\n• ') + '\n\nSelecciona al menos el estado del padre o la madre para cada niño/a.');
+    const primerIdx = ninos.findIndex((n, idx) => {
+      const d = childData[idx] || {};
+      return !d.estadoPadre && !d.estadoMadre;
+    });
+    if (primerIdx >= 0) selectChild(primerIdx);
+    return;
+  }
+  goTo(3);
+}
+
 function updateMiembroSignosOptions() {
   const sel = document.getElementById('miembroSignos');
   if (!sel) return;
