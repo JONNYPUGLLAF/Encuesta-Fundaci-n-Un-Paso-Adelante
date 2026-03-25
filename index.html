@@ -1280,19 +1280,19 @@ function renderFamTable() {
     const tr = tbl.insertRow();
     tr.innerHTML = `
       <td class="fam-num">${i+1}</td>
-      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoFillPadreMadre();renderFamTable();autoSave()"></td>
+      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoFillPadreMadre();updateTotales();autoSave()"></td>
       <td><select onchange="famRows[${i}].miembro=this.value;autoFillPadreMadre();updateCuidadorOptions();renderFamTable();autoSave()">
         <option value="">--</option>
         ${MIEMBRO_OPTS.map(o=>`<option${r.miembro===o?' selected':''}>${o}</option>`).join('')}
       </select></td>
-      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;renderFamTable();autoSave()" style="width:42px"></td>
+      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;updateTotales();autoSave()" style="width:42px"></td>
       <td style="padding:3px">
         <div style="display:flex;gap:3px">
           <button onclick="famRows[${i}].sexo='M';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='M'?'#3B82F6':'var(--border)'};background:${r.sexo==='M'?'#DBEAFE':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='M'?'#1D4ED8':'var(--mid)'}">M</button>
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncNinosFromFamilia();autoFillPadreMadre();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncNinosFromFamilia();autoFillPadreMadre();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
+      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncPadreMadreFields();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncPadreMadreFields();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">--</option>
         ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel','Cuarto nivel','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
       </select></td>`;
@@ -1333,7 +1333,11 @@ function renderFamTable() {
   }
   updateNinosDatalist();
   updateMiembroSignosOptions();
-  // ── AUTO-ACTUALIZAR total de personas y menores de 18 ──
+  updateTotales();
+  syncPadreMadreFields();
+}
+
+function updateTotales() {
   const totalEl = document.getElementById('totalPersonas');
   const menoresEl = document.getElementById('menores18');
   if (totalEl) totalEl.value = famRows.filter(r => r.nombre && r.nombre.trim()).length || '';
@@ -1343,7 +1347,30 @@ function renderFamTable() {
   }
 }
 
-function updateNinosDatalist() {
+function syncPadreMadreFields() {
+  const _p = famRows.find(r => r.miembro === 'Padre');
+  const _m = famRows.find(r => r.miembro === 'Madre');
+  if (_p) {
+    if (_p.nombre) { const el = document.getElementById('nombrePadre'); if(el) el.value = _p.nombre; }
+    if (_p.cedula) { const el = document.getElementById('cedulaPadre'); if(el) el.value = _p.cedula; }
+    if (_p.tel)    { const el = document.getElementById('telPadre');    if(el) el.value = _p.tel; }
+  }
+  if (_m) {
+    if (_m.nombre) { const el = document.getElementById('nombreMadre'); if(el) el.value = _m.nombre; }
+    if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
+    if (_m.tel)    { const el = document.getElementById('telMadre');    if(el) el.value = _m.tel; }
+  }
+  // Sincronizar cédula en niños
+  ninos.forEach((n, idx) => {
+    const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === n.nombre.toLowerCase());
+    if (fam) {
+      if (fam.cedula && !n.cedula) { ninos[idx].cedula = fam.cedula; }
+    }
+  });
+  if (ninos.some(n => !n.cedula)) renderNinos();
+}
+
+
   const rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
   const hijos = famRows.filter(r => r.nombre && r.nombre.trim() && r.miembro &&
     rolesH.some(rol => r.miembro.toLowerCase().includes(rol)));
