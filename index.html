@@ -1371,6 +1371,7 @@ function syncPadreMadreFields() {
 }
 
 
+function updateNinosDatalist() {
   const rolesH = ['hijo/a','hija','hijo','nieto/a','nieto','nieta'];
   const hijos = famRows.filter(r => r.nombre && r.nombre.trim() && r.miembro &&
     rolesH.some(rol => r.miembro.toLowerCase().includes(rol)));
