@@ -413,6 +413,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card">
       <div class="card-lbl">Cuidador / Responsable principal</div>
       <div class="card-body">
+        <div style="margin-bottom:8px">
+          <button onclick="mismoCuidadorTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;font-weight:600;cursor:pointer">👨‍👩‍👧 Mismo cuidador para todos los niños/as</button>
+        </div>
         <div class="frow">
           <div class="fg">
             <label>Nombre del cuidador/a</label>
@@ -807,53 +810,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="vacunas" value="Incompleto"><span>Incompleto</span></label>
       <label class="opt risk"><input type="radio" name="vacunas" value="No tiene/no sabe"><span>No tiene / no sabe</span></label>
     </div>
+    <div id="vphCard" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">Vacuna VPH (aplica para niños/as de 9 a 14 años)</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="vacunaVPH" value="1ª dosis recibida"><span>1ª dosis recibida</span></label>
+        <label class="opt"><input type="radio" name="vacunaVPH" value="2ª dosis recibida"><span>2ª dosis recibida (completo)</span></label>
+        <label class="opt risk"><input type="radio" name="vacunaVPH" value="No ha recibido VPH"><span>No ha recibido</span></label>
+        <label class="opt"><input type="radio" name="vacunaVPH" value="No aplica VPH"><span>No aplica</span></label>
+      </div>
+    </div>
     </div>
   </div>
-  <div class="card">
-    <div class="sub">▸ Soberanía alimentaria (familia)</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="ultimaComida" value="Hoy"><span>Hoy</span></label>
-      <label class="opt warn"><input type="radio" name="ultimaComida" value="Ayer"><span>Ayer</span></label>
-      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace 2 días"><span>Hace 2 días</span></label>
-      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace más de 2 días"><span>Hace más de 2 días</span></label>
-      <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día (familia)</div>
-    <div class="opts c2">
-      <label class="opt risk"><input type="radio" name="comidas" value="1 comida"><span>1 comida</span></label>
-      <label class="opt warn"><input type="radio" name="comidas" value="2 comidas"><span>2 comidas</span></label>
-      <label class="opt"><input type="radio" name="comidas" value="3 comidas"><span>3 comidas</span></label>
-      <label class="opt"><input type="radio" name="comidas" value="Más de 3"><span>Más de 3</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuál es la forma de alimentación regular de la familia? (puede marcar varias)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca (yuca / plátano / papa china)</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca"><span>Caza / pesca</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Restaurante/comida preparada"><span>Restaurante / compran comida preparada</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia el niño/a se va a dormir sin haber comido?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="sinComer" value="Nunca"><span>Nunca</span></label>
-      <label class="opt warn"><input type="radio" name="sinComer" value="Rara vez (1 vez al mes)"><span>Rara vez (1 vez al mes)</span></label>
-      <label class="opt warn"><input type="radio" name="sinComer" value="A veces (1 vez por semana)"><span>A veces (1 vez por semana)</span></label>
-      <label class="opt risk"><input type="radio" name="sinComer" value="Frecuentemente (más de 2 veces/semana)"><span>Frecuentemente (más de 2 veces/semana)</span></label>
-      <label class="opt risk"><input type="radio" name="sinComer" value="Casi siempre"><span>Casi siempre</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes hubo días en que no había comida en el hogar?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="sinComidaHogar" value="No"><span>No</span></label>
-      <label class="opt warn"><input type="radio" name="sinComidaHogar" value="Sí, 1 o 2 días"><span>Sí, 1 o 2 días</span></label>
-      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, una semana"><span>Sí, una semana</span></label>
-      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, más de una semana"><span>Sí, más de una semana</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿El niño/a come solo o acompañado?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="comeAcompanado" value="Siempre acompañado"><span>Siempre acompañado</span></label>
-      <label class="opt warn"><input type="radio" name="comeAcompanado" value="A veces solo"><span>A veces solo</span></label>
-      <label class="opt risk"><input type="radio" name="comeAcompanado" value="Casi siempre solo"><span>Casi siempre solo</span></label>
-    </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="desayunoEscolar" value="Sí, todos los días"><span>Sí, todos los días</span></label>
@@ -861,35 +828,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
       <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de frutas / verduras</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="frutas" value="Diario"><span>Diario</span></label>
-      <label class="opt"><input type="radio" name="frutas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="frutas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="frutas" value="Casi nunca"><span>Casi nunca</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de proteínas (carne / huevo / pescado)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="proteinas" value="Diario"><span>Diario</span></label>
-      <label class="opt"><input type="radio" name="proteinas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="proteinas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="proteinas" value="Casi nunca"><span>Casi nunca</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el menor</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="chicha" value="No toma"><span>No toma</span></label>
-      <label class="opt"><input type="radio" name="chicha" value="Uso cultural (sin alcohol)"><span>Uso cultural (sin alcohol)</span></label>
-      <label class="opt warn"><input type="radio" name="chicha" value="Chicha fermentada (involuntario)"><span>Chicha fermentada — involuntario</span></label>
-      <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Horas al día que el niño/a permanece solo/a</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="horasSoloNino" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
-      <label class="opt"><input type="radio" name="horasSoloNino" value="1–2 horas"><span>1 – 2 horas</span></label>
-      <label class="opt warn"><input type="radio" name="horasSoloNino" value="3–5 horas"><span>3 – 5 horas</span></label>
-      <label class="opt risk"><input type="radio" name="horasSoloNino" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
+      <label class="opt"><input type="radio" name="ultimaComida" value="Hoy"><span>Hoy</span></label>
+      <label class="opt warn"><input type="radio" name="ultimaComida" value="Ayer"><span>Ayer</span></label>
+      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace 2 días"><span>Hace 2 días</span></label>
+      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace más de 2 días"><span>Hace más de 2 días</span></label>
+      <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
     </div>
   </div>
   <div class="btn-row">
@@ -911,6 +856,63 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="card">
     <div class="sub red">▸ Entorno y supervisión del hogar</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuántas horas permanecen solos sus hijos/as al día?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="horasSolo" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
+      <label class="opt"><input type="radio" name="horasSolo" value="1–2 horas"><span>1 – 2 horas</span></label>
+      <label class="opt warn"><input type="radio" name="horasSolo" value="3–5 horas"><span>3 – 5 horas</span></label>
+      <label class="opt risk"><input type="radio" name="horasSolo" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día (familia)</div>
+    <div class="opts c2">
+      <label class="opt risk"><input type="radio" name="comidas" value="1 comida"><span>1 comida</span></label>
+      <label class="opt warn"><input type="radio" name="comidas" value="2 comidas"><span>2 comidas</span></label>
+      <label class="opt"><input type="radio" name="comidas" value="3 comidas"><span>3 comidas</span></label>
+      <label class="opt"><input type="radio" name="comidas" value="Más de 3"><span>Más de 3</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuál es la forma de alimentación regular de la familia? (puede marcar varias)</div>
+    <div class="opts c2">
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca (yuca / plátano / papa china)</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca"><span>Caza / pesca</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Restaurante/comida preparada"><span>Restaurante / compran comida preparada</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia algún niño/a se va a dormir sin haber comido?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="sinComer" value="Nunca"><span>Nunca</span></label>
+      <label class="opt warn"><input type="radio" name="sinComer" value="Rara vez (1 vez al mes)"><span>Rara vez (1 vez al mes)</span></label>
+      <label class="opt warn"><input type="radio" name="sinComer" value="A veces (1 vez por semana)"><span>A veces (1 vez por semana)</span></label>
+      <label class="opt risk"><input type="radio" name="sinComer" value="Frecuentemente (más de 2 veces/semana)"><span>Frecuentemente (más de 2 veces/semana)</span></label>
+      <label class="opt risk"><input type="radio" name="sinComer" value="Casi siempre"><span>Casi siempre</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes hubo días en que no había comida en el hogar?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="sinComidaHogar" value="No"><span>No</span></label>
+      <label class="opt warn"><input type="radio" name="sinComidaHogar" value="Sí, 1 o 2 días"><span>Sí, 1 o 2 días</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, una semana"><span>Sí, una semana</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, más de una semana"><span>Sí, más de una semana</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de frutas / verduras (familia)</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="frutas" value="Diario"><span>Diario</span></label>
+      <label class="opt"><input type="radio" name="frutas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
+      <label class="opt warn"><input type="radio" name="frutas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
+      <label class="opt warn"><input type="radio" name="frutas" value="Casi nunca"><span>Casi nunca</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de proteínas (carne / huevo / pescado)</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="proteinas" value="Diario"><span>Diario</span></label>
+      <label class="opt"><input type="radio" name="proteinas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
+      <label class="opt warn"><input type="radio" name="proteinas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
+      <label class="opt warn"><input type="radio" name="proteinas" value="Casi nunca"><span>Casi nunca</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el hogar</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="chicha" value="No toma"><span>No toma</span></label>
+      <label class="opt"><input type="radio" name="chicha" value="Uso cultural (sin alcohol)"><span>Uso cultural (sin alcohol)</span></label>
+      <label class="opt warn"><input type="radio" name="chicha" value="Chicha fermentada (involuntario)"><span>Chicha fermentada — involuntario</span></label>
+      <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
+    </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="peleas" value="No/raramente"><span>No / raramente</span></label>
@@ -925,15 +927,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="alcohol" value="Frecuente"><span>Frecuente</span></label>
       <label class="opt risk"><input type="radio" name="alcohol" value="Problema reconocido"><span>Problema reconocido</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Horas al día que el niño/a permanece solo/a</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="horasSolo" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
-      <label class="opt"><input type="radio" name="horasSolo" value="1–2 horas"><span>1 – 2 horas</span></label>
-      <label class="opt warn"><input type="radio" name="horasSolo" value="3–5 horas"><span>3 – 5 horas</span></label>
-      <label class="opt risk"><input type="radio" name="horasSolo" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
-    </div>
   </div>
-  <div class="card">
     <div class="sub red">▸ Forma de disciplinar al niño/a</div>
     <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar más de 2</p>
     <div class="opts c2">
@@ -1746,9 +1740,9 @@ function calcScore() {
   });
 
   let lvl, cls, em, desc;
-  if (score<=15){lvl='BAJA';cls='sc-low';em='🟢';desc='Familia con necesidades básicas cubiertas. Seguimiento periódico recomendado.'}
-  else if(score<=30){lvl='MEDIA';cls='sc-med';em='🟡';desc='Vulnerabilidad moderada. Requiere atención y seguimiento cercano.'}
-  else if(score<=45){lvl='ALTA';cls='sc-high';em='🔴';desc='Alta vulnerabilidad. Intervención prioritaria de la Fundación.'}
+  if (score<=10){lvl='BAJA';cls='sc-low';em='🟢';desc='Familia con necesidades básicas cubiertas. Seguimiento periódico recomendado.'}
+  else if(score<=25){lvl='MEDIA';cls='sc-med';em='🟡';desc='Vulnerabilidad moderada. Requiere atención y seguimiento cercano.'}
+  else if(score<=40){lvl='ALTA';cls='sc-high';em='🟠';desc='Alta vulnerabilidad. Intervención prioritaria de la Fundación.'}
   else{lvl='URGENTE';cls='sc-urg';em='🔴';desc='Situación crítica. Intervención inmediata requerida.'}
 
   document.getElementById('scoreSection').innerHTML = `
@@ -1940,11 +1934,14 @@ function toggleMotivoAbandono() {
 
 // ── CONTROLES Y VACUNAS ≤15 años ─────────────────────────────────────
 function updateControlesVacunas() {
+  // Mostrar VPH solo si niño/a tiene entre 9 y 14 años
   const cur = ninos[currentNino];
-  if (!cur) return;
-  const edad = parseInt(cur.edad) || 0;
-  const card = document.getElementById('controlesVacunasCard');
-  if (card) card.style.display = edad <= 15 ? 'block' : 'none';
+  const vphCard = document.getElementById('vphCard');
+  if (vphCard && cur) {
+    const edadStr = cur.edad || '';
+    const edad = parseInt(edadStr);
+    vphCard.style.display = (!isNaN(edad) && edad >= 9 && edad <= 14) ? 'block' : 'none';
+  }
 }
 
 // ── CÁLCULO NUTRICIONAL OMS ───────────────────────────────────────────
@@ -1981,8 +1978,8 @@ function sugerirPrioridad(score) {
   if (!div || !txt) return;
   let sug, val;
   if (score <= 10) { sug = '🟢 Baja'; val = 'Baja'; }
-  else if (score <= 20) { sug = '🟡 Media'; val = 'Media'; }
-  else if (score <= 30) { sug = '🔴 Alta'; val = 'Alta'; }
+  else if (score <= 25) { sug = '🟡 Media'; val = 'Media'; }
+  else if (score <= 40) { sug = '🟠 Alta'; val = 'Alta'; }
   else { sug = '🔴 Urgente/Inmediata'; val = 'Urgente/Inmediata'; }
   div.style.display = 'block';
   txt.textContent = sug;
@@ -2116,6 +2113,28 @@ function setAbACargo(ninoIdx, key, val) {
   getAbData(ninoIdx, key).aCargo = val;
   autoSave();
 }
+function mismoCuidadorTodos() {
+  if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
+  saveCurrentChildData();
+  const cuid = {
+    cuidadorSelect: document.getElementById('cuidadorSelect')?.value || '',
+    parentescoCuidador: document.getElementById('parentescoCuidador')?.value || '',
+    edadCuidador: document.getElementById('edadCuidador')?.value || '',
+    cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
+    telCuidador: document.getElementById('telCuidador')?.value || '',
+    laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
+    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || '',
+    quienCuida: document.querySelector('input[name="quienCuida"]:checked')?.value || ''
+  };
+  if (!cuid.cuidadorSelect) { alert('Primero selecciona un cuidador para este niño/a.'); return; }
+  ninos.forEach((n, idx) => {
+    if (!childData[idx]) childData[idx] = {};
+    Object.assign(childData[idx], cuid);
+  });
+  alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
+  autoSave();
+}
+
 function validarYAvanzarSec2() {
   if (ninos.length === 0) { goTo(3); return; }
   saveCurrentChildData();
