@@ -607,12 +607,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="asiste" value="Edad pre-escolar"><span>👶 Edad pre-escolar</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Nivel educativo</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial/Kinder"><span>Inicial / Kinder</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Básica elemental (1°–4°)"><span>Básica elemental (1°–4°)</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Básica media (5°–7°)"><span>Básica media (5°–7°)</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Bachillerato básico (8°–10° AEB)"><span>Bachillerato básico (8°–10° AEB)</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Bachillerato (1°–3° BACH.)"><span>Bachillerato (1°–3° BACH.)</span></label>
+    <div class="opts c2" id="nivelEducOpts">
+      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 1" onclick="setGrado('Inicial 1')"><span>Inicial 1</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 2" onclick="setGrado('Inicial 2')"><span>Inicial 2</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Kinder" onclick="setGrado('Kinder')"><span>Kinder</span></label>
+      <label class="opt" style="grid-column:1/-1;background:#EFF6FF;font-weight:600;font-size:11px;pointer-events:none;color:#1D4ED8">▸ Primaria (A.E.B.)</label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="1ro AEB" onclick="setGrado('1ro AEB')"><span>1ro AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="2do AEB" onclick="setGrado('2do AEB')"><span>2do AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="3ro AEB" onclick="setGrado('3ro AEB')"><span>3ro AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="4to AEB" onclick="setGrado('4to AEB')"><span>4to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="5to AEB" onclick="setGrado('5to AEB')"><span>5to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="6to AEB" onclick="setGrado('6to AEB')"><span>6to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="7mo AEB" onclick="setGrado('7mo AEB')"><span>7mo AEB</span></label>
+      <label class="opt" style="grid-column:1/-1;background:#F0FDF4;font-weight:600;font-size:11px;pointer-events:none;color:#15803D">▸ Secundaria Básica</label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="8vo AEB" onclick="setGrado('8vo AEB')"><span>8vo AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="9no AEB" onclick="setGrado('9no AEB')"><span>9no AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="10mo AEB" onclick="setGrado('10mo AEB')"><span>10mo AEB</span></label>
+      <label class="opt" style="grid-column:1/-1;background:#FFF7ED;font-weight:600;font-size:11px;pointer-events:none;color:#C2410C">▸ Bachillerato</label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="1ro Bach." onclick="setGrado('1ro Bach.')"><span>1ro Bach.</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="2do Bach." onclick="setGrado('2do Bach.')"><span>2do Bach.</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.')"><span>3ro Bach.</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Tercer nivel" onclick="setGrado('Universidad')"><span>Tercer nivel</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Cuarto nivel" onclick="setGrado('Posgrado')"><span>Cuarto nivel</span></label>
+      <label class="opt risk"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>No estudia</span></label>
     </div>
     <div class="card-body">
       <div class="frow">
@@ -636,11 +653,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="abandono" value="No"><span>No</span></label>
-      <label class="opt warn"><input type="radio" name="abandono" value="Sí, 1 vez"><span>Sí, 1 vez</span></label>
-      <label class="opt warn"><input type="radio" name="abandono" value="Sí, más de 1 vez"><span>Sí, más de 1 vez</span></label>
-      <label class="opt risk"><input type="radio" name="abandono" value="Actualmente abandonó"><span>Actualmente abandonó</span></label>
+      <label class="opt"><input type="radio" name="abandono" value="No" onclick="toggleMotivoAbandono()"><span>No</span></label>
+      <label class="opt warn"><input type="radio" name="abandono" value="Sí, 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, 1 vez</span></label>
+      <label class="opt warn"><input type="radio" name="abandono" value="Sí, más de 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, más de 1 vez</span></label>
+      <label class="opt risk"><input type="radio" name="abandono" value="Actualmente abandonó" onclick="toggleMotivoAbandono()"><span>Actualmente abandonó</span></label>
     </div>
+    <div id="motivoAbandonoCard" style="display:none">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Motivo del abandono / no asistencia (se puede marcar varias)</div>
     <div class="opts c2">
       <label class="opt"><input type="checkbox" name="motivoAb" value="Trabajo infantil"><span>Trabajo infantil</span></label>
@@ -650,6 +668,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="motivoAb" value="Problemas con institución"><span>Problemas con institución</span></label>
       <label class="opt risk"><input type="checkbox" name="motivoAb" value="Embarazo adolescente"><span>Embarazo adolescente</span></label>
       <label class="opt"><input type="checkbox" name="motivoAb" value="Desmotivado"><span>Desmotivado</span></label>
+    </div>
     </div>
   </div>
   <div class="card">
@@ -669,7 +688,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(4)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(6)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="if(validarSeccionHijos(5)){goTo(6)}" >Siguiente →</button>
   </div>
 </div>
 
@@ -705,34 +724,67 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="discap" value="Intelectual/cognitiva"><span>Intelectual / cognitiva</span></label>
       <label class="opt"><input type="radio" name="discap" value="Sensorial (vista/oído)"><span>Sensorial (vista / oído)</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado nutricional</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="nutricion" value="Normal"><span>Normal</span></label>
-      <label class="opt warn"><input type="radio" name="nutricion" value="Desnutrición leve"><span>Desnutrición leve</span></label>
-      <label class="opt risk"><input type="radio" name="nutricion" value="Desnutrición moderada"><span>Desnutrición moderada</span></label>
-      <label class="opt risk"><input type="radio" name="nutricion" value="Desnutrición severa"><span>Desnutrición severa</span></label>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado nutricional (medición objetiva)</div>
+    <div class="card-body">
+      <div class="frow">
+        <div class="fg sm"><label>Peso (kg)</label><input type="number" id="pesoNino" min="1" max="150" step="0.1" placeholder="Ej: 18.5" oninput="calcNutri()"></div>
+        <div class="fg sm"><label>Talla (cm)</label><input type="number" id="tallaNino" min="30" max="220" step="0.1" placeholder="Ej: 110" oninput="calcNutri()"></div>
+      </div>
+      <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
+      <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha recibido apoyo psicológico?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha recibido el niño/a apoyo psicológico alguna vez?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="psico" value="Sí, actualmente"><span>Sí, actualmente</span></label>
-      <label class="opt"><input type="radio" name="psico" value="Sí, anteriormente"><span>Sí, anteriormente</span></label>
-      <label class="opt warn"><input type="radio" name="psico" value="No, pero lo necesita"><span>No, pero lo necesita</span></label>
-      <label class="opt"><input type="radio" name="psico" value="No aplica"><span>No aplica</span></label>
+      <label class="opt"><input type="radio" name="psico" value="Sí"><span>Sí</span></label>
+      <label class="opt"><input type="radio" name="psico" value="No"><span>No</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Qué comportamientos presenta el niño/a? (puede marcar varias)</div>
+    <div class="opts c2">
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Ansiedad"><span>Ansiedad</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Estrés"><span>Estrés</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Tristeza persistente"><span>Tristeza persistente</span></label>
+      <label class="opt warn"><input type="checkbox" name="comportamiento" value="Depresión"><span>Depresión</span></label>
+      <label class="opt warn"><input type="checkbox" name="comportamiento" value="Conducta agresiva"><span>Conducta agresiva</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Berrinches frecuentes"><span>Berrinches frecuentes</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Miedo / temores"><span>Miedo / temores</span></label>
+      <label class="opt warn"><input type="checkbox" name="comportamiento" value="Trauma o experiencia difícil"><span>Trauma o experiencia difícil</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Duelo (pérdida familiar)"><span>Duelo (pérdida familiar)</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Dificultad para relacionarse"><span>Dificultad para relacionarse</span></label>
+      <label class="opt warn"><input type="checkbox" name="comportamiento" value="Bajo rendimiento académico"><span>Bajo rendimiento académico</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="No le gusta jugar con otros"><span>No le gusta jugar con otros</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="No se ríe mucho / aislado"><span>No se ríe mucho / aislado</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Otro"><span>Otro</span></label>
     </div>
     <div class="card-body">
-      <div class="fg"><label>Condición de salud relevante</label><input type="text" id="condSalud" placeholder="Ej: asma, anemia, parásitos..."></div>
+      <div class="fg"><label>Observaciones de salud adicionales</label><input type="text" id="condSalud" placeholder="Ej: asma, anemia, parásitos..."></div>
     </div>
   </div>
   <div class="card">
     <div class="sub">▸ Brigadas médicas y controles</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha tenido alguna vez brigada médica?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha tenido brigada médica alguna vez?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="brigada" value="Sí"><span>Sí</span></label>
-      <label class="opt"><input type="radio" name="brigada" value="No"><span>No</span></label>
-      <label class="opt"><input type="radio" name="brigada" value="No sabe/no recuerda"><span>No sabe / no recuerda</span></label>
+      <label class="opt"><input type="radio" name="brigada" value="Sí" onclick="toggleBrigada(true)"><span>Sí</span></label>
+      <label class="opt"><input type="radio" name="brigada" value="No" onclick="toggleBrigada(false)"><span>No</span></label>
+      <label class="opt"><input type="radio" name="brigada" value="No sabe/no recuerda" onclick="toggleBrigada(false)"><span>No sabe / no recuerda</span></label>
     </div>
-    <div class="card-body">
-      <div class="fg"><label>¿Hace cuánto?</label><input type="text" id="cuandoBrigada" placeholder="Ej: hace 2 años..."></div>
+    <div id="brigadaDetalles" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Quién brindó la brigada médica? (puede marcar varias)</div>
+      <div class="opts c2">
+        <label class="opt"><input type="checkbox" name="quienBrigada" value="Gobierno/Ministerio Salud"><span>Gobierno / Ministerio de Salud</span></label>
+        <label class="opt"><input type="checkbox" name="quienBrigada" value="ONG/Organización internacional"><span>ONG / Organización internacional</span></label>
+        <label class="opt"><input type="checkbox" name="quienBrigada" value="Empresa privada"><span>Empresa privada</span></label>
+        <label class="opt"><input type="checkbox" name="quienBrigada" value="Grupos cristianos/iglesia"><span>Grupos cristianos / iglesia</span></label>
+        <label class="opt"><input type="checkbox" name="quienBrigada" value="Otro"><span>Otro</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hace cuánto?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="Menos de 1 año"><span>Menos de 1 año</span></label>
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="1–2 años"><span>1 – 2 años</span></label>
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="3–4 años"><span>3 – 4 años</span></label>
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="5–6 años"><span>5 – 6 años</span></label>
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="Más de 6 años"><span>Más de 6 años</span></label>
+        <label class="opt"><input type="radio" name="cuandoBrigada" value="No se acuerda"><span>No se acuerda</span></label>
+      </div>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha ido al odontólogo?</div>
     <div class="opts c2">
@@ -748,6 +800,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="condBucal" value="Dientes faltantes/dañados"><span>Dientes faltantes / dañados</span></label>
       <label class="opt"><input type="radio" name="condBucal" value="No se puede valorar"><span>No se puede valorar</span></label>
     </div>
+    <div id="controlesVacunasCard">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe controles médicos periódicos? (vacunas, crecimiento)</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="controles" value="Sí, al día"><span>Sí, al día</span></label>
@@ -761,22 +814,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="vacunas" value="Incompleto"><span>Incompleto</span></label>
       <label class="opt risk"><input type="radio" name="vacunas" value="No tiene/no sabe"><span>No tiene / no sabe</span></label>
     </div>
+    </div>
   </div>
   <div class="card">
-    <div class="sub">▸ Soberanía alimentaria</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día</div>
+    <div class="sub">▸ Soberanía alimentaria (familia)</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="ultimaComida" value="Hoy"><span>Hoy</span></label>
+      <label class="opt warn"><input type="radio" name="ultimaComida" value="Ayer"><span>Ayer</span></label>
+      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace 2 días"><span>Hace 2 días</span></label>
+      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace más de 2 días"><span>Hace más de 2 días</span></label>
+      <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día (familia)</div>
     <div class="opts c2">
       <label class="opt risk"><input type="radio" name="comidas" value="1 comida"><span>1 comida</span></label>
       <label class="opt warn"><input type="radio" name="comidas" value="2 comidas"><span>2 comidas</span></label>
       <label class="opt"><input type="radio" name="comidas" value="3 comidas"><span>3 comidas</span></label>
       <label class="opt"><input type="radio" name="comidas" value="Más de 3"><span>Más de 3</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Qué comieron ayer? (se puede marcar varias)</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuál es la forma de alimentación regular de la familia? (puede marcar varias)</div>
     <div class="opts c2">
       <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca (yuca / plátano / papa china)</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca/chontacuro"><span>Caza / pesca / chontacuro</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca"><span>Caza / pesca</span></label>
       <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
       <label class="opt risk"><input type="checkbox" name="comioAyer" value="No comieron"><span>No comieron</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia el niño/a se va a dormir sin haber comido?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="sinComer" value="Nunca"><span>Nunca</span></label>
+      <label class="opt warn"><input type="radio" name="sinComer" value="Rara vez (1 vez al mes)"><span>Rara vez (1 vez al mes)</span></label>
+      <label class="opt warn"><input type="radio" name="sinComer" value="A veces (1 vez por semana)"><span>A veces (1 vez por semana)</span></label>
+      <label class="opt risk"><input type="radio" name="sinComer" value="Frecuentemente (más de 2 veces/semana)"><span>Frecuentemente (más de 2 veces/semana)</span></label>
+      <label class="opt risk"><input type="radio" name="sinComer" value="Casi siempre"><span>Casi siempre</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes hubo días en que no había comida en el hogar?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="sinComidaHogar" value="No"><span>No</span></label>
+      <label class="opt warn"><input type="radio" name="sinComidaHogar" value="Sí, 1 o 2 días"><span>Sí, 1 o 2 días</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, una semana"><span>Sí, una semana</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, más de una semana"><span>Sí, más de una semana</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿El niño/a come solo o acompañado?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="comeAcompanado" value="Siempre acompañado"><span>Siempre acompañado</span></label>
+      <label class="opt warn"><input type="radio" name="comeAcompanado" value="A veces solo"><span>A veces solo</span></label>
+      <label class="opt risk"><input type="radio" name="comeAcompanado" value="Casi siempre solo"><span>Casi siempre solo</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="desayunoEscolar" value="Sí, todos los días"><span>Sí, todos los días</span></label>
+      <label class="opt warn"><input type="radio" name="desayunoEscolar" value="Sí, a veces"><span>Sí, a veces</span></label>
+      <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
+      <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de frutas / verduras</div>
     <div class="opts c2">
@@ -800,9 +890,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
     </div>
   </div>
+  <div class="card">
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Horas al día que el niño/a permanece solo/a</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="horasSoloNino" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
+      <label class="opt"><input type="radio" name="horasSoloNino" value="1–2 horas"><span>1 – 2 horas</span></label>
+      <label class="opt warn"><input type="radio" name="horasSoloNino" value="3–5 horas"><span>3 – 5 horas</span></label>
+      <label class="opt risk"><input type="radio" name="horasSoloNino" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
+    </div>
+  </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(7)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){goTo(7)}">Siguiente →</button>
   </div>
 </div>
 
@@ -861,10 +960,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="opts c2">
       <label class="opt"><input type="radio" name="religion" value="Católica"><span>Católica</span></label>
       <label class="opt"><input type="radio" name="religion" value="Evangélica"><span>Evangélica</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Cristiano"><span>Cristiano</span></label>
       <label class="opt"><input type="radio" name="religion" value="Testigos de Jehová"><span>Testigos de Jehová</span></label>
       <label class="opt"><input type="radio" name="religion" value="Shamanismo"><span>Shamanismo</span></label>
       <label class="opt"><input type="radio" name="religion" value="No se identifica / Cree en Dios"><span>No se identifica / Cree en Dios</span></label>
       <label class="opt"><input type="radio" name="religion" value="Ateo"><span>Ateo</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Otro"><span>Otro</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia se congrega?</div>
     <div class="opts c2">
@@ -882,7 +983,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(6)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(8)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="updateMiembroSignosOptions();goTo(8)">Siguiente →</button>
   </div>
 </div>
 
@@ -924,11 +1025,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="prioridad" value="Escuela de fútbol/deporte"><span>⚽ Escuela fútbol / deporte</span></label>
       <label class="opt"><input type="checkbox" name="prioridad" value="Apoyo psicológico"><span>🧠 Apoyo psicológico</span></label>
       <label class="opt"><input type="checkbox" name="prioridad" value="Huerto familiar"><span>🌱 Huerto familiar</span></label>
+      <label class="opt"><input type="checkbox" name="prioridad" value="Energía eléctrica"><span>⚡ Energía eléctrica</span></label>
+      <label class="opt"><input type="checkbox" name="prioridad" value="Acceso a internet"><span>📶 Acceso a internet</span></label>
     </div>
   </div>
   <div class="card">
     <div class="card-lbl purple">Signos de riesgo observados (confidencial)</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Signos físicos en el niño/a</div>
+    <div class="card-lbl purple">Signos físicos — selecciona el miembro</div>
+    <div style="margin-bottom:8px">
+      <select id="miembroSignos" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white">
+        <option value="">— Seleccionar miembro de la familia —</option>
+      </select>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Signos físicos observados</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="signosFis" value="Apariencia saludable"><span>Apariencia saludable</span></label>
       <label class="opt warn"><input type="radio" name="signosFis" value="Signos desnutrición/anemia"><span>Signos desnutrición / anemia</span></label>
@@ -979,7 +1088,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(10)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(10)">Siguiente →</button>
   </div>
 </div>
 
@@ -999,6 +1108,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="card">
     <div class="card-lbl">Nivel de prioridad de atención *</div>
+    <div id="sugerenciaPrioridad" style="padding:8px 12px;border-radius:8px;background:#F0F9FF;border:1px solid #BAE6FD;font-size:12px;margin-bottom:8px;display:none">
+      💡 <strong>Sugerencia automática:</strong> <span id="sugerenciaTxt"></span> — puedes ajustarla si consideras necesario.
+    </div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="prioridadAt" value="Baja"><span>🟢 Baja</span></label>
       <label class="opt"><input type="radio" name="prioridadAt" value="Media"><span>🟡 Media</span></label>
@@ -1178,7 +1290,7 @@ function renderFamTable() {
       </td>
       <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncNinosFromFamilia();autoFillPadreMadre();autoSave()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncNinosFromFamilia();autoFillPadreMadre();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">--</option>
-        ${['Inicial','Kinder','Primaria','Secundaria','4to nivel','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
+        ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel','Cuarto nivel','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
       </select></td>`;
   });
   // ── AUTO-CHAIN: padre/madre → campos abajo ──
@@ -1216,6 +1328,7 @@ function renderFamTable() {
     renderNinos();
   }
   updateNinosDatalist();
+  updateMiembroSignosOptions();
 }
 
 function updateNinosDatalist() {
@@ -1403,6 +1516,7 @@ function updateChildNavs() {
   // Update labels
   const cur = ninos[currentNino];
   const name = cur ? (cur.nombre || `Niño/a ${currentNino+1}`) : '—';
+  updateControlesVacunas();
   ['ninoFamiliarLabel','ninoEducLabel','ninoSaludLabel'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = '👶 ' + name + (cur && cur.edad ? ' · ' + cur.edad : '') + (cur && cur.sexo ? ' · ' + cur.sexo : '');
@@ -1623,6 +1737,7 @@ function guardarFicha() {
   const data = collectAllData();
   const sc = calcScore();
   data.puntajeVulnerabilidad = sc.score;
+  sugerirPrioridad(sc.score);
   data.nivelVulnerabilidad = sc.lvl;
   data.id = 'F'+Date.now();
   let fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
@@ -1717,6 +1832,114 @@ async function enviarASheets(data) {
     return false;
   }
 }
+
+// ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
+function validarSeccionHijos(sec) {
+  if (ninos.length === 0) return true;
+  const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
+  for (let i = 0; i < ninos.length; i++) {
+    const d = childData[i] || {};
+    for (const campo of camposReq) {
+      if (!d[campo]) {
+        alert('⚠️ Falta completar la sección para: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)) + '\nPor favor completa todos los hijos antes de continuar.');
+        // Switch to that child
+        currentNino = i;
+        updateChildTabs();
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// ── SETGRADO (encadena nivel educativo → grado/año) ──────────────────
+function setGrado(val) {
+  const g = document.getElementById('gradoAnio');
+  if (g) g.value = val;
+}
+
+// ── TOGGLE BRIGADA ────────────────────────────────────────────────────
+function toggleBrigada(show) {
+  const el = document.getElementById('brigadaDetalles');
+  if (el) el.style.display = show ? 'block' : 'none';
+}
+
+// ── TOGGLE MOTIVO ABANDONO ────────────────────────────────────────────
+function toggleMotivoAbandono() {
+  const abandono = document.querySelector('input[name="abandono"]:checked');
+  const card = document.getElementById('motivoAbandonoCard');
+  if (card) card.style.display = (abandono && abandono.value !== 'No') ? 'block' : 'none';
+}
+
+// ── CONTROLES Y VACUNAS ≤15 años ─────────────────────────────────────
+function updateControlesVacunas() {
+  const cur = ninos[currentNino];
+  if (!cur) return;
+  const edad = parseInt(cur.edad) || 0;
+  const card = document.getElementById('controlesVacunasCard');
+  if (card) card.style.display = edad <= 15 ? 'block' : 'none';
+}
+
+// ── CÁLCULO NUTRICIONAL OMS ───────────────────────────────────────────
+function calcNutri() {
+  const peso = parseFloat(document.getElementById('pesoNino')?.value);
+  const talla = parseFloat(document.getElementById('tallaNino')?.value);
+  const result = document.getElementById('resultNutri');
+  const hidden = document.getElementById('nutricionResult');
+  if (!result) return;
+  if (!peso || !talla || talla < 30) { result.style.display='none'; return; }
+  const tallaMt = talla / 100;
+  const imc = peso / (tallaMt * tallaMt);
+  let estado, color, bgColor;
+  if (imc < 14) { estado = '⚠️ Desnutrición severa'; color='#991B1B'; bgColor='#FEE2E2'; }
+  else if (imc < 16) { estado = '🟠 Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
+  else if (imc < 18.5) { estado = '🟡 Desnutrición leve'; color='#B45309'; bgColor='#FFFBEB'; }
+  else if (imc < 25) { estado = '✅ Normal'; color='#166534'; bgColor='#DCFCE7'; }
+  else if (imc < 30) { estado = '🟡 Sobrepeso'; color='#B45309'; bgColor='#FFFBEB'; }
+  else { estado = '🔴 Obesidad'; color='#991B1B'; bgColor='#FEE2E2'; }
+  result.style.display = 'block';
+  result.style.background = bgColor;
+  result.style.color = color;
+  result.style.border = '1.5px solid ' + color;
+  result.textContent = 'IMC: ' + imc.toFixed(1) + ' — ' + estado;
+  if (hidden) hidden.value = estado.replace(/[⚠️🟠🟡✅🔴]/g,'').trim();
+}
+
+// ── SUGERENCIA PRIORIDAD POR PUNTAJE ─────────────────────────────────
+function sugerirPrioridad(score) {
+  const div = document.getElementById('sugerenciaPrioridad');
+  const txt = document.getElementById('sugerenciaTxt');
+  if (!div || !txt) return;
+  let sug, val;
+  if (score <= 10) { sug = '🟢 Baja'; val = 'Baja'; }
+  else if (score <= 20) { sug = '🟡 Media'; val = 'Media'; }
+  else if (score <= 30) { sug = '🔴 Alta'; val = 'Alta'; }
+  else { sug = '🔴 Urgente/Inmediata'; val = 'Urgente/Inmediata'; }
+  div.style.display = 'block';
+  txt.textContent = sug;
+  // Auto-select suggestion if nothing selected
+  const selected = document.querySelector('input[name="prioridadAt"]:checked');
+  if (!selected) {
+    const radio = document.querySelector('input[name="prioridadAt"][value="' + val + '"]');
+    if (radio) { radio.checked = true; radio.closest('.opt')?.classList.add('sel'); }
+  }
+}
+
+// ── POBLAR SELECTOR SIGNOS DE RIESGO ─────────────────────────────────
+function updateMiembroSignosOptions() {
+  const sel = document.getElementById('miembroSignos');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Seleccionar miembro de la familia —</option>';
+  famRows.filter(r => r.nombre && r.nombre.trim()).forEach(r => {
+    const o = document.createElement('option');
+    o.value = r.nombre;
+    o.textContent = r.nombre + (r.miembro ? ' (' + r.miembro + ')' : '');
+    sel.appendChild(o);
+  });
+  if (cur) sel.value = cur;
+}
+
 
 </script>
 
