@@ -1353,26 +1353,37 @@ function syncPadreMadreFields() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
     if (_m.tel)    { const el = document.getElementById('telMadre');    if(el) el.value = _m.tel; }
   }
-  // Sincronizar cédula en niños — actualiza el dato Y el input del DOM sin re-renderizar
-  let needsRender = false;
+  // Sincronizar cédula y sexo en niños — solo DOM directo, sin re-renderizar
+  const cards = document.querySelectorAll('#childrenList .nino-card');
   ninos.forEach((n, idx) => {
     const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === n.nombre.toLowerCase());
-    if (fam && fam.cedula && fam.cedula !== n.cedula) {
+    if (!fam) return;
+    // Sincronizar cédula
+    if (fam.cedula && fam.cedula !== n.cedula) {
       ninos[idx].cedula = fam.cedula;
-      // Actualizar input en DOM directamente (evita perder foco en tabla)
-      const inputs = document.querySelectorAll('#childrenList .nino-card');
-      if (inputs[idx]) {
-        const cedInput = inputs[idx].querySelector('input[placeholder="Opcional"]');
-        if (cedInput) cedInput.value = fam.cedula;
+      if (cards[idx]) {
+        const cedInput = cards[idx].querySelector('input[placeholder="Opcional"]');
+        if (cedInput && document.activeElement !== cedInput) cedInput.value = fam.cedula;
       }
-      needsRender = true;
     }
-    if (fam && fam.sexo && fam.sexo !== n.sexo) {
+    // Sincronizar sexo
+    if (fam.sexo && fam.sexo !== n.sexo) {
       ninos[idx].sexo = fam.sexo;
-      needsRender = true;
+      if (cards[idx]) {
+        const btnM = cards[idx].querySelectorAll('button')[0];
+        const btnF = cards[idx].querySelectorAll('button')[1];
+        if (btnM && btnF) {
+          const esM = fam.sexo === 'M';
+          btnM.style.background = esM ? '#DBEAFE' : 'white';
+          btnM.style.borderColor = esM ? '#3B82F6' : 'var(--border)';
+          btnM.style.color = esM ? '#1D4ED8' : 'var(--mid)';
+          btnF.style.background = !esM ? '#FCE7F3' : 'white';
+          btnF.style.borderColor = !esM ? '#EC4899' : 'var(--border)';
+          btnF.style.color = !esM ? '#BE185D' : 'var(--mid)';
+        }
+      }
     }
   });
-  if (needsRender) renderNinos();
 }
 
 
