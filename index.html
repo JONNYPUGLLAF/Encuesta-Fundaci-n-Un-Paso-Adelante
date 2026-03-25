@@ -627,9 +627,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="nivelEduc" value="1ro Bach." onclick="setGrado('1ro Bach.')"><span>1ro Bach.</span></label>
       <label class="opt"><input type="radio" name="nivelEduc" value="2do Bach." onclick="setGrado('2do Bach.')"><span>2do Bach.</span></label>
       <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.')"><span>3ro Bach.</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Tercer nivel" onclick="setGrado('Universidad')"><span>Tercer nivel</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Cuarto nivel" onclick="setGrado('Posgrado')"><span>Cuarto nivel</span></label>
-      <label class="opt risk"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>No estudia</span></label>
+      <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>🚫 No estudia</span></label>
     </div>
     <div class="card-body">
       <div class="frow">
@@ -731,6 +729,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="fg sm"><label>Talla (cm)</label><input type="number" id="tallaNino" min="30" max="220" step="0.1" placeholder="Ej: 110" oninput="calcNutri()"></div>
       </div>
       <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
+      <div id="notaOMS" style="display:none;margin-top:4px;font-size:10px;color:#6B7280;font-style:italic">📊 Calculado con tablas IMC para niños/as según OMS (5–19 años)</div>
       <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha recibido el niño/a apoyo psicológico alguna vez?</div>
@@ -838,7 +837,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca (yuca / plátano / papa china)</span></label>
       <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca"><span>Caza / pesca</span></label>
       <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
-      <label class="opt risk"><input type="checkbox" name="comioAyer" value="No comieron"><span>No comieron</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Restaurante/comida preparada"><span>Restaurante / compran comida preparada</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia el niño/a se va a dormir sin haber comido?</div>
     <div class="opts c2">
@@ -958,14 +957,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sub red">▸ Religión y vida comunitaria</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Religión</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="religion" value="Católica"><span>Católica</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Evangélica"><span>Evangélica</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Cristiano"><span>Cristiano</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Testigos de Jehová"><span>Testigos de Jehová</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Shamanismo"><span>Shamanismo</span></label>
-      <label class="opt"><input type="radio" name="religion" value="No se identifica / Cree en Dios"><span>No se identifica / Cree en Dios</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Ateo"><span>Ateo</span></label>
-      <label class="opt"><input type="radio" name="religion" value="Otro"><span>Otro</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Católica" onclick="toggleReligionOtro(false)"><span>Católica</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Evangélica" onclick="toggleReligionOtro(false)"><span>Evangélica</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Cristiano" onclick="toggleReligionOtro(false)"><span>Cristiano</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Testigos de Jehová" onclick="toggleReligionOtro(false)"><span>Testigos de Jehová</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Shamanismo" onclick="toggleReligionOtro(false)"><span>Shamanismo</span></label>
+      <label class="opt"><input type="radio" name="religion" value="No se identifica / Cree en Dios" onclick="toggleReligionOtro(false)"><span>No se identifica / Cree en Dios</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Ateo" onclick="toggleReligionOtro(false)"><span>Ateo</span></label>
+      <label class="opt"><input type="radio" name="religion" value="Otro" onclick="toggleReligionOtro(true)"><span>Otro</span></label>
+    </div>
+    <div id="religionOtroCard" style="display:none;padding:6px 11px">
+      <input type="text" id="religionOtroTexto" placeholder="Especifique la religión..." style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px">
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia se congrega?</div>
     <div class="opts c2">
@@ -1037,9 +1039,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <option value="">— Seleccionar miembro de la familia —</option>
       </select>
     </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Se observan signos de riesgo?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="haySignos" value="Sin signos visibles de riesgo" onclick="toggleSignosRiesgo(false)"><span>✅ Sin signos visibles de riesgo</span></label>
+      <label class="opt risk"><input type="radio" name="haySignos" value="Existen signos de riesgo" onclick="toggleSignosRiesgo(true)"><span>⚠️ Existen signos de riesgo</span></label>
+    </div>
+    <div id="signosRiesgoDetalles" style="display:none">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Signos físicos observados</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="signosFis" value="Apariencia saludable"><span>Apariencia saludable</span></label>
       <label class="opt warn"><input type="radio" name="signosFis" value="Signos desnutrición/anemia"><span>Signos desnutrición / anemia</span></label>
       <label class="opt warn"><input type="radio" name="signosFis" value="Signos parásitos (abdomen)"><span>Signos parásitos (abdomen)</span></label>
       <label class="opt risk"><input type="radio" name="signosFis" value="Signos violencia física"><span>Signos de violencia física</span></label>
@@ -1053,10 +1060,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Factores de riesgo adicionales</div>
     <div class="opts c2">
-      <label class="opt warn"><input type="checkbox" name="factoresR" value="Uso sustancias en adultos"><span>Uso de sustancias en adultos del hogar</span></label>
-      <label class="opt risk"><input type="checkbox" name="factoresR" value="Adolescente embarazo/riesgo"><span>Adolescente con embarazo / riesgo</span></label>
-      <label class="opt warn"><input type="checkbox" name="factoresR" value="Aislamiento familiar severo"><span>Aislamiento familiar severo</span></label>
-      <label class="opt risk"><input type="checkbox" name="factoresR" value="Requiere derivación urgente"><span>Requiere derivación urgente</span></label>
+      <label class="opt warn"><input type="checkbox" name="factoresR" value="Consumo alcohol/sustancias en adultos"><span>Consumo de alcohol / sustancias en adultos del hogar</span></label>
+      <label class="opt risk"><input type="checkbox" name="factoresR" value="Embarazo adolescente activo"><span>Embarazo adolescente activo</span></label>
+      <label class="opt warn"><input type="checkbox" name="factoresR" value="Niño/a trabajando en lugar de estudiar"><span>Niño/a trabajando en lugar de estudiar</span></label>
+      <label class="opt warn"><input type="checkbox" name="factoresR" value="Niño/a a cargo de hermanos sin adulto"><span>Niño/a a cargo de hermanos menores sin adulto presente</span></label>
+      <label class="opt risk"><input type="checkbox" name="factoresR" value="Desnutrición visible sin atención médica"><span>Desnutrición visible sin atención médica</span></label>
+      <label class="opt risk"><input type="checkbox" name="factoresR" value="Deserción escolar reciente"><span>Deserción escolar reciente</span></label>
+    </div>
     </div>
   </div>
   <div class="card">
@@ -1562,6 +1572,11 @@ function saveCurrentChildData() {
     const el = document.getElementById(id);
     if (el) childData[currentNino][id] = el.value;
   });
+  // Peso y talla
+  ['pesoNino','tallaNino'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) childData[currentNino][id] = el.value;
+  });
   // Abuelos
   ['pp','pa','mp','ma'].forEach(ab => {
     ['v','f','d','c','a'].forEach(col => {
@@ -1603,6 +1618,17 @@ function loadChildData(idx) {
     const el = document.getElementById(id);
     if (el && d[id] !== undefined) el.value = d[id];
   });
+  // Peso y talla — limpiar primero, luego restaurar si hay datos
+  const pesoEl = document.getElementById('pesoNino');
+  const tallaEl = document.getElementById('tallaNino');
+  if (pesoEl) pesoEl.value = d['pesoNino'] || '';
+  if (tallaEl) tallaEl.value = d['tallaNino'] || '';
+  // Limpiar resultado IMC y recalcular si hay datos
+  const resultNutri = document.getElementById('resultNutri');
+  const notaOMS = document.getElementById('notaOMS');
+  if (resultNutri) resultNutri.style.display = 'none';
+  if (notaOMS) notaOMS.style.display = 'none';
+  if (d['pesoNino'] && d['tallaNino']) calcNutri();
   // Abuelos
   ['pp','pa','mp','ma'].forEach(ab => {
     ['v','f','d','c','a'].forEach(col => {
@@ -1902,6 +1928,8 @@ function calcNutri() {
   result.style.color = color;
   result.style.border = '1.5px solid ' + color;
   result.textContent = 'IMC: ' + imc.toFixed(1) + ' — ' + estado;
+  const notaOMS = document.getElementById('notaOMS');
+  if (notaOMS) notaOMS.style.display = 'block';
   if (hidden) hidden.value = estado.replace(/[⚠️🟠🟡✅🔴]/g,'').trim();
 }
 
@@ -1938,6 +1966,27 @@ function updateMiembroSignosOptions() {
     sel.appendChild(o);
   });
   if (cur) sel.value = cur;
+}
+
+// ── RELIGIÓN OTRO ──────────────────────────────────────────────────────
+function toggleReligionOtro(show) {
+  const card = document.getElementById('religionOtroCard');
+  if (card) card.style.display = show ? 'block' : 'none';
+  if (!show) {
+    const txt = document.getElementById('religionOtroTexto');
+    if (txt) txt.value = '';
+  }
+}
+
+// ── SIGNOS DE RIESGO ──────────────────────────────────────────────────
+function toggleSignosRiesgo(show) {
+  const detalles = document.getElementById('signosRiesgoDetalles');
+  if (detalles) detalles.style.display = show ? 'block' : 'none';
+  if (!show) {
+    // Limpiar campos de signos cuando se oculta
+    document.querySelectorAll('input[name="signosFis"],input[name="riesgos"],input[name="factoresR"]')
+      .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+  }
 }
 
 
