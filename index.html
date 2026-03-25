@@ -1280,12 +1280,12 @@ function renderFamTable() {
     const tr = tbl.insertRow();
     tr.innerHTML = `
       <td class="fam-num">${i+1}</td>
-      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoFillPadreMadre();autoSave()"></td>
-      <td><select onchange="famRows[${i}].miembro=this.value;autoFillPadreMadre();updateCuidadorOptions();autoSave()">
+      <td><input type="text" value="${r.nombre}" placeholder="Nombre" oninput="famRows[${i}].nombre=this.value;updateCuidadorOptions();autoFillPadreMadre();renderFamTable();autoSave()"></td>
+      <td><select onchange="famRows[${i}].miembro=this.value;autoFillPadreMadre();updateCuidadorOptions();renderFamTable();autoSave()">
         <option value="">--</option>
         ${MIEMBRO_OPTS.map(o=>`<option${r.miembro===o?' selected':''}>${o}</option>`).join('')}
       </select></td>
-      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;autoSave()" style="width:42px"></td>
+      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;renderFamTable();autoSave()" style="width:42px"></td>
       <td style="padding:3px">
         <div style="display:flex;gap:3px">
           <button onclick="famRows[${i}].sexo='M';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='M'?'#3B82F6':'var(--border)'};background:${r.sexo==='M'?'#DBEAFE':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='M'?'#1D4ED8':'var(--mid)'}">M</button>
