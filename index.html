@@ -1353,14 +1353,26 @@ function syncPadreMadreFields() {
     if (_m.cedula) { const el = document.getElementById('cedulaMadre'); if(el) el.value = _m.cedula; }
     if (_m.tel)    { const el = document.getElementById('telMadre');    if(el) el.value = _m.tel; }
   }
-  // Sincronizar cédula en niños
+  // Sincronizar cédula en niños — actualiza el dato Y el input del DOM sin re-renderizar
+  let needsRender = false;
   ninos.forEach((n, idx) => {
     const fam = famRows.find(r => r.nombre && r.nombre.toLowerCase() === n.nombre.toLowerCase());
-    if (fam) {
-      if (fam.cedula) { ninos[idx].cedula = fam.cedula; }
+    if (fam && fam.cedula && fam.cedula !== n.cedula) {
+      ninos[idx].cedula = fam.cedula;
+      // Actualizar input en DOM directamente (evita perder foco en tabla)
+      const inputs = document.querySelectorAll('#childrenList .nino-card');
+      if (inputs[idx]) {
+        const cedInput = inputs[idx].querySelector('input[placeholder="Opcional"]');
+        if (cedInput) cedInput.value = fam.cedula;
+      }
+      needsRender = true;
+    }
+    if (fam && fam.sexo && fam.sexo !== n.sexo) {
+      ninos[idx].sexo = fam.sexo;
+      needsRender = true;
     }
   });
-  if (ninos.some(n => !n.cedula)) renderNinos();
+  if (needsRender) renderNinos();
 }
 
 
