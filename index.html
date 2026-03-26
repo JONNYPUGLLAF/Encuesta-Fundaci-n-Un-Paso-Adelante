@@ -1787,7 +1787,7 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
    'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas'].forEach(name => {
+   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas','chicha'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
