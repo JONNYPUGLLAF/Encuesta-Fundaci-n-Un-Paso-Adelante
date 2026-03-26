@@ -1472,10 +1472,7 @@ function updateCuidadorOptions() {
   famRows.forEach(r => {
     if (r.nombre) { const opt = document.createElement('option'); opt.value = r.nombre; opt.textContent = r.nombre + (r.miembro ? ` (${r.miembro})` : ''); sel.appendChild(opt); }
   });
-  // Add children
-  ninos.forEach(n => {
-    if (n.nombre) { const opt = document.createElement('option'); opt.value = n.nombre; opt.textContent = n.nombre + ' (Niño/a)'; sel.appendChild(opt); }
-  });
+
   const otherOpt = document.createElement('option'); otherOpt.value = 'Otro'; otherOpt.textContent = 'Otro (escribir manualmente)'; sel.appendChild(otherOpt);
   if (current) sel.value = current;
 }
