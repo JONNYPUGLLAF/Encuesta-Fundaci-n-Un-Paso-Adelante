@@ -2127,13 +2127,13 @@ function mismoCuidadorTodos() {
     edadCuidador: document.getElementById('edadCuidador')?.value || '',
     cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
     telCuidador: document.getElementById('telCuidador')?.value || '',
-    laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
+    laboral: document.querySelector('iput[na=laboral"]:checked')?.value || '',
     lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || ''
   };
-  if (!cuid.cuidadorSelect) { alert('Primero selecciona un cuidador para este niño/a.'); return; }
+  if (!cuid.cuidadorSelect) { alert('Pimero selecciona un cuidador para este niño/a.'); return; }
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
-    Object.assign(childData[idx], cuid);
+    Object.assign(childData[idx], cuid
   });
   alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
   autoSave();
