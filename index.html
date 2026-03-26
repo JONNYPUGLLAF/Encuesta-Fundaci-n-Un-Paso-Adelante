@@ -909,10 +909,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el hogar</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="chicha" value="No toma"><span>No toma</span></label>
-      <label class="opt"><input type="radio" name="chicha" value="Uso cultural (sin alcohol)"><span>Uso cultural (sin alcohol)</span></label>
-      <label class="opt warn"><input type="radio" name="chicha" value="Chicha fermentada (involuntario)"><span>Chicha fermentada — involuntario</span></label>
-      <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
+      <label class="opt"><input type="checkbox" name="chicha" value="No toma nadie chicha"><span>No toma nadie chicha</span></label>
+      <label class="opt"><input type="checkbox" name="chicha" value="Toma chicha toda la familia"><span>Toma chicha toda la familia</span></label>
+      <label class="opt warn"><input type="checkbox" name="chicha" value="Chicha fermentada solo adultos"><span>Chicha fermentada solo adultos — involuntario</span></label>
+      <label class="opt risk"><input type="checkbox" name="chicha" value="Chicha niños solo si no está fermentada"><span>Chicha niños solo si no está fermentada — frecuente</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
     <div class="opts c2">
@@ -1787,11 +1787,11 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
    'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt'].forEach(name => {
+   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
-  ['fuente','apoyos','disciplina','prioridad','factoresR'].forEach(name => {
+  ['fuente','apoyos','disciplina','prioridad','factoresR','comioAyer','chicha'].forEach(name => {
     const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
     data[name] = Array.from(checked).map(c=>c.value).join('; ');
   });
@@ -2140,12 +2140,12 @@ function mismoCuidadorTodos() {
 }
 
 function validarYAvanzarSec2() {
-  if (ninos.length === 0) { goTo(3); return; }
+  if (ninos.length === 0) { goTo(3); return; 
   saveCurrentChildData();
   const incompletos = [];
-  ninos.forEach((n, idx) => {
+  ninos.forEach((n, idx) =
     const d = childData[idx] || {};
-    if (!d.estadoPadre && !d.estadoMadre) 
+    if (!d.estadoPadre && !d.estadoMadre)
       incompletos.push(n.nombre || 'Niño/a ' + (idx+1));
     }
   })
@@ -2227,7 +2227,6 @@ function toggleSignosRiesgo(show) {
       .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
   }
 }
-
 
 </script>
 
