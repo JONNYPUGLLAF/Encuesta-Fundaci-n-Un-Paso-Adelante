@@ -2145,10 +2145,10 @@ function validarYAvanzarSec2() {
   const incompletos = [];
   ninos.forEach((n, idx) => {
     const d = childData[idx] || {};
-    if (!d.estadoPadre && !d.estadoMadre) {
+    if (!d.estadoPadre && !d.estadoMadre) 
       incompletos.push(n.nombre || 'Niño/a ' + (idx+1));
     }
-  });
+  })
   if (incompletos.length > 0) {
     alert('⚠️ Por favor completa la información familiar de:\n\n• ' + incompletos.join('\n• ') + '\n\nSelecciona al menos el estado del padre o la madre para cada niño/a.');
     const primerIdx = ninos.findIndex((n, idx) => {
