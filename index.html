@@ -2128,8 +2128,7 @@ function mismoCuidadorTodos() {
     cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
     telCuidador: document.getElementById('telCuidador')?.value || '',
     laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
-    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || '',
-    quienCuida: document.querySelector('input[name="quienCuida"]:checked')?.value || ''
+    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || ''
   };
   if (!cuid.cuidadorSelect) { alert('Primero selecciona un cuidador para este niño/a.'); return; }
   ninos.forEach((n, idx) => {
