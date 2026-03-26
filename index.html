@@ -627,6 +627,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>🚫 No estudia</span></label>
     </div>
     <div class="card-body">
+      <div style="margin-bottom:6px"><button type="button" onclick="mismaInstitucionTodos()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;cursor:pointer">📚 Misma institución educativa para todos los niños/as</button></div>
       <div class="frow">
         <div class="fg"><label>Institución educativa</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
         <div class="fg sm"><label>Grado / Año</label><input type="text" id="gradoAnio" placeholder="Ej: 3ro"></div>
@@ -666,6 +667,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     </div>
   </div>
+  <div style="margin-bottom:8px"><button type="button" onclick="mismaInfrastructuraTodos()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--purple);background:#FAF5FF;color:var(--purple);font-size:12px;cursor:pointer">🏫 Misma infraestructura escolar para todos los niños/as</button></div>
   <div class="card">
     <div class="sub">▸ Estado infraestructura escolar (observación del técnico)</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado de aulas</div>
@@ -2185,6 +2187,38 @@ function toggleReligionOtro(show) {
 }
 
 // ── SIGNOS DE RIESGO ──────────────────────────────────────────────────
+function mismaInstitucionTodos() {
+  saveCurrentChildData();
+  const inst = document.getElementById('institucion')?.value || '';
+  const grado = document.getElementById('gradoAnio')?.value || '';
+  const modalidad = document.querySelector('input[name="modalidad"]:checked')?.value || '';
+  const idioma = document.querySelector('input[name="idiomaEduc"]:checked')?.value || '';
+  if (!inst) { alert('Primero escribe el nombre de la institución educativa.'); return; }
+  ninos.forEach((n, idx) => {
+    if (idx === currentNino) return;
+    if (!childData[idx]) childData[idx] = {};
+    childData[idx].institucion = inst;
+    childData[idx].gradoAnio = grado;
+    childData[idx].modalidad = modalidad;
+    childData[idx].idiomaEduc = idioma;
+  });
+  autoSave();
+  alert('✅ Institución copiada a ' + (ninos.length - 1) + ' niño/a(s).');
+}
+function mismaInfrastructuraTodos() {
+  saveCurrentChildData();
+  const aulas = document.querySelector('input[name="aulas"]:checked')?.value || '';
+  const banos = document.querySelector('input[name="banosEsc"]:checked')?.value || '';
+  if (!aulas && !banos) { alert('Primero selecciona al menos una opción de infraestructura.'); return; }
+  ninos.forEach((n, idx) => {
+    if (idx === currentNino) return;
+    if (!childData[idx]) childData[idx] = {};
+    if (aulas) childData[idx].aulas = aulas;
+    if (banos) childData[idx].banosEsc = banos;
+  });
+  autoSave();
+  alert('✅ Infraestructura copiada a ' + (ninos.length - 1) + ' niño/a(s).');
+}
 function toggleSignosRiesgo(show) {
   const detalles = document.getElementById('signosRiesgoDetalles');
   if (detalles) detalles.style.display = show ? 'block' : 'none';
