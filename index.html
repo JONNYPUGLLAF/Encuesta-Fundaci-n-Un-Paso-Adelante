@@ -1831,7 +1831,7 @@ function showFichasGuardadas() {
     </div>`).join('');
 }
 
-// ── EXPORT CSV ────────────────────────────────────────────────────────
+// ── EXPORT CSV ──────────────────────────────────────────────────────── 
 function exportCSV() {
   const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
   if (!fichas.length) { alert('No hay fichas para exportar.'); return; }
