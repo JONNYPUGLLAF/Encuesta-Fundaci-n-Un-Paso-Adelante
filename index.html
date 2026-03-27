@@ -1787,7 +1787,7 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
    'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas','chicha'].forEach(name => {
+   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
@@ -2143,7 +2143,7 @@ function validarYAvanzarSec2() {
   if (ninos.length === 0) { goTo(3); return; 
   saveCurrentChildData();
   const incompletos = [];
-  ninos.forEach((n, idx) =
+  ninos.forEach((n, idx) => {
     const d = childData[idx] || {};
     if (!d.estadoPadre && !d.estadoMadre)
       incompletos.push(n.nombre || 'Niño/a ' + (idx+1));
