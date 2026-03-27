@@ -2133,7 +2133,7 @@ function mismoCuidadorTodos() {
   if (!cuid.cuidadorSelect) { alert('Pimero selecciona un cuidador para este niño/a.'); return; }
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
-    Object.assign(childData[idx], cuid
+    Object.assign(childData[idx], cuid);
   });
   alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
   autoSave();
