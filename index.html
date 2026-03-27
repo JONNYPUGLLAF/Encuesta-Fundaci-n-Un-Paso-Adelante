@@ -2135,6 +2135,7 @@ function mismoCuidadorTodos() {
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
     Object.assign(childData[idx], cuid);
+      ['laboral','lugarTrabajo','quienCuida'].forEach(function(nm){var v=cuid[nm];if(!v)return;var e=document.querySelector('input[name="'+nm+'"][value="'+v+'"]');if(e){e.checked=true;var p=e.closest('.opt');if(p)p.classList.add('sel');}});
   });
   alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
   autoSave();
