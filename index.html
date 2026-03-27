@@ -1891,7 +1891,7 @@ async function enviarASheets(data) {
   try {
     const payload = encodeURIComponent(JSON.stringify(data));
     const url = WEBHOOK_URL + '?data=' + payload;
-    await fetch(url, { method: 'GET', mode: 'no-cors' });
+const img=new Image(); img.onerror=()=>{}; img.src=url;
     return true;
   } catch(err) {
     console.log('Error enviando a Sheets:', err);
