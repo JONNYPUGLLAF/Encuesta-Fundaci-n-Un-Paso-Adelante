@@ -627,7 +627,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>🚫 No estudia</span></label>
     </div>
     <div class="card-body">
-      <div style="margin-bottom:6px"><button type="button" onclick="mismaInstitucionTodos()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;cursor:pointer">📚 Misma institución educativa para todos los niños/as</button></div>
       <div class="frow">
         <div class="fg"><label>Institución educativa</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
         <div class="fg sm"><label>Grado / Año</label><input type="text" id="gradoAnio" placeholder="Ej: 3ro"></div>
@@ -667,7 +666,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     </div>
   </div>
-  <div style="margin-bottom:8px"><button type="button" onclick="mismaInfrastructuraTodos()" style="width:100%;padding:8px;border-radius:8px;border:1.5px solid var(--purple);background:#FAF5FF;color:var(--purple);font-size:12px;cursor:pointer">🏫 Misma infraestructura escolar para todos los niños/as</button></div>
   <div class="card">
     <div class="sub">▸ Estado infraestructura escolar (observación del técnico)</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado de aulas</div>
@@ -909,10 +907,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el hogar</div>
     <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="chicha" value="No toma nadie chicha"><span>No toma nadie chicha</span></label>
-      <label class="opt"><input type="checkbox" name="chicha" value="Toma chicha toda la familia"><span>Toma chicha toda la familia</span></label>
-      <label class="opt warn"><input type="checkbox" name="chicha" value="Chicha fermentada solo adultos"><span>Chicha fermentada solo adultos — involuntario</span></label>
-      <label class="opt risk"><input type="checkbox" name="chicha" value="Chicha niños solo si no está fermentada"><span>Chicha niños solo si no está fermentada — frecuente</span></label>
+      <label class="opt"><input type="radio" name="chicha" value="No toma"><span>No toma</span></label>
+      <label class="opt"><input type="radio" name="chicha" value="Uso cultural (sin alcohol)"><span>Uso cultural (sin alcohol)</span></label>
+      <label class="opt warn"><input type="radio" name="chicha" value="Chicha fermentada (involuntario)"><span>Chicha fermentada — involuntario</span></label>
+      <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
     <div class="opts c2">
@@ -1474,7 +1472,10 @@ function updateCuidadorOptions() {
   famRows.forEach(r => {
     if (r.nombre) { const opt = document.createElement('option'); opt.value = r.nombre; opt.textContent = r.nombre + (r.miembro ? ` (${r.miembro})` : ''); sel.appendChild(opt); }
   });
-
+  // Add children
+  ninos.forEach(n => {
+    if (n.nombre) { const opt = document.createElement('option'); opt.value = n.nombre; opt.textContent = n.nombre + ' (Niño/a)'; sel.appendChild(opt); }
+  });
   const otherOpt = document.createElement('option'); otherOpt.value = 'Otro'; otherOpt.textContent = 'Otro (escribir manualmente)'; sel.appendChild(otherOpt);
   if (current) sel.value = current;
 }
@@ -1787,11 +1788,11 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
    'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt','comidas','sinComer','frutas','proteinas','chicha'].forEach(name => {
+   'perfil','confiable','prioridadAt'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
-  ['fuente','apoyos','disciplina','prioridad','factoresR','comioAyer','chicha'].forEach(name => {
+  ['fuente','apoyos','disciplina','prioridad','factoresR'].forEach(name => {
     const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
     data[name] = Array.from(checked).map(c=>c.value).join('; ');
   });
@@ -1861,13 +1862,6 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Fix logo
-  const logoEl = document.getElementById('logoImg');
-  if (logoEl && !logoEl.src) { logoEl.src = 'logo.png'; }
-  // Fix fecha automatica
-  const fechaEl = document.getElementById('fechaVisita');
-  if (fechaEl && !fechaEl.value) { const hoy = new Date(); fechaEl.value = hoy.toISOString().split('T')[0]; }
-
   // ── SIEMPRE INICIAR LIMPIO ──
   localStorage.removeItem('ficha_draft_v2');
   // Reset all text/number/tel inputs except encuestador
@@ -2134,28 +2128,29 @@ function mismoCuidadorTodos() {
     edadCuidador: document.getElementById('edadCuidador')?.value || '',
     cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
     telCuidador: document.getElementById('telCuidador')?.value || '',
-    laboral: document.querySelector('iput[na=laboral"]:checked')?.value || '',
-    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || ''
+    laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
+    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || '',
+    quienCuida: document.querySelector('input[name="quienCuida"]:checked')?.value || ''
   };
-  if (!cuid.cuidadorSelect) { alert('Pimero selecciona un cuidador para este niño/a.'); return; }
+  if (!cuid.cuidadorSelect) { alert('Primero selecciona un cuidador para este niño/a.'); return; }
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
-    Object.assign(childData[idx], cuid
+    Object.assign(childData[idx], cuid);
   });
   alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
   autoSave();
 }
 
 function validarYAvanzarSec2() {
-  if (ninos.length === 0) { goTo(3); return; 
+  if (ninos.length === 0) { goTo(3); return; }
   saveCurrentChildData();
   const incompletos = [];
-  ninos.forEach((n, idx) =
+  ninos.forEach((n, idx) => {
     const d = childData[idx] || {};
-    if (!d.estadoPadre && !d.estadoMadre)
+    if (!d.estadoPadre && !d.estadoMadre) {
       incompletos.push(n.nombre || 'Niño/a ' + (idx+1));
     }
-  })
+  });
   if (incompletos.length > 0) {
     alert('⚠️ Por favor completa la información familiar de:\n\n• ' + incompletos.join('\n• ') + '\n\nSelecciona al menos el estado del padre o la madre para cada niño/a.');
     const primerIdx = ninos.findIndex((n, idx) => {
@@ -2193,38 +2188,6 @@ function toggleReligionOtro(show) {
 }
 
 // ── SIGNOS DE RIESGO ──────────────────────────────────────────────────
-function mismaInstitucionTodos() {
-  saveCurrentChildData();
-  const inst = document.getElementById('institucion')?.value || '';
-  const grado = document.getElementById('gradoAnio')?.value || '';
-  const modalidad = document.querySelector('input[name="modalidad"]:checked')?.value || '';
-  const idioma = document.querySelector('input[name="idiomaEduc"]:checked')?.value || '';
-  if (!inst) { alert('Primero escribe el nombre de la institución educativa.'); return; }
-  ninos.forEach((n, idx) => {
-    if (idx === currentNino) return;
-    if (!childData[idx]) childData[idx] = {};
-    childData[idx].institucion = inst;
-    childData[idx].gradoAnio = grado;
-    childData[idx].modalidad = modalidad;
-    childData[idx].idiomaEduc = idioma;
-  });
-  autoSave();
-  alert('✅ Institución copiada a ' + (ninos.length - 1) + ' niño/a(s).');
-}
-function mismaInfrastructuraTodos() {
-  saveCurrentChildData();
-  const aulas = document.querySelector('input[name="aulas"]:checked')?.value || '';
-  const banos = document.querySelector('input[name="banosEsc"]:checked')?.value || '';
-  if (!aulas && !banos) { alert('Primero selecciona al menos una opción de infraestructura.'); return; }
-  ninos.forEach((n, idx) => {
-    if (idx === currentNino) return;
-    if (!childData[idx]) childData[idx] = {};
-    if (aulas) childData[idx].aulas = aulas;
-    if (banos) childData[idx].banosEsc = banos;
-  });
-  autoSave();
-  alert('✅ Infraestructura copiada a ' + (ninos.length - 1) + ' niño/a(s).');
-}
 function toggleSignosRiesgo(show) {
   const detalles = document.getElementById('signosRiesgoDetalles');
   if (detalles) detalles.style.display = show ? 'block' : 'none';
@@ -2234,6 +2197,7 @@ function toggleSignosRiesgo(show) {
       .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
   }
 }
+
 
 </script>
 
