@@ -1861,6 +1861,13 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Fix logo
+  const logoEl = document.getElementById('logoImg');
+  if (logoEl && !logoEl.src) { logoEl.src = 'logo.png'; }
+  // Fix fecha automatica
+  const fechaEl = document.getElementById('fechaVisita');
+  if (fechaEl && !fechaEl.value) { const hoy = new Date(); fechaEl.value = hoy.toISOString().split('T')[0]; }
+
   // ── SIEMPRE INICIAR LIMPIO ──
   localStorage.removeItem('ficha_draft_v2');
   // Reset all text/number/tel inputs except encuestador
