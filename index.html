@@ -1872,11 +1872,12 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
    'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt'].forEach(name => {
+   'perfil','confiable','prioridadAt',
+   'chicha','chichaDetalle','comidas','frutas','proteinas','sinComer','sinComidaHogar'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
-  ['fuente','apoyos','disciplina','prioridad','factoresR'].forEach(name => {
+  ['fuente','apoyos','disciplina','prioridad','factoresR','comioAyer'].forEach(name => {
     const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
     data[name] = Array.from(checked).map(c=>c.value).join('; ');
   });
@@ -1906,20 +1907,78 @@ function compartirWhatsApp(idx) {
   const f = idx !== undefined ? fichas[idx] : fichas[fichas.length-1];
   if (!f) { alert('Ficha no encontrada.'); return; }
 
+  const v = s => s || '—';
   const fecha = f.fechaVisita || f.timestamp?.slice(0,10) || '—';
-  const ni = (f.ninos||[]).map((n,i)=>`  ${i+1}. ${n.nombre||'—'} (${n.edad||'?'} años, ${n.sexo||'—'})`).join('\n') || '  Ninguno';
-  const fam = (f.famRows||[]).filter(r=>r.nombre).map(r=>`  • ${r.nombre} (${r.miembro||'—'}, ${r.edad||'?'} años)`).join('\n') || '  —';
+  const fam = (f.famRows||[]).filter(r=>r.nombre).map(r=>`  • ${r.nombre} (${r.miembro||'—'}, ${r.edad||'?'}a, ${r.sexo||'—'})`).join('\n') || '  —';
 
-  // Por cada niño, datos clave
+  // ── Detalle por cada niño ──
   let ninosDetalle = '';
-  (f.ninos||[]).forEach((n,i)=>{
+  (f.ninos||[]).forEach((n,i) => {
     const d = (f.childData||{})[i] || {};
-    ninosDetalle += `\n👶 *${n.nombre||'Niño '+(i+1)}*\n`;
-    if(d.nutricion) ninosDetalle += `  Nutrición: ${d.nutricion}\n`;
-    if(d.pesoNino||d.tallaNino) ninosDetalle += `  Peso: ${d.pesoNino||'?'}kg  Talla: ${d.tallaNino||'?'}cm\n`;
-    if(d.asiste) ninosDetalle += `  Escuela: ${d.asiste}\n`;
-    if(d.vacunas) ninosDetalle += `  Vacunas: ${d.vacunas}\n`;
-    if(d.odontologo) ninosDetalle += `  Odontólogo: ${d.odontologo}\n`;
+    const nom = n.nombre || `Niño/a ${i+1}`;
+    ninosDetalle += `\n👶 *${nom}* (${n.edad||'?'}, ${n.sexo||'—'})\n`;
+
+    // Cuidador
+    ninosDetalle += `  Cuidador: ${v(d.cuidadorSelect)} (${v(d.parentescoCuidador)}, ${v(d.edadCuidador)}a)\n`;
+    ninosDetalle += `  Situación laboral cuidador: ${v(d.laboral)}\n`;
+    ninosDetalle += `  Lugar de trabajo: ${v(d.lugarTrabajo)}\n`;
+    ninosDetalle += `  ¿Quién cuida durante trabajo?: ${v(d.quienCuida)}\n`;
+
+    // Estado padres
+    ninosDetalle += `  Padre: ${v(d.estadoPadre)} | Madre: ${v(d.estadoMadre)}\n`;
+    ninosDetalle += `  Orfandad: ${v(d.orfandad)}\n`;
+    ninosDetalle += `  Convive con: ${v(d.convive)}\n`;
+
+    // Educación
+    ninosDetalle += `  ── Educación ──\n`;
+    ninosDetalle += `  Asistencia: ${v(d.asiste)}\n`;
+    ninosDetalle += `  Nivel: ${v(d.nivelEduc)} ${v(d.gradoAnio)}\n`;
+    ninosDetalle += `  Institución: ${v(d.institucion)}\n`;
+    ninosDetalle += `  Modalidad: ${v(d.modalidad)}\n`;
+    ninosDetalle += `  Idioma instrucción: ${v(d.idiomaEduc)}\n`;
+    ninosDetalle += `  Desayuno escolar: ${v(d.desayunoEscolar)}\n`;
+    ninosDetalle += `  Abandono escolar: ${v(d.abandono)}\n`;
+    if (d.motivoAb) ninosDetalle += `  Motivo abandono: ${d.motivoAb}\n`;
+    ninosDetalle += `  Estado aulas: ${v(d.aulas)}\n`;
+    ninosDetalle += `  Baños escuela: ${v(d.banosEsc)}\n`;
+
+    // Salud
+    ninosDetalle += `  ── Salud ──\n`;
+    ninosDetalle += `  Atención médica: ${v(d.saludAt)}\n`;
+    ninosDetalle += `  Discapacidad: ${v(d.discap)}\n`;
+    ninosDetalle += `  Apoyo psicológico: ${v(d.psico)}\n`;
+    if (d.comportamiento) ninosDetalle += `  Comportamientos: ${d.comportamiento}\n`;
+    if (d.condSalud) ninosDetalle += `  Obs. salud: ${d.condSalud}\n`;
+    ninosDetalle += `  Brigada médica: ${v(d.brigada)}\n`;
+    ninosDetalle += `  Odontólogo: ${v(d.odontologo)}\n`;
+    ninosDetalle += `  Condición bucal: ${v(d.condBucal)}\n`;
+    ninosDetalle += `  Controles médicos: ${v(d.controles)}\n`;
+    ninosDetalle += `  Vacunas: ${v(d.vacunas)}\n`;
+    if (d.vacunaVPH) ninosDetalle += `  Vacuna VPH: ${d.vacunaVPH}\n`;
+
+    // Nutricional
+    ninosDetalle += `  ── Nutrición ──\n`;
+    if (d.pesoNino || d.tallaNino) ninosDetalle += `  Peso: ${v(d.pesoNino)}kg | Talla: ${v(d.tallaNino)}cm\n`;
+    if (d.nutricion) ninosDetalle += `  Estado nutricional: ${d.nutricion}\n`;
+    ninosDetalle += `  Última comida: ${v(d.ultimaComida)}\n`;
+  });
+
+  // ── Percepción ──
+  const percLabels = {
+    p1: '¿Qué tan seguro/a se siente en este hogar?',
+    p2: '¿Qué tan bien come su familia?',
+    p3: '¿Qué tan capaz de cuidar a sus hijos?',
+    p4: '¿Cree que sus hijos tendrán mejor futuro?',
+    p5: '¿Qué tan importante es que terminen la escuela?',
+    p6: '¿Alguien en casa pierde el control seguido?',
+    p7: '¿Qué tan bien se llevan los adultos del hogar?',
+    p8: '¿Confía en los servicios de salud cercanos?',
+    p9: '¿Siente que la Fundación puede ayudar?'
+  };
+  let percTexto = '';
+  const pv = f.percVals || {};
+  Object.keys(percLabels).forEach(k => {
+    percTexto += `  ${percLabels[k]}: ${pv[k] || '—'}/5\n`;
   });
 
   const emoji = f.nivelVulnerabilidad==='BAJA'?'🟢':f.nivelVulnerabilidad==='MEDIA'?'🟡':f.nivelVulnerabilidad==='ALTA'?'🟠':'🔴';
@@ -1927,42 +1986,55 @@ function compartirWhatsApp(idx) {
   const msg =
 `*🏠 FICHA DIAGNÓSTICO – FUNDACIÓN DAR UN PASO ADELANTE*
 ━━━━━━━━━━━━━━━━━━━━━━
+📋 N° Ficha: ${v(f.numEncuesta)}
 📅 Fecha: ${fecha}
-📍 Comunidad: ${f.comunidad||'—'}
-👤 Encuestador/a: ${f.encuestador||'—'}
-🛶 Acceso: ${f.acceso||'—'}
+📍 Comunidad: ${v(f.comunidad)}
+👤 Encuestador/a: ${v(f.encuestador)}
+🛶 Acceso: ${v(f.acceso)}
 ━━━━━━━━━━━━━━━━━━━━━━
-*COMPOSICIÓN FAMILIAR*
+*1. COMPOSICIÓN DEL HOGAR*
 ${fam}
-Total personas: ${f.totalPersonas||'—'}  |  Menores de 18: ${f.menores18||'—'}
-
-*NIÑOS/AS REGISTRADOS*
-${ni}
+Total personas: ${v(f.totalPersonas)}  |  Menores de 18: ${v(f.menores18)}
+Identidad Shuar: ${v(f.esShuar)} | Shuar Chicham: ${v(f.shuar)}
+Padre: ${v(f.nombrePadre)} | Cédula: ${v(f.cedulaPadre)} | Tel: ${v(f.telPadre)}
+Madre: ${v(f.nombreMadre)} | Cédula: ${v(f.cedulaMadre)} | Tel: ${v(f.telMadre)}
+━━━━━━━━━━━━━━━━━━━━━━
+*2-6. DATOS POR NIÑO/A*
 ${ninosDetalle}
 ━━━━━━━━━━━━━━━━━━━━━━
-*ECONOMÍA*
-Ingreso: ${f.ingreso||'—'}
-Fuentes: ${f.fuente||'—'}
-Apoyos: ${f.apoyos||'—'}
+*3. ECONOMÍA*
+Ingreso mensual: ${v(f.ingreso)}
+Fuentes: ${v(f.fuente)}
+Apoyos estatales: ${v(f.apoyos)}
 
-*INFRAESTRUCTURA*
-Vivienda: ${f.tipoVivienda||'—'} – ${f.material||'—'}
-Agua: ${f.agua||'—'}
-Excretas: ${f.excretas||'—'}
-Electricidad: ${f.electr||'—'}
-Internet: ${f.internet||'—'}
+*4. INFRAESTRUCTURA*
+Vivienda: ${v(f.tipoVivienda)} – ${v(f.material)}
+Agua: ${v(f.agua)} | ¿Gestionada por Fundación?: ${v(f.aguaFund)}
+Excretas: ${v(f.excretas)}
+Electricidad: ${v(f.electr)}
+Internet: ${v(f.internet)}
 
-*DINÁMICA FAMILIAR*
-Peleas/violencia: ${f.peleas||'—'}
-Alcohol/drogas: ${f.alcohol||'—'}
-Horas solo el niño: ${f.horasSolo||'—'}
+*7. DINÁMICA FAMILIAR*
+Horas solo el niño/a: ${v(f.horasSolo)}
+N° comidas/día: ${v(f.comidas)}
+Alimentación regular: ${v(f.comioAyer)}
+Frutas/verduras: ${v(f.frutas)}
+Proteínas: ${v(f.proteinas)}
+Chicha en hogar: ${v(f.chicha)}${f.chichaDetalle ? ' → ' + f.chichaDetalle : ''}
+Peleas entre adultos: ${v(f.peleas)}
+Alcohol en hogar: ${v(f.alcohol)}
+Forma de disciplina: ${v(f.disciplina)}
+Religión: ${v(f.religion)} | Frecuencia: ${v(f.congrega)}
+Grupos comunitarios: ${v(f.grupos)}
 
-*OBSERVACIONES*
-${f.obsGenerales||'—'}
+*9. PERCEPCIÓN DEL CUIDADOR (1–5)*
+${percTexto}
+*OBSERVACIONES GENERALES*
+${v(f.obsGenerales)}
 ━━━━━━━━━━━━━━━━━━━━━━
-${emoji} *VULNERABILIDAD: ${f.nivelVulnerabilidad||'—'} (${f.puntajeVulnerabilidad||'?'} pts)*
-Prioridad: ${f.prioridadAt||'—'}
-ID: ${f.id||'—'}`;
+${emoji} *VULNERABILIDAD: ${v(f.nivelVulnerabilidad)} (${f.puntajeVulnerabilidad||'?'} pts)*
+Prioridad: ${v(f.prioridadAt)}
+ID: ${v(f.id)}`;
 
   const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
