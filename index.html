@@ -598,34 +598,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl" id="ninoEducLabel">Miembro: —</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="asiste" value="Sí, de manera regular"><span>✅ Sí, regular</span></label>
-      <label class="opt warn"><input type="radio" name="asiste" value="Sí, de forma irregular"><span>⚠️ Sí, irregular</span></label>
-      <label class="opt risk"><input type="radio" name="asiste" value="No asiste"><span>❌ No asiste</span></label>
-      <label class="opt"><input type="radio" name="asiste" value="Edad pre-escolar"><span>👶 Edad pre-escolar</span></label>
+      <label class="opt"><input type="radio" name="asiste" value="Sí, de manera regular" onclick="toggleInstitucion(true)"><span>✅ Sí, regular</span></label>
+      <label class="opt warn"><input type="radio" name="asiste" value="Sí, de forma irregular" onclick="toggleInstitucion(true)"><span>⚠️ Sí, irregular</span></label>
+      <label class="opt risk"><input type="radio" name="asiste" value="No asiste" onclick="toggleInstitucion(false)"><span>❌ No asiste</span></label>
+      <label class="opt"><input type="radio" name="asiste" value="Edad pre-escolar" onclick="toggleInstitucion(false)"><span>👶 Edad pre-escolar</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Nivel educativo</div>
     <div class="opts c2" id="nivelEducOpts">
-      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 1" onclick="setGrado('Inicial 1')"><span>Inicial 1</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 2" onclick="setGrado('Inicial 2')"><span>Inicial 2</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Kinder" onclick="setGrado('Kinder')"><span>Kinder</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 1" onclick="setGrado('Inicial 1');toggleInstitucion(true)"><span>Inicial 1</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 2" onclick="setGrado('Inicial 2');toggleInstitucion(true)"><span>Inicial 2</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="Kinder" onclick="setGrado('Kinder');toggleInstitucion(true)"><span>Kinder</span></label>
       <label class="opt" style="grid-column:1/-1;background:#EFF6FF;font-weight:600;font-size:11px;pointer-events:none;color:#1D4ED8">▸ Primaria (A.E.B.)</label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="1ro AEB" onclick="setGrado('1ro AEB')"><span>1ro AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="2do AEB" onclick="setGrado('2do AEB')"><span>2do AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="3ro AEB" onclick="setGrado('3ro AEB')"><span>3ro AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="4to AEB" onclick="setGrado('4to AEB')"><span>4to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="5to AEB" onclick="setGrado('5to AEB')"><span>5to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="6to AEB" onclick="setGrado('6to AEB')"><span>6to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="7mo AEB" onclick="setGrado('7mo AEB')"><span>7mo AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="1ro AEB" onclick="setGrado('1ro AEB');toggleInstitucion(true)"><span>1ro AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="2do AEB" onclick="setGrado('2do AEB');toggleInstitucion(true)"><span>2do AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="3ro AEB" onclick="setGrado('3ro AEB');toggleInstitucion(true)"><span>3ro AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="4to AEB" onclick="setGrado('4to AEB');toggleInstitucion(true)"><span>4to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="5to AEB" onclick="setGrado('5to AEB');toggleInstitucion(true)"><span>5to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="6to AEB" onclick="setGrado('6to AEB');toggleInstitucion(true)"><span>6to AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="7mo AEB" onclick="setGrado('7mo AEB');toggleInstitucion(true)"><span>7mo AEB</span></label>
       <label class="opt" style="grid-column:1/-1;background:#F0FDF4;font-weight:600;font-size:11px;pointer-events:none;color:#15803D">▸ Secundaria Básica</label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="8vo AEB" onclick="setGrado('8vo AEB')"><span>8vo AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="9no AEB" onclick="setGrado('9no AEB')"><span>9no AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="10mo AEB" onclick="setGrado('10mo AEB')"><span>10mo AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="8vo AEB" onclick="setGrado('8vo AEB');toggleInstitucion(true)"><span>8vo AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="9no AEB" onclick="setGrado('9no AEB');toggleInstitucion(true)"><span>9no AEB</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="10mo AEB" onclick="setGrado('10mo AEB');toggleInstitucion(true)"><span>10mo AEB</span></label>
       <label class="opt" style="grid-column:1/-1;background:#FFF7ED;font-weight:600;font-size:11px;pointer-events:none;color:#C2410C">▸ Bachillerato</label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="1ro Bach." onclick="setGrado('1ro Bach.')"><span>1ro Bach.</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="2do Bach." onclick="setGrado('2do Bach.')"><span>2do Bach.</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.')"><span>3ro Bach.</span></label>
-      <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>🚫 No estudia</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="1ro Bach." onclick="setGrado('1ro Bach.');toggleInstitucion(true)"><span>1ro Bach.</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="2do Bach." onclick="setGrado('2do Bach.');toggleInstitucion(true)"><span>2do Bach.</span></label>
+      <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.');toggleInstitucion(true)"><span>3ro Bach.</span></label>
+      <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('');toggleInstitucion(false)"><span>🚫 No estudia</span></label>
     </div>
+    <div id="bloqueInstitucion">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
     <div class="card-body">
       <div style="margin-bottom:8px">
@@ -657,6 +658,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
       <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
+    </div><!-- fin bloqueInstitucion -->
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="abandono" value="No" onclick="toggleMotivoAbandono()"><span>No</span></label>
@@ -1688,6 +1690,9 @@ function loadChildData(idx) {
   // ── 4. Ocultar todos los paneles condicionales ──
   ['signosRiesgoDetalles','religionOtroCard','chichaDetalleCard','motivoAbandonoCard','brigadaDetalles','vphCard']
     .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  // bloqueInstitucion: mostrar por defecto, se oculta si nivelEduc=No estudia o asiste=No/Pre-escolar
+  const bloqueInst = document.getElementById('bloqueInstitucion');
+  if (bloqueInst) bloqueInst.style.display = 'block';
 
   // Si no hay datos guardados para este niño, quedamos con todo limpio
   if (!childData[idx] || Object.keys(d).length === 0) {
@@ -1728,6 +1733,10 @@ function loadChildData(idx) {
 
   // ── 8. Restaurar paneles condicionales según valores guardados ──
   if (d['chicha'] === 'Sí toman') toggleChichaDetalle(true);
+  // Bloque institución: ocultar si no estudia o no asiste
+  const noEstudia = d['nivelEduc'] === 'No estudia';
+  const noAsiste = d['asiste'] === 'No asiste' || d['asiste'] === 'Edad pre-escolar';
+  toggleInstitucion(!(noEstudia || noAsiste));
   if (d['abandono'] && d['abandono'] !== 'No') {
     const card = document.getElementById('motivoAbandonoCard');
     if (card) card.style.display = 'block';
@@ -2145,6 +2154,22 @@ function validarSeccionHijos(sec) {
 function setGrado(val) {
   const g = document.getElementById('gradoAnio');
   if (g) g.value = val;
+}
+
+// ── TOGGLE BLOQUE INSTITUCIÓN ─────────────────────────────────────────
+function toggleInstitucion(show) {
+  const bloque = document.getElementById('bloqueInstitucion');
+  if (!bloque) return;
+  bloque.style.display = show ? 'block' : 'none';
+  if (!show) {
+    // Limpiar todos los campos del bloque
+    const inst = document.getElementById('institucion');
+    const grado = document.getElementById('gradoAnio');
+    if (inst) inst.value = '';
+    if (grado) grado.value = '';
+    document.querySelectorAll('input[name="modalidad"], input[name="idiomaEduc"], input[name="desayunoEscolar"]')
+      .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+  }
 }
 
 // ── TOGGLE CHICHA DETALLE ─────────────────────────────────────────────
