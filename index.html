@@ -1641,67 +1641,97 @@ function saveCurrentChildData() {
 
 function loadChildData(idx) {
   const d = childData[idx] || {};
-  // ── Limpiar TODOS los campos de secciones por niño ──
-  document.querySelectorAll('#sec2 input[type=radio],#sec2 input[type=checkbox],#sec5 input[type=radio],#sec5 input[type=checkbox],#sec6 input[type=radio],#sec6 input[type=checkbox]')
-    .forEach(el => { el.checked = false; });
-  document.querySelectorAll('#sec2 .opt,#sec5 .opt,#sec6 .opt').forEach(el => el.classList.remove('sel'));
-  // Limpiar todos los text/number inputs de sec2, sec5, sec6
-  document.querySelectorAll('#sec2 input[type=text],#sec2 input[type=number],#sec2 select,#sec5 input[type=text],#sec5 input[type=number],#sec5 select,#sec6 input[type=text],#sec6 input[type=number],#sec6 textarea')
-    .forEach(el => { if(el.id !== 'cuidadorSelect') el.value = ''; });
-  // Limpiar IMC
+
+  // ── 1. Limpiar TODOS los radios y checkboxes de las secciones por niño ──
+  document.querySelectorAll(
+    '#sec2 input[type=radio], #sec2 input[type=checkbox], ' +
+    '#sec5 input[type=radio], #sec5 input[type=checkbox], ' +
+    '#sec6 input[type=radio], #sec6 input[type=checkbox]'
+  ).forEach(el => { el.checked = false; });
+  document.querySelectorAll('#sec2 .opt, #sec5 .opt, #sec6 .opt')
+    .forEach(el => el.classList.remove('sel'));
+
+  // ── 2. Limpiar inputs de texto, número, select ──
+  document.querySelectorAll(
+    '#sec2 input[type=text], #sec2 input[type=number], #sec2 input[type=tel], #sec2 select, ' +
+    '#sec5 input[type=text], #sec5 input[type=number], ' +
+    '#sec6 input[type=text], #sec6 input[type=number], #sec6 textarea'
+  ).forEach(el => {
+    if (el.id === 'cuidadorSelect') return; // se maneja aparte
+    el.value = '';
+  });
+
+  // ── 3. Limpiar explícitamente peso, talla e IMC ──
+  const pesoEl = document.getElementById('pesoNino');
+  const tallaEl = document.getElementById('tallaNino');
   const resultNutri = document.getElementById('resultNutri');
   const notaOMS = document.getElementById('notaOMS');
-  if (resultNutri) resultNutri.style.display = 'none';
+  if (pesoEl) pesoEl.value = '';
+  if (tallaEl) tallaEl.value = '';
+  if (resultNutri) { resultNutri.style.display = 'none'; resultNutri.textContent = ''; }
   if (notaOMS) notaOMS.style.display = 'none';
-  // Limpiar paneles condicionales
-  document.getElementById('signosRiesgoDetalles') && (document.getElementById('signosRiesgoDetalles').style.display='none');
-  document.getElementById('religionOtroCard') && (document.getElementById('religionOtroCard').style.display='none');
-  document.getElementById('chichaDetalleCard') && (document.getElementById('chichaDetalleCard').style.display='none');
-  document.getElementById('motivoAbandonoCard') && (document.getElementById('motivoAbandonoCard').style.display='none');
-  document.getElementById('brigadaDetalles') && (document.getElementById('brigadaDetalles').style.display='none');
 
-  // ── Restaurar radios/checkboxes ──
-  Object.keys(d).forEach(key => {
+  // ── 4. Ocultar todos los paneles condicionales ──
+  ['signosRiesgoDetalles','religionOtroCard','chichaDetalleCard','motivoAbandonoCard','brigadaDetalles','vphCard']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+
+  // Si no hay datos guardados para este niño, quedamos con todo limpio
+  if (!childData[idx] || Object.keys(d).length === 0) {
+    updateControlesVacunas();
+    return;
+  }
+
+  // ── 5. Restaurar radios y checkboxes ──
+  const radioCheckFields = [
+    'estadoPadre','estadoMadre','orfandad','convive','laboral','lugarTrabajo','quienCuida',
+    'asiste','nivelEduc','modalidad','idiomaEduc','abandono','motivoAb','aulas','banosEsc','desayunoEscolar',
+    'saludAt','discap','psico','comportamiento',
+    'brigada','odontologo','condBucal','controles','vacunas','vacunaVPH',
+    'ultimaComida','comidas','frutas','proteinas','chicha','chichaDetalle','comioAyer'
+  ];
+  radioCheckFields.forEach(key => {
     const val = d[key];
-    if (typeof val === 'string' && val) {
-      val.split('; ').forEach(v => {
-        const el = document.querySelector(`input[name="${key}"][value="${v}"]`);
-        if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
-      });
-    } else if (typeof val === 'boolean') {
-      const el = document.querySelector(`input[name="${key}"]`);
-      if (el) el.checked = val;
-    }
+    if (!val) return;
+    val.split('; ').forEach(v => {
+      const el = document.querySelector(`input[name="${key}"][value="${v}"]`);
+      if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
+    });
   });
-  // ── Text inputs ──
-  ['institucion','gradoAnio','condSalud','cuidadorSelect','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
+
+  // ── 6. Restaurar inputs de texto ──
+  ['institucion','gradoAnio','condSalud','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
     const el = document.getElementById(id);
     if (el && d[id] !== undefined) el.value = d[id];
   });
-  // ── Peso y talla ──
-  const pesoEl = document.getElementById('pesoNino');
-  const tallaEl = document.getElementById('tallaNino');
-  if (pesoEl) pesoEl.value = d['pesoNino'] || '';
-  if (tallaEl) tallaEl.value = d['tallaNino'] || '';
+  // cuidadorSelect aparte
+  const cuidSel = document.getElementById('cuidadorSelect');
+  if (cuidSel && d['cuidadorSelect'] !== undefined) cuidSel.value = d['cuidadorSelect'];
+
+  // ── 7. Restaurar peso y talla (explícito, solo si tienen valor) ──
+  if (pesoEl && d['pesoNino']) pesoEl.value = d['pesoNino'];
+  if (tallaEl && d['tallaNino']) tallaEl.value = d['tallaNino'];
   if (d['pesoNino'] && d['tallaNino']) calcNutri();
-  // ── Restaurar paneles condicionales ──
-  if (d['haySignos']) {
-    const el = document.querySelector(`input[name="haySignos"][value="${d['haySignos']}"]`);
-    if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); toggleSignosRiesgo(d['haySignos']==='Existen signos de riesgo'); }
-  }
+
+  // ── 8. Restaurar paneles condicionales según valores guardados ──
   if (d['chicha'] === 'Sí toman') toggleChichaDetalle(true);
   if (d['abandono'] && d['abandono'] !== 'No') {
     const card = document.getElementById('motivoAbandonoCard');
     if (card) card.style.display = 'block';
   }
   if (d['brigada'] === 'Sí') toggleBrigada(true);
-  // ── Restaurar religión otro ──
+  if (d['haySignos']) {
+    const el = document.querySelector(`input[name="haySignos"][value="${d['haySignos']}"]`);
+    if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); toggleSignosRiesgo(d['haySignos'] === 'Existen signos de riesgo'); }
+  }
   if (d['religion'] === 'Otro') toggleReligionOtro(true);
-  if (d['religionOtroTexto']) { const el = document.getElementById('religionOtroTexto'); if(el) el.value = d['religionOtroTexto']; }
-  // ── Abuelos ──
+  if (d['religionOtroTexto']) { const el = document.getElementById('religionOtroTexto'); if (el) el.value = d['religionOtroTexto']; }
+
+  // ── 9. Abuelos ──
   if (d['_abData']) abData[idx] = JSON.parse(JSON.stringify(d['_abData']));
   else abData[idx] = {};
   renderAbuelos(idx);
+
+  updateControlesVacunas();
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────────
@@ -1709,6 +1739,30 @@ let curSec = 0;
 const TOTAL_SECS = 11;
 
 function goTo(idx) {
+  // Bloquear entrada a Educación (5) y Salud (6) desde los tabs si no se ha completado lo anterior
+  // Solo bloquear si viene desde un tab (no desde botón Siguiente que ya valida)
+  const vieneDeSiguiente = (idx === curSec + 1);
+  if (!vieneDeSiguiente) {
+    // Si intenta saltar a sec5 o sec6 sin haber pasado por el flujo normal, validar sec2
+    if (idx === 5 || idx === 6) {
+      if (ninos.length === 0) {
+        alert('⚠️ Primero registra los niños/as en la sección 2 (Familiar).');
+        return;
+      }
+      // Validar que sec5 esté completa si va a sec6 saltando
+      if (idx === 6) {
+        saveCurrentChildData();
+        for (let i = 0; i < ninos.length; i++) {
+          const d = childData[i] || {};
+          if (!d.asiste || !d.nivelEduc) {
+            alert('⚠️ Completa la sección Educación para todos los niños/as antes de continuar a Salud.\nFalta: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)));
+            return;
+          }
+        }
+      }
+    }
+  }
+
   if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
   document.getElementById('sec'+idx).classList.add('active');
