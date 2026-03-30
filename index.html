@@ -626,9 +626,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.')"><span>3ro Bach.</span></label>
       <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('')"><span>🚫 No estudia</span></label>
     </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
     <div class="card-body">
+      <div style="margin-bottom:8px">
+        <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
+      </div>
       <div class="frow">
-        <div class="fg"><label>Institución educativa</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
+        <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
         <div class="fg sm"><label>Grado / Año</label><input type="text" id="gradoAnio" placeholder="Ej: 3ro"></div>
       </div>
     </div>
@@ -645,6 +649,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="idiomaEduc" value="Shuar Chicham"><span>Shuar Chicham</span></label>
       <label class="opt"><input type="radio" name="idiomaEduc" value="Bilingüe"><span>Bilingüe</span></label>
       <label class="opt"><input type="radio" name="idiomaEduc" value="Otro"><span>Otro</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="desayunoEscolar" value="Sí, todos los días"><span>Sí, todos los días</span></label>
+      <label class="opt warn"><input type="radio" name="desayunoEscolar" value="Sí, a veces"><span>Sí, a veces</span></label>
+      <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
+      <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
     <div class="opts c2">
@@ -718,16 +729,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="discap" value="Física/motriz"><span>Física / motriz</span></label>
       <label class="opt"><input type="radio" name="discap" value="Intelectual/cognitiva"><span>Intelectual / cognitiva</span></label>
       <label class="opt"><input type="radio" name="discap" value="Sensorial (vista/oído)"><span>Sensorial (vista / oído)</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado nutricional (medición objetiva)</div>
-    <div class="card-body">
-      <div class="frow">
-        <div class="fg sm"><label>Peso (kg)</label><input type="number" id="pesoNino" min="1" max="150" step="0.1" placeholder="Ej: 18.5" oninput="calcNutri()"></div>
-        <div class="fg sm"><label>Talla (cm)</label><input type="number" id="tallaNino" min="30" max="220" step="0.1" placeholder="Ej: 110" oninput="calcNutri()"></div>
-      </div>
-      <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
-      <div id="notaOMS" style="display:none;margin-top:4px;font-size:10px;color:#6B7280;font-style:italic">📊 Calculado con tablas IMC para niños/as según OMS (5–19 años)</div>
-      <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha recibido el niño/a apoyo psicológico alguna vez?</div>
     <div class="opts c2">
@@ -819,12 +820,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt"><input type="radio" name="vacunaVPH" value="No aplica VPH"><span>No aplica</span></label>
       </div>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="desayunoEscolar" value="Sí, todos los días"><span>Sí, todos los días</span></label>
-      <label class="opt warn"><input type="radio" name="desayunoEscolar" value="Sí, a veces"><span>Sí, a veces</span></label>
-      <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
-      <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
+  </div>
+  </div>
+  <!-- Estado nutricional y última comida — al final de la sección salud -->
+  <div class="card">
+    <div class="sub">▸ Estado nutricional (medición objetiva)</div>
+    <div class="card-body">
+      <div class="frow">
+        <div class="fg sm"><label>Peso (kg)</label><input type="number" id="pesoNino" min="1" max="150" step="0.1" placeholder="Ej: 18.5" oninput="calcNutri()"></div>
+        <div class="fg sm"><label>Talla (cm)</label><input type="number" id="tallaNino" min="30" max="220" step="0.1" placeholder="Ej: 110" oninput="calcNutri()"></div>
+      </div>
+      <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
+      <div id="notaOMS" style="display:none;margin-top:4px;font-size:10px;color:#6B7280;font-style:italic">📊 Calculado con tablas IMC para niños/as según OMS (5–19 años)</div>
+      <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
     <div class="opts c2">
@@ -834,7 +842,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace más de 2 días"><span>Hace más de 2 días</span></label>
       <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
     </div>
-  </div>
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
@@ -907,10 +914,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el hogar</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="chicha" value="No toma"><span>No toma</span></label>
-      <label class="opt"><input type="radio" name="chicha" value="Uso cultural (sin alcohol)"><span>Uso cultural (sin alcohol)</span></label>
-      <label class="opt warn"><input type="radio" name="chicha" value="Chicha fermentada (involuntario)"><span>Chicha fermentada — involuntario</span></label>
-      <label class="opt risk"><input type="radio" name="chicha" value="Chicha con alcohol frecuente"><span>Chicha con alcohol — frecuente</span></label>
+      <label class="opt"><input type="radio" name="chicha" value="No toman" onclick="toggleChichaDetalle(false)"><span>No toman</span></label>
+      <label class="opt warn"><input type="radio" name="chicha" value="Sí toman" onclick="toggleChichaDetalle(true)"><span>Sí toman</span></label>
+    </div>
+    <div id="chichaDetalleCard" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN NIÑOS</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="chichaDetalle" value="Solo chicha sin fermentar (recién hecha)"><span>Toman chicha solamente si está sin fermentar (recién hecha)</span></label>
+        <label class="opt risk"><input type="radio" name="chichaDetalle" value="Chicha fermentada"><span>Chicha fermentada</span></label>
+      </div>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
     <div class="opts c2">
@@ -1583,10 +1595,12 @@ function saveCurrentChildData() {
     convive: 'checkbox', laboral: 'radio', lugarTrabajo: 'radio', quienCuida: 'radio',
     asiste: 'radio', nivelEduc: 'radio', modalidad: 'radio', idiomaEduc: 'radio', abandono: 'radio',
     motivoAb: 'checkbox', aulas: 'radio', banosEsc: 'radio',
+    desayunoEscolar: 'radio',
     saludAt: 'radio', discap: 'radio', nutricion: 'radio', psico: 'radio',
     brigada: 'radio', odontologo: 'radio', condBucal: 'radio', controles: 'radio', vacunas: 'radio',
-    comidas: 'radio', frutas: 'radio', proteinas: 'radio', chicha: 'radio',
-    comioAyer: 'checkbox'
+    ultimaComida: 'radio',
+    comidas: 'radio', frutas: 'radio', proteinas: 'radio', chicha: 'radio', chichaDetalle: 'radio',
+    comioAyer: 'checkbox', comportamiento: 'checkbox'
   };
   Object.keys(fields).forEach(name => {
     if (fields[name] === 'radio') {
@@ -1638,10 +1652,12 @@ function loadChildData(idx) {
   const notaOMS = document.getElementById('notaOMS');
   if (resultNutri) resultNutri.style.display = 'none';
   if (notaOMS) notaOMS.style.display = 'none';
-  // Limpiar signos de riesgo
+  // Limpiar paneles condicionales
   document.getElementById('signosRiesgoDetalles') && (document.getElementById('signosRiesgoDetalles').style.display='none');
-  // Limpiar religión otro
   document.getElementById('religionOtroCard') && (document.getElementById('religionOtroCard').style.display='none');
+  document.getElementById('chichaDetalleCard') && (document.getElementById('chichaDetalleCard').style.display='none');
+  document.getElementById('motivoAbandonoCard') && (document.getElementById('motivoAbandonoCard').style.display='none');
+  document.getElementById('brigadaDetalles') && (document.getElementById('brigadaDetalles').style.display='none');
 
   // ── Restaurar radios/checkboxes ──
   Object.keys(d).forEach(key => {
@@ -1667,11 +1683,17 @@ function loadChildData(idx) {
   if (pesoEl) pesoEl.value = d['pesoNino'] || '';
   if (tallaEl) tallaEl.value = d['tallaNino'] || '';
   if (d['pesoNino'] && d['tallaNino']) calcNutri();
-  // ── Restaurar signos si había ──
+  // ── Restaurar paneles condicionales ──
   if (d['haySignos']) {
     const el = document.querySelector(`input[name="haySignos"][value="${d['haySignos']}"]`);
     if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); toggleSignosRiesgo(d['haySignos']==='Existen signos de riesgo'); }
   }
+  if (d['chicha'] === 'Sí toman') toggleChichaDetalle(true);
+  if (d['abandono'] && d['abandono'] !== 'No') {
+    const card = document.getElementById('motivoAbandonoCard');
+    if (card) card.style.display = 'block';
+  }
+  if (d['brigada'] === 'Sí') toggleBrigada(true);
   // ── Restaurar religión otro ──
   if (d['religion'] === 'Otro') toggleReligionOtro(true);
   if (d['religionOtroTexto']) { const el = document.getElementById('religionOtroTexto'); if(el) el.value = d['religionOtroTexto']; }
@@ -1697,7 +1719,13 @@ function goTo(idx) {
   const tabs = document.getElementById('tabsBar');
   tabs.querySelectorAll('.tab')[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   if (idx === 10) calcScore();
-  if (idx === 2) renderAbuelos(currentNino);
+  // Al entrar a sección 2, 5 o 6 siempre empezar en el primer niño
+  if (idx === 2 || idx === 5 || idx === 6) {
+    currentNino = 0;
+    loadChildData(0);
+    renderAbuelos(0);
+    updateChildNavs();
+  }
   autoSave();
 }
 
@@ -1978,7 +2006,35 @@ function setGrado(val) {
   if (g) g.value = val;
 }
 
-// ── TOGGLE BRIGADA ────────────────────────────────────────────────────
+// ── TOGGLE CHICHA DETALLE ─────────────────────────────────────────────
+function toggleChichaDetalle(show) {
+  const el = document.getElementById('chichaDetalleCard');
+  if (el) el.style.display = show ? 'block' : 'none';
+  if (!show) {
+    document.querySelectorAll('input[name="chichaDetalle"]').forEach(r => { r.checked = false; r.closest('.opt')?.classList.remove('sel'); });
+  }
+}
+
+// ── MISMA INSTITUCIÓN EDUCATIVA PARA TODOS ────────────────────────────
+function mismaInstitucionTodos() {
+  if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
+  saveCurrentChildData();
+  // Encadenar: institución, idioma de instrucción, estado aulas, baños escuela, desayuno escolar
+  const inst = {
+    institucion: document.getElementById('institucion')?.value || '',
+    idiomaEduc: document.querySelector('input[name="idiomaEduc"]:checked')?.value || '',
+    aulas: document.querySelector('input[name="aulas"]:checked')?.value || '',
+    banosEsc: document.querySelector('input[name="banosEsc"]:checked')?.value || '',
+    desayunoEscolar: document.querySelector('input[name="desayunoEscolar"]:checked')?.value || ''
+  };
+  if (!inst.institucion) { alert('Primero escribe el nombre de la institución educativa.'); return; }
+  ninos.forEach((n, idx) => {
+    if (!childData[idx]) childData[idx] = {};
+    Object.assign(childData[idx], inst);
+  });
+  alert('✅ Institución educativa copiada a todos los ' + ninos.length + ' niños/as.');
+  autoSave();
+}
 function toggleBrigada(show) {
   const el = document.getElementById('brigadaDetalles');
   if (el) el.style.display = show ? 'block' : 'none';
@@ -2175,6 +2231,8 @@ function setAbACargo(ninoIdx, key, val) {
 function mismoCuidadorTodos() {
   if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
   saveCurrentChildData();
+  // Solo se encadenan: cuidador, parentesco, edad, cédula, tel, situación laboral, lugar de trabajo
+  // quienCuida NO se encadena — cada niño tiene su propia respuesta
   const cuid = {
     cuidadorSelect: document.getElementById('cuidadorSelect')?.value || '',
     parentescoCuidador: document.getElementById('parentescoCuidador')?.value || '',
@@ -2182,15 +2240,17 @@ function mismoCuidadorTodos() {
     cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
     telCuidador: document.getElementById('telCuidador')?.value || '',
     laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
-    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || '',
-    quienCuida: document.querySelector('input[name="quienCuida"]:checked')?.value || ''
+    lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || ''
   };
   if (!cuid.cuidadorSelect) { alert('Primero selecciona un cuidador para este niño/a.'); return; }
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
+    // Preservar quienCuida de cada niño
+    const quienCuidaActual = childData[idx].quienCuida || '';
     Object.assign(childData[idx], cuid);
+    childData[idx].quienCuida = quienCuidaActual;
   });
-  alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.');
+  alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.\n(¡Recuerda que "¿Quién cuida al niño/a durante el trabajo?" se completa individualmente para cada niño/a)');
   autoSave();
 }
 
