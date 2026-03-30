@@ -1324,16 +1324,25 @@ function renderFamTable() {
   );
   if (_hijos.length > 0) {
     const _prev = [...ninos];
+    const _prevChildData = { ...(typeof childData !== 'undefined' ? childData : {}) };
+    // Reconstruir ninos completamente desde famRows (sin duplicados)
     ninos = _hijos.map(fam => {
-      const ex = _prev.find(n => n.nombre && n.nombre.toLowerCase() === fam.nombre.toLowerCase());
+      const ex = _prev.find(n => n.nombre && n.nombre.trim().toLowerCase() === fam.nombre.trim().toLowerCase());
       return {
         nombre: fam.nombre.trim(),
-        edad: fam.edad ? String(fam.edad) + 'a' : '',
-        sexo: fam.sexo || '',
+        edad: fam.edad ? String(fam.edad).replace('a','') + 'a' : '',
+        sexo: fam.sexo || (ex ? ex.sexo || '' : ''),
         cedula: fam.cedula || (ex ? ex.cedula || '' : ''),
         fechaNac: ex ? ex.fechaNac || '' : '',
         grupoEdad: ex ? ex.grupoEdad || '' : ''
       };
+    });
+    // Reasignar childData por nombre
+    _prev.forEach((pn, oldIdx) => {
+      const newIdx = ninos.findIndex(n => n.nombre.trim().toLowerCase() === pn.nombre.trim().toLowerCase());
+      if (newIdx >= 0 && _prevChildData[oldIdx]) {
+        childData[newIdx] = _prevChildData[oldIdx];
+      }
     });
     renderNinos();
   }
@@ -1514,31 +1523,36 @@ function onCuidadorSelect() {
 
 // ── SYNC NIÑOS DESDE COMPOSICIÓN FAMILIAR ─────────────────────────────
 function syncNinosFromFamilia() {
-  // Cualquier miembro menor de 18 años va a la sección niños
-  const desdeTabla = famRows.filter(r => 
-    r.nombre && r.nombre.trim() !== '' && 
+  const desdeTabla = famRows.filter(r =>
+    r.nombre && r.nombre.trim() !== '' &&
     r.edad !== '' && Number(r.edad) < 18
   );
   if (desdeTabla.length === 0) return;
 
-  // Mantener datos ya ingresados si el nombre coincide
-  desdeTabla.forEach(fam => {
-    const existe = ninos.find(n => n.nombre && n.nombre.toLowerCase() === fam.nombre.toLowerCase());
-    if (!existe) {
-      ninos.push({
-        nombre: fam.nombre.trim(),
-        edad: fam.edad ? fam.edad + 'a' : '',
-        sexo: fam.sexo || '',
-        cedula: '',
-        fechaNac: '',
-        grupoEdad: ''
-      });
-    } else {
-      // Actualizar edad y sexo si estaban vacíos
-      if (!existe.edad && fam.edad) existe.edad = fam.edad + 'a';
-      if (!existe.sexo && fam.sexo) existe.sexo = fam.sexo;
+  // Reconstruir completamente desde famRows, preservando childData por nombre
+  const prevNinos = [...ninos];
+  ninos = desdeTabla.map(fam => {
+    // Buscar si ya existía con ese nombre (ignorando mayúsculas/espacios)
+    const ex = prevNinos.find(n => n.nombre && n.nombre.trim().toLowerCase() === fam.nombre.trim().toLowerCase());
+    return {
+      nombre: fam.nombre.trim(),
+      edad: fam.edad ? String(fam.edad).replace('a','') + 'a' : '',
+      sexo: fam.sexo || (ex ? ex.sexo || '' : ''),
+      cedula: fam.cedula || (ex ? ex.cedula || '' : ''),
+      fechaNac: ex ? ex.fechaNac || '' : '',
+      grupoEdad: ex ? ex.grupoEdad || '' : ''
+    };
+  });
+
+  // Reasignar childData por posición nueva usando el nombre como clave
+  const prevChildData = { ...childData };
+  prevNinos.forEach((pn, oldIdx) => {
+    const newIdx = ninos.findIndex(n => n.nombre.trim().toLowerCase() === pn.nombre.trim().toLowerCase());
+    if (newIdx >= 0 && prevChildData[oldIdx]) {
+      childData[newIdx] = prevChildData[oldIdx];
     }
   });
+
   renderNinos();
 }
 
