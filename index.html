@@ -487,13 +487,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card">
     <div class="card-lbl orange">Principal fuente de ingreso (se puede marcar varias)</div>
     <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="fuente" value="Empleado público/privado"><span>Empleado público / privado</span></label>
+      <label class="opt"><input type="checkbox" name="fuente" value="Empleado público"><span>Empleado público</span></label>
+      <label class="opt"><input type="checkbox" name="fuente" value="Empleado privado"><span>Empleado privado</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Agricultura/pesca/finca"><span>Agricultura / pesca / finca</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Artesanía/comercio"><span>Artesanía / comercio</span></label>
       <label class="opt warn"><input type="checkbox" name="fuente" value="Solo bonos estatales"><span>Solo bonos estatales</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Ganadería"><span>Ganadería</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Jornalero"><span>Jornalero</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Remesas/pensión"><span>Remesas / pensión</span></label>
+      <label class="opt"><input type="checkbox" name="fuente" value="Otro"><span>Otro</span></label>
     </div>
   </div>
   <div class="card">
@@ -659,6 +661,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
     </div><!-- fin bloqueInstitucion -->
+    <div id="bloqueEscolar">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="abandono" value="No" onclick="toggleMotivoAbandono()"><span>No</span></label>
@@ -678,8 +681,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="motivoAb" value="Desmotivado"><span>Desmotivado</span></label>
     </div>
     </div>
+    </div><!-- fin bloqueEscolar -->
   </div>
-  <div class="card">
+  <div class="card" id="bloqueInfraestructura">
     <div class="sub">▸ Estado infraestructura escolar (observación del técnico)</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado de aulas</div>
     <div class="opts c2">
@@ -1653,6 +1657,14 @@ function saveCurrentChildData() {
     const el = document.getElementById(id);
     if (el) childData[currentNino][id] = el.tagName==='SELECT'?el.value:el.value;
   });
+  // Si no estudia o no asiste → limpiar forzosamente campos de institución en childData
+  const noEstudia = childData[currentNino]['nivelEduc'] === 'No estudia';
+  const noAsiste = childData[currentNino]['asiste'] === 'No asiste' || childData[currentNino]['asiste'] === 'Edad pre-escolar';
+  if (noEstudia || noAsiste) {
+    ['institucion','gradoAnio','modalidad','idiomaEduc','desayunoEscolar','aulas','banosEsc'].forEach(k => {
+      childData[currentNino][k] = '';
+    });
+  }
 }
 
 function loadChildData(idx) {
@@ -1690,9 +1702,10 @@ function loadChildData(idx) {
   // ── 4. Ocultar todos los paneles condicionales ──
   ['signosRiesgoDetalles','religionOtroCard','chichaDetalleCard','motivoAbandonoCard','brigadaDetalles','vphCard']
     .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-  // bloqueInstitucion: mostrar por defecto, se oculta si nivelEduc=No estudia o asiste=No/Pre-escolar
-  const bloqueInst = document.getElementById('bloqueInstitucion');
-  if (bloqueInst) bloqueInst.style.display = 'block';
+  // Mostrar bloques de institución por defecto, se ajustan según datos guardados
+  ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'block';
+  });
 
   // Si no hay datos guardados para este niño, quedamos con todo limpio
   if (!childData[idx] || Object.keys(d).length === 0) {
@@ -2158,17 +2171,23 @@ function setGrado(val) {
 
 // ── TOGGLE BLOQUE INSTITUCIÓN ─────────────────────────────────────────
 function toggleInstitucion(show) {
-  const bloque = document.getElementById('bloqueInstitucion');
-  if (!bloque) return;
-  bloque.style.display = show ? 'block' : 'none';
+  ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'block' : 'none';
+  });
   if (!show) {
-    // Limpiar todos los campos del bloque
+    // Limpiar todos los campos del bloque institución
     const inst = document.getElementById('institucion');
     const grado = document.getElementById('gradoAnio');
     if (inst) inst.value = '';
     if (grado) grado.value = '';
-    document.querySelectorAll('input[name="modalidad"], input[name="idiomaEduc"], input[name="desayunoEscolar"]')
-      .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+    document.querySelectorAll(
+      'input[name="modalidad"], input[name="idiomaEduc"], input[name="desayunoEscolar"], ' +
+      'input[name="abandono"], input[name="motivoAb"], input[name="aulas"], input[name="banosEsc"]'
+    ).forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+    // Ocultar también el panel de motivo abandono
+    const motivoCard = document.getElementById('motivoAbandonoCard');
+    if (motivoCard) motivoCard.style.display = 'none';
   }
 }
 
@@ -2194,11 +2213,28 @@ function mismaInstitucionTodos() {
     desayunoEscolar: document.querySelector('input[name="desayunoEscolar"]:checked')?.value || ''
   };
   if (!inst.institucion) { alert('Primero escribe el nombre de la institución educativa.'); return; }
+
+  let copiados = 0;
+  let omitidos = [];
   ninos.forEach((n, idx) => {
     if (!childData[idx]) childData[idx] = {};
-    Object.assign(childData[idx], inst);
+    const d = childData[idx];
+    // Solo copiar si el niño estudia (no tiene nivelEduc=No estudia ni asiste=No asiste/Edad pre-escolar)
+    const noEstudia = d.nivelEduc === 'No estudia';
+    const noAsiste = d.asiste === 'No asiste' || d.asiste === 'Edad pre-escolar';
+    if (noEstudia || noAsiste) {
+      omitidos.push(n.nombre || 'Niño/a ' + (idx + 1));
+    } else {
+      Object.assign(childData[idx], inst);
+      copiados++;
+    }
   });
-  alert('✅ Institución educativa copiada a todos los ' + ninos.length + ' niños/as.');
+
+  let msg = `✅ Institución copiada a ${copiados} niño/a(s).`;
+  if (omitidos.length > 0) {
+    msg += `\n\n⚠️ Se omitió a:\n• ${omitidos.join('\n• ')}\n(no estudian — sus datos de institución quedan en blanco)`;
+  }
+  alert(msg);
   autoSave();
 }
 function toggleBrigada(show) {
