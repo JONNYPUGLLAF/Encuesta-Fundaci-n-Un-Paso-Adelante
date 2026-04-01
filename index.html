@@ -2076,6 +2076,17 @@ ID: ${v(f.id)}`;
   window.open(url, '_blank');
 }
 
+function eliminarFicha(idx) {
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
+  const f = fichas[idx];
+  if (!f) return;
+  const confirmar = confirm(`¿Seguro que quieres borrar esta ficha?\n\n📍 ${f.comunidad||'Sin comunidad'} · ${f.fechaVisita||''}\n\nEsta acción no se puede deshacer.`);
+  if (!confirmar) return;
+  fichas.splice(idx, 1);
+  localStorage.setItem('fichas_shuar_v2', JSON.stringify(fichas));
+  showFichasGuardadas();
+}
+
 function showFichasGuardadas() {
   const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
   const c = document.getElementById('fichasGuardadas');
@@ -2087,6 +2098,7 @@ function showFichasGuardadas() {
         <span style="font-size:11px;color:var(--light);display:block">${f.fechaVisita||f.timestamp?.slice(0,10)||''} · ${f.ninos?.length||0} niños · Puntaje: ${f.puntajeVulnerabilidad||'?'} (${f.nivelVulnerabilidad||'?'})</span>
       </div>
       <button onclick="compartirWhatsApp(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#25D366;color:white;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📲 WhatsApp</button>
+      <button onclick="eliminarFicha(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🗑️ Borrar</button>
     </div>`).join('');
 }
 
@@ -2094,23 +2106,158 @@ function showFichasGuardadas() {
 function exportCSV() {
   const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
   if (!fichas.length) { alert('No hay fichas para exportar.'); return; }
-  // Flatten for CSV
-  const flat = fichas.map(f => {
-    const row = {...f};
-    delete row.childData; delete row.ninos; delete row.famRows; delete row.percVals;
-    // Add ninos as columns
-    (f.ninos||[]).forEach((n,i) => { row[`nino_${i+1}_nombre`]=n.nombre; row[`nino_${i+1}_edad`]=n.edad; row[`nino_${i+1}_sexo`]=n.sexo; });
-    // Add percepcion
-    Object.keys(f.percVals||{}).forEach(k => { row['perc_'+k]=f.percVals[k]; });
-    return row;
+
+  const rows = [];
+
+  fichas.forEach(f => {
+    // Base de la ficha (campos del hogar)
+    const base = {
+      'ID': f.id || '',
+      'Fecha': f.fechaVisita || f.timestamp?.slice(0,10) || '',
+      'Comunidad': f.comunidad || '',
+      'Encuestador': f.encuestador || '',
+      'Acceso': f.acceso || '',
+      'N° Encuesta': f.numEncuesta || '',
+      'Total personas': f.totalPersonas || '',
+      'Habitaciones': f.habitaciones || '',
+      'Menores de 18': f.menores18 || '',
+      '¿Es Shuar?': f.esShuar || '',
+      'Habla Shuar Chicham': f.shuar || '',
+      'Nombre padre': f.nombrePadre || '',
+      'Cédula padre': f.cedulaPadre || '',
+      'Tel padre': f.telPadre || '',
+      'Nombre madre': f.nombreMadre || '',
+      'Cédula madre': f.cedulaMadre || '',
+      'Tel madre': f.telMadre || '',
+      // Economía
+      'Ingreso mensual': f.ingreso || '',
+      'Fuentes ingreso': f.fuente || '',
+      'Apoyos estatales': f.apoyos || '',
+      // Infraestructura
+      'Tipo vivienda': f.tipoVivienda || '',
+      'Material vivienda': f.material || '',
+      'Fuente agua': f.agua || '',
+      'Agua gestionada Fundación': f.aguaFund || '',
+      'Excretas': f.excretas || '',
+      'Electricidad': f.electr || '',
+      'Internet': f.internet || '',
+      // Dinámica
+      'Horas solo el niño': f.horasSolo || '',
+      'N° comidas/día': f.comidas || '',
+      'Alimentación regular': f.comioAyer || '',
+      'Frutas/verduras': f.frutas || '',
+      'Proteínas': f.proteinas || '',
+      'Sin comer (frecuencia)': f.sinComer || '',
+      'Sin comida en hogar': f.sinComidaHogar || '',
+      'Chicha en hogar': f.chicha || '',
+      'Chicha detalle niños': f.chichaDetalle || '',
+      'Peleas entre adultos': f.peleas || '',
+      'Alcohol en hogar': f.alcohol || '',
+      'Forma de disciplina': f.disciplina || '',
+      'Religión': f.religion || '',
+      'Frecuencia congregación': f.congrega || '',
+      'Grupos comunitarios': f.grupos || '',
+      // Técnico
+      'Perfil familiar': f.perfil || '',
+      'Info confiable': f.confiable || '',
+      'Prioridades intervención': f.prioridad || '',
+      'Factores de riesgo': f.factoresR || '',
+      'Obs. privadas técnico': f.obsPrivadas || '',
+      // Percepción
+      'Perc: Seguridad hogar': (f.percVals||{}).p1 || '',
+      'Perc: Alimentación familia': (f.percVals||{}).p2 || '',
+      'Perc: Capacidad cuidar hijos': (f.percVals||{}).p3 || '',
+      'Perc: Futuro de hijos': (f.percVals||{}).p4 || '',
+      'Perc: Importancia escuela': (f.percVals||{}).p5 || '',
+      'Perc: Control emocional adultos': (f.percVals||{}).p6 || '',
+      'Perc: Relación adultos hogar': (f.percVals||{}).p7 || '',
+      'Perc: Confianza servicios salud': (f.percVals||{}).p8 || '',
+      'Perc: Confianza en Fundación': (f.percVals||{}).p9 || '',
+      // Cierre
+      'Observaciones generales': f.obsGenerales || '',
+      'Nivel vulnerabilidad': f.nivelVulnerabilidad || '',
+      'Puntaje vulnerabilidad': f.puntajeVulnerabilidad || '',
+      'Prioridad atención': f.prioridadAt || '',
+    };
+
+    // Una fila por niño (si hay varios niños, se repite la info del hogar)
+    const ninos = f.ninos || [];
+    if (ninos.length === 0) {
+      rows.push(base);
+    } else {
+      ninos.forEach((n, i) => {
+        const d = (f.childData || {})[i] || {};
+        const fila = {
+          ...base,
+          // Identificación del niño
+          'Niño N°': i + 1,
+          'Nombre niño/a': n.nombre || '',
+          'Edad niño/a': n.edad || '',
+          'Sexo niño/a': n.sexo || '',
+          'Cédula niño/a': n.cedula || '',
+          // Familiar
+          'Estado padre biológico': d.estadoPadre || '',
+          'Estado madre biológica': d.estadoMadre || '',
+          'Tipo orfandad': d.orfandad || '',
+          'Convive con': d.convive || '',
+          // Cuidador
+          'Cuidador principal': d.cuidadorSelect || '',
+          'Parentesco cuidador': d.parentescoCuidador || '',
+          'Edad cuidador': d.edadCuidador || '',
+          'Cédula cuidador': d.cedulaCuidador || '',
+          'Tel cuidador': d.telCuidador || '',
+          'Situación laboral cuidador': d.laboral || '',
+          'Lugar de trabajo cuidador': d.lugarTrabajo || '',
+          'Quién cuida durante trabajo': d.quienCuida || '',
+          // Educación
+          'Asiste a escuela': d.asiste || '',
+          'Nivel educativo': d.nivelEduc || '',
+          'Grado/Año': d.gradoAnio || '',
+          'Institución educativa': d.institucion || '',
+          'Modalidad': d.modalidad || '',
+          'Idioma instrucción': d.idiomaEduc || '',
+          'Desayuno escolar': d.desayunoEscolar || '',
+          'Abandono escolar': d.abandono || '',
+          'Motivo abandono': d.motivoAb || '',
+          'Estado aulas': d.aulas || '',
+          'Baños escuela': d.banosEsc || '',
+          // Salud
+          'Atención médica': d.saludAt || '',
+          'Discapacidad': d.discap || '',
+          'Apoyo psicológico': d.psico || '',
+          'Comportamientos': d.comportamiento || '',
+          'Obs. salud': d.condSalud || '',
+          'Brigada médica': d.brigada || '',
+          'Odontólogo': d.odontologo || '',
+          'Condición bucal': d.condBucal || '',
+          'Controles médicos': d.controles || '',
+          'Vacunas': d.vacunas || '',
+          'Vacuna VPH': d.vacunaVPH || '',
+          // Nutrición
+          'Peso (kg)': d.pesoNino || '',
+          'Talla (cm)': d.tallaNino || '',
+          'Estado nutricional': d.nutricion || '',
+          'Última comida': d.ultimaComida || '',
+        };
+        rows.push(fila);
+      });
+    }
   });
-  const keys = [...new Set(flat.flatMap(Object.keys))];
-  const csv = [keys.join(','), ...flat.map(f=>keys.map(k=>`"${String(f[k]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+
+  // Construir CSV
+  const keys = Object.keys(rows[0] || {});
+  const csv = [
+    keys.join(','),
+    ...rows.map(r => keys.map(k => `"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))
+  ].join('\n');
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url;
+  const a = document.createElement('a');
+  a.href = url;
   a.download = `fichas_shuar_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(url);
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── OFFLINE ───────────────────────────────────────────────────────────
