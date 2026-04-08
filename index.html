@@ -335,15 +335,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <!-- TABLA NIÑOS -->
-  <div class="card">
-    <div class="card-lbl green">👶 Niños / Niñas / Adolescentes del hogar <span class="badge badge-child">Las secciones 5 y 6 se completan por cada niño/a</span></div>
-    <div class="card-body">
-      <p style="font-size:11px;color:var(--mid);margin-bottom:8px;">Registra todos los menores de 18 años. Después podrás completar Educación y Salud para cada uno.</p>
-      <div id="ninosContainer"></div>
-      <button onclick="addNino()" style="width:100%;padding:9px;border-radius:8px;border:1.5px dashed var(--green);background:white;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;">+ Agregar niño/a</button>
-    </div>
-  </div>
+  <!-- TABLA NIÑOS -->\n  <div class=\"card\">\n    <div class=\"card-lbl green\">👶 Niños / Niñas / Adolescentes del hogar <span class=\"badge badge-child\">Las secciones 5 y 6 se completan por cada niño/a</span></div>\n    <div class=\"card-body\">\n      <p style=\"font-size:11px;color:var(--mid);margin-bottom:8px;\">Registra todos los menores de 18 años. Después podrás completar Educación y Salud para cada uno.</p>\n      <!-- Botón sin menores -->\n      <div id=\"sinMenoresBtn\" style=\"margin-bottom:10px\">\n        <button onclick=\"toggleSinMenores()\" id=\"btnSinMenores\" style=\"width:100%;padding:10px;border-radius:8px;border:2px solid #B45309;background:white;color:#B45309;font-size:13px;font-weight:700;cursor:pointer\">🚫 No viven menores de edad en este hogar</button>\n      </div>\n      <div id=\"ninosArea\">\n        <div id=\"ninosContainer\"></div>\n        <button onclick=\"addNino()\" style=\"width:100%;padding:9px;border-radius:8px;border:1.5px dashed var(--green);background:white;color:var(--green);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;\">+ Agregar niño/a</button>\n      </div>\n    </div>\n  </div>
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(0)">← Atrás</button>
@@ -363,7 +355,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <div class="child-nav" id="childNavFamiliar">
+  <!-- Banner sin menores sec2 -->
+  <div id="sinMenoresBanner2" style="display:none;background:#FFF7ED;border:2px solid #B45309;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px">
+    <div style="font-size:28px;margin-bottom:6px">🏠</div>
+    <strong style="color:#B45309;font-size:14px">No hay menores de edad en este hogar</strong>
+    <p style="font-size:12px;color:#92400E;margin-top:4px">Esta sección no aplica. Puedes continuar a la siguiente sección.</p>
+  </div>
+
+  <div id="childNavFamiliar" class="child-nav">
     <p>👶 Selecciona el niño/a:</p>
     <div class="child-nav-btns" id="childBtnsFamiliar"></div>
   </div>
@@ -592,6 +591,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
   </div>
+  <!-- Banner sin menores sec5 -->
+  <div id="sinMenoresBanner5" style="display:none;background:#FFF7ED;border:2px solid #B45309;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px">
+    <div style="font-size:28px;margin-bottom:6px">🏠</div>
+    <strong style="color:#B45309;font-size:14px">No hay menores de edad en este hogar</strong>
+    <p style="font-size:12px;color:#92400E;margin-top:4px">Esta sección no aplica. Puedes continuar a la siguiente sección.</p>
+  </div>
   <div class="child-nav" id="childNavEduc">
     <p>👶 Selecciona el miembro:</p>
     <div class="child-nav-btns" id="childBtnsEduc"></div>
@@ -714,6 +719,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <p>Cobertura médica, brigadas, alimentación y bienestar</p>
       </div>
     </div>
+  </div>
+  <!-- Banner sin menores sec6 -->
+  <div id="sinMenoresBanner6" style="display:none;background:#FFF7ED;border:2px solid #B45309;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px">
+    <div style="font-size:28px;margin-bottom:6px">🏠</div>
+    <strong style="color:#B45309;font-size:14px">No hay menores de edad en este hogar</strong>
+    <p style="font-size:12px;color:#92400E;margin-top:4px">Esta sección no aplica. Puedes continuar a la siguiente sección.</p>
   </div>
   <div class="child-nav" id="childNavSalud">
     <p>👶 Selecciona el niño/a:</p>
@@ -1209,6 +1220,68 @@ function setPerc(id, val, btn) {
 let ninos = []; // [{nombre, edad, sexo, cedula, fechaNac, grupoEdad}]
 let currentNino = 0;
 let childData = {}; // {ninoIdx: {familiar: {}, educ: {}, salud: {}}}
+let sinMenores = false; // flag hogar sin menores de edad
+
+// ── SIN MENORES DE EDAD ───────────────────────────────────────────────
+function toggleSinMenores() {
+  sinMenores = !sinMenores;
+  aplicarSinMenores();
+  autoSave();
+}
+
+function aplicarSinMenores() {
+  const btn = document.getElementById('btnSinMenores');
+  const ninosArea = document.getElementById('ninosArea');
+
+  if (sinMenores) {
+    // Activado: ocultar área de niños, resaltar botón
+    if (btn) {
+      btn.style.background = '#B45309';
+      btn.style.color = 'white';
+      btn.textContent = '✅ No viven menores de edad en este hogar (activo — toca para desactivar)';
+    }
+    if (ninosArea) ninosArea.style.display = 'none';
+    // Limpiar niños registrados
+    ninos = [];
+    childData = {};
+    renderNinos();
+  } else {
+    // Desactivado: mostrar área de niños
+    if (btn) {
+      btn.style.background = 'white';
+      btn.style.color = '#B45309';
+      btn.textContent = '🚫 No viven menores de edad en este hogar';
+    }
+    if (ninosArea) ninosArea.style.display = 'block';
+  }
+
+  // Mostrar/ocultar banners en sec2, sec5, sec6
+  ['sinMenoresBanner2','sinMenoresBanner5','sinMenoresBanner6'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = sinMenores ? 'block' : 'none';
+  });
+
+  // Mostrar/ocultar contenido de secciones por niño
+  ['childNavFamiliar','childDataFamiliar','childNavEduc','childNavSalud'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = sinMenores ? 'none' : 'block';
+  });
+
+  // Marcar tabs 2, 5, 6 visualmente
+  ['tab2','tab5','tab6'].forEach(id => {
+    const tab = document.getElementById(id);
+    if (!tab) return;
+    if (sinMenores) {
+      tab.style.opacity = '0.5';
+      tab.title = 'No aplica — hogar sin menores';
+    } else {
+      tab.style.opacity = '';
+      tab.title = '';
+    }
+  });
+
+  buildChildTabs();
+}
 
 function addNino() {
   const idx = ninos.length;
@@ -1775,17 +1848,14 @@ let curSec = 0;
 const TOTAL_SECS = 11;
 
 function goTo(idx) {
-  // Bloquear entrada a Educación (5) y Salud (6) desde los tabs si no se ha completado lo anterior
-  // Solo bloquear si viene desde un tab (no desde botón Siguiente que ya valida)
+  // Si sinMenores está activo, las secciones 2, 5, 6 son de libre acceso (no bloquear)
   const vieneDeSiguiente = (idx === curSec + 1);
-  if (!vieneDeSiguiente) {
-    // Si intenta saltar a sec5 o sec6 sin haber pasado por el flujo normal, validar sec2
+  if (!vieneDeSiguiente && !sinMenores) {
     if (idx === 5 || idx === 6) {
       if (ninos.length === 0) {
         alert('⚠️ Primero registra los niños/as en la sección 2 (Familiar).');
         return;
       }
-      // Validar que sec5 esté completa si va a sec6 saltando
       if (idx === 6) {
         saveCurrentChildData();
         for (let i = 0; i < ninos.length; i++) {
@@ -1894,7 +1964,7 @@ function saveDraft() {
 
 function collectAllData() {
   saveCurrentChildData();
-  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals };
+  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals, sinMenores };
   // Global fields
   ['numEncuesta','comunidad','fechaVisita','fechaVisita','totalPersonas','habitaciones',
    'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre',
@@ -2027,6 +2097,7 @@ function compartirWhatsApp(idx) {
 📍 Comunidad: ${v(f.comunidad)}
 👤 Encuestador/a: ${v(f.encuestador)}
 🛶 Acceso: ${v(f.acceso)}
+🏠 Menores en hogar: ${f.sinMenores ? 'No — hogar solo adultos' : 'Sí'}
 ━━━━━━━━━━━━━━━━━━━━━━
 *1. COMPOSICIÓN DEL HOGAR*
 ${fam}
@@ -2118,6 +2189,7 @@ function exportCSV() {
       'Encuestador': f.encuestador || '',
       'Acceso': f.acceso || '',
       'N° Encuesta': f.numEncuesta || '',
+      'Hogar solo adultos (sin menores)': f.sinMenores ? 'Sí' : 'No',
       'Total personas': f.totalPersonas || '',
       'Habitaciones': f.habitaciones || '',
       'Menores de 18': f.menores18 || '',
@@ -2269,6 +2341,7 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 document.addEventListener('DOMContentLoaded', () => {
   // ── SIEMPRE INICIAR LIMPIO ──
   localStorage.removeItem('ficha_draft_v2');
+  sinMenores = false; // reset flag
   // Reset all text/number/tel inputs except encuestador
   document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
     if (el.id !== 'encuestador') el.value = '';
@@ -2287,12 +2360,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (fe) fe.value = today;
   showFichasGuardadas();
   buildChildTabs();
+  aplicarSinMenores(); // asegurar estado visual correcto al iniciar
 });
 
 // ── OFFLINE ───────────────────────────────────────────────────────────}
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
 function validarSeccionHijos(sec) {
+  if (sinMenores) return true; // hogar sin menores, siempre pasa
   if (ninos.length === 0) return true;
   const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
   for (let i = 0; i < ninos.length; i++) {
@@ -2300,7 +2375,6 @@ function validarSeccionHijos(sec) {
     for (const campo of camposReq) {
       if (!d[campo]) {
         alert('⚠️ Falta completar la sección para: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)) + '\nPor favor completa todos los hijos antes de continuar.');
-        // Switch to that child
         currentNino = i;
         updateChildTabs();
         return false;
@@ -2604,7 +2678,7 @@ function mismoCuidadorTodos() {
 }
 
 function validarYAvanzarSec2() {
-  if (ninos.length === 0) { goTo(3); return; }
+  if (sinMenores || ninos.length === 0) { goTo(3); return; }
   saveCurrentChildData();
   const incompletos = [];
   ninos.forEach((n, idx) => {
