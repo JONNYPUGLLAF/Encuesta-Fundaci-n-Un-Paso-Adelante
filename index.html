@@ -602,17 +602,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
   </div>
-  <div id="sinMenoresBanner5" style="display:none;background:#FFF7ED;border:2px solid #B45309;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px">
-    <div style="font-size:28px;margin-bottom:6px">🏠</div>
-    <strong style="color:#B45309;font-size:14px">No hay menores de edad en este hogar</strong>
-    <p style="font-size:12px;color:#92400E;margin-top:4px">Esta sección no aplica. Puedes continuar a la siguiente sección.</p>
-  </div>
   <div class="child-nav" id="childNavEduc">
-    <p>👶 Selecciona el miembro:</p>
+    <p id="childNavEducLabel">👶 Selecciona el miembro:</p>
     <div class="child-nav-btns" id="childBtnsEduc"></div>
   </div>
   <div class="card">
     <div class="card-lbl" id="ninoEducLabel">Miembro: —</div>
+    <!-- Botones Estudia/No estudia — solo para adultos (sinMenores) -->
+    <div id="adultoEstudiaToggle" style="display:none;padding:7px">
+      <div style="font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px">¿Esta persona estudia actualmente?</div>
+      <div style="display:flex;gap:8px">
+        <button id="btnAdultoSi" onclick="setAdultoEstudia(true)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">✅ Sí estudia</button>
+        <button id="btnAdultoNo" onclick="setAdultoEstudia(false)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">🚫 No estudia</button>
+      </div>
+    </div>
+    <div id="bloqueEducNino">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="asiste" value="Sí, de manera regular" onclick="toggleInstitucion(true)"><span>✅ Sí, regular</span></label>
@@ -697,6 +701,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     </div>
     </div><!-- fin bloqueEscolar -->
+    </div><!-- fin bloqueEducNino -->
   </div>
   <div class="card" id="bloqueInfraestructura">
     <div class="sub">▸ Estado infraestructura escolar (observación del técnico)</div>
@@ -730,10 +735,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
   </div>
-  <div id="sinMenoresBanner6" style="display:none;background:#FFF7ED;border:2px solid #B45309;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px">
-    <div style="font-size:28px;margin-bottom:6px">🏠</div>
-    <strong style="color:#B45309;font-size:14px">No hay menores de edad en este hogar</strong>
-    <p style="font-size:12px;color:#92400E;margin-top:4px">Esta sección no aplica. Puedes continuar a la siguiente sección.</p>
+  <!-- Nav adultos salud (visible solo cuando sinMenores) -->
+  <div id="childNavAdultosSalud" style="display:none" class="child-nav">
+    <p>👤 Selecciona el adulto/a:</p>
+    <div class="child-nav-btns" id="childBtnsAdultosSalud"></div>
+  </div>
+  <!-- Card salud adultos -->
+  <div id="cardSaludAdultos" style="display:none">
+    <div class="card">
+      <div class="card-lbl" id="adultoSaludLabel">Adulto/a: —</div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Atención en salud</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="saludAtAdulto" value="Hospital IESS"><span>Hospital IESS</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdulto" value="Ministerio Salud Pública"><span>Ministerio Salud Pública</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdulto" value="Clínica privada"><span>Clínica privada</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdulto" value="Medicina ancestral"><span>Medicina ancestral</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Presenta alguna discapacidad?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="discapAdulto" value="No"><span>No</span></label>
+        <label class="opt"><input type="radio" name="discapAdulto" value="Física/motriz"><span>Física / motriz</span></label>
+        <label class="opt"><input type="radio" name="discapAdulto" value="Intelectual/cognitiva"><span>Intelectual / cognitiva</span></label>
+        <label class="opt"><input type="radio" name="discapAdulto" value="Sensorial (vista/oído)"><span>Sensorial (vista / oído)</span></label>
+      </div>
+      <div class="card-body">
+        <div class="fg"><label>Observaciones de salud adicionales</label><input type="text" id="condSaludAdulto" placeholder="Ej: diabetes, hipertensión..."></div>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha tenido brigada médica alguna vez?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="brigadaAdulto" value="Sí"><span>Sí</span></label>
+        <label class="opt"><input type="radio" name="brigadaAdulto" value="No"><span>No</span></label>
+        <label class="opt"><input type="radio" name="brigadaAdulto" value="No sabe/no recuerda"><span>No sabe / no recuerda</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha ido al odontólogo?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="odontologoAdulto" value="Sí, recientemente"><span>Sí, recientemente</span></label>
+        <label class="opt warn"><input type="radio" name="odontologoAdulto" value="Sí, hace más de 1 año"><span>Sí, hace más de 1 año</span></label>
+        <label class="opt risk"><input type="radio" name="odontologoAdulto" value="Nunca ha ido"><span>Nunca ha ido</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Condición bucal observada</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="condBucalAdulto" value="Aparentemente sana"><span>Aparentemente sana</span></label>
+        <label class="opt warn"><input type="radio" name="condBucalAdulto" value="Caries visibles"><span>Caries visibles</span></label>
+        <label class="opt risk"><input type="radio" name="condBucalAdulto" value="Dientes faltantes/dañados"><span>Dientes faltantes / dañados</span></label>
+        <label class="opt"><input type="radio" name="condBucalAdulto" value="No se puede valorar"><span>No se puede valorar</span></label>
+      </div>
+    </div>
   </div>
   <div class="child-nav" id="childNavSalud">
     <p>👶 Selecciona el niño/a:</p>
@@ -888,6 +935,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="card">
     <div class="sub red">▸ Entorno y supervisión del hogar</div>
+    <div id="bloqueHorasSolo">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuántas horas permanecen solos sus hijos/as al día?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="horasSolo" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
@@ -895,6 +943,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="horasSolo" value="3–5 horas"><span>3 – 5 horas</span></label>
       <label class="opt risk"><input type="radio" name="horasSolo" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
     </div>
+    </div><!-- fin bloqueHorasSolo -->
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día (familia)</div>
     <div class="opts c2">
       <label class="opt risk"><input type="radio" name="comidas" value="1 comida"><span>1 comida</span></label>
@@ -909,6 +958,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
       <label class="opt"><input type="checkbox" name="comioAyer" value="Restaurante/comida preparada"><span>Restaurante / compran comida preparada</span></label>
     </div>
+    <div id="bloqueSinComer">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia algún niño/a se va a dormir sin haber comido?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="sinComer" value="Nunca"><span>Nunca</span></label>
@@ -917,6 +967,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="sinComer" value="Frecuentemente (más de 2 veces/semana)"><span>Frecuentemente (más de 2 veces/semana)</span></label>
       <label class="opt risk"><input type="radio" name="sinComer" value="Casi siempre"><span>Casi siempre</span></label>
     </div>
+    </div><!-- fin bloqueSinComer -->
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes hubo días en que no había comida en el hogar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="sinComidaHogar" value="No"><span>No</span></label>
@@ -944,12 +995,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="chicha" value="Sí toman" onclick="toggleChichaDetalle(true)"><span>Sí toman</span></label>
     </div>
     <div id="chichaDetalleCard" style="display:none">
-      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN NIÑOS</div>
+      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN ADULTOS</div>
       <div class="opts c2">
-        <label class="opt"><input type="radio" name="chichaDetalle" value="Solo chicha sin fermentar (recién hecha)"><span>Toman chicha solamente si está sin fermentar (recién hecha)</span></label>
+        <label class="opt"><input type="radio" name="chichaDetalle" value="Chicha sin fermentar (recién hecha)"><span>Chicha sin fermentar (recién hecha)</span></label>
         <label class="opt risk"><input type="radio" name="chichaDetalle" value="Chicha fermentada"><span>Chicha fermentada</span></label>
       </div>
     </div>
+    <!-- Bloque niños chicha — solo cuando hay menores -->
+    <div id="chichaDetalleNinosCard" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN NIÑOS</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="chichaDetalleNinos" value="Solo chicha sin fermentar (recién hecha)"><span>Toman solamente si está sin fermentar (recién hecha)</span></label>
+        <label class="opt risk"><input type="radio" name="chichaDetalleNinos" value="Chicha fermentada"><span>Chicha fermentada</span></label>
+      </div>
+    </div>
+    <div id="bloquePeleas">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="peleas" value="No/raramente"><span>No / raramente</span></label>
@@ -957,6 +1017,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="peleas" value="Frecuentemente"><span>Frecuentemente</span></label>
       <label class="opt risk"><input type="radio" name="peleas" value="Muy seguido/violencia"><span>Muy seguido / violencia</span></label>
     </div>
+    </div><!-- fin bloquePeleas -->
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Consumo frecuente de alcohol en el hogar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="alcohol" value="No"><span>No</span></label>
@@ -965,7 +1026,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="alcohol" value="Problema reconocido"><span>Problema reconocido</span></label>
     </div>
   </div>
-  <div class="card">
+  <div class="card" id="bloqueDisciplina">
     <div class="sub red">▸ Forma de disciplinar al niño/a</div>
     <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar más de 2</p>
     <div class="opts c2">
@@ -1182,24 +1243,27 @@ document.getElementById('logoImg').src = 'data:image/png;base64,' + LOGO_B64;
 
 // ── PERCEPTION QUESTIONS ─────────────────────────────────────────────
 const PERC_Q = [
-  { id:'p1', q:'¿Qué tan seguro/a se siente usted y sus hijos en este hogar?', hint:'1=Muy inseguro/a · 5=Muy seguro/a' },
-  { id:'p2', q:'¿Qué tan bien come su familia en el día a día?', hint:'1=Casi no comemos bien · 5=Comemos bien siempre' },
-  { id:'p3', q:'¿Qué tan capaz se siente de cuidar y proteger bien a sus hijos?', hint:'1=No me siento capaz · 5=Me siento muy capaz' },
-  { id:'p4', q:'¿Cree que sus hijos tendrán un futuro mejor que el suyo?', hint:'1=No lo creo · 5=Estoy completamente seguro/a' },
-  { id:'p5', q:'¿Qué tan importante es para usted que sus hijos terminen la escuela?', hint:'1=No es importante · 5=Es muy importante' },
-  { id:'p6', q:'¿Con qué frecuencia alguien en casa pierde el control o se enoja mucho?', hint:'1=Muy seguido · 5=Nunca o casi nunca' },
-  { id:'p7', q:'¿Qué tan bien se llevan los adultos que viven en su hogar?', hint:'1=Muy mal · 5=Muy bien' },
-  { id:'p8', q:'¿Confía en los servicios de salud que tiene disponibles cerca?', hint:'1=No confío/no tengo · 5=Confío plenamente' },
-  { id:'p9', q:'¿Siente que la Fundación puede ayudar a mejorar la vida de su familia?', hint:'1=No lo creo · 5=Sí, completamente' },
+  { id:'p1', q:'¿Qué tan seguro/a se siente usted y sus hijos en este hogar?', hint:'1=Muy inseguro/a · 5=Muy seguro/a', soloConNinos:true },
+  { id:'p2', q:'¿Qué tan bien come su familia en el día a día?', hint:'1=Casi no comemos bien · 5=Comemos bien siempre', soloConNinos:false },
+  { id:'p3', q:'¿Qué tan capaz se siente de cuidar y proteger bien a sus hijos?', hint:'1=No me siento capaz · 5=Me siento muy capaz', soloConNinos:true },
+  { id:'p4', q:'¿Cree que sus hijos tendrán un futuro mejor que el suyo?', hint:'1=No lo creo · 5=Estoy completamente seguro/a', soloConNinos:true },
+  { id:'p5', q:'¿Qué tan importante es para usted que sus hijos terminen la escuela?', hint:'1=No es importante · 5=Es muy importante', soloConNinos:true },
+  { id:'p6', q:'¿Con qué frecuencia alguien en casa pierde el control o se enoja mucho?', hint:'1=Muy seguido · 5=Nunca o casi nunca', soloConNinos:true },
+  { id:'p7', q:'¿Qué tan bien se llevan los adultos que viven en su hogar?', hint:'1=Muy mal · 5=Muy bien', soloConNinos:true },
+  { id:'p8', q:'¿Confía en los servicios de salud que tiene disponibles cerca?', hint:'1=No confío/no tengo · 5=Confío plenamente', soloConNinos:false },
+  { id:'p9', q:'¿Siente que la Fundación puede ayudar a mejorar la vida de su familia?', hint:'1=No lo creo · 5=Sí, completamente', soloConNinos:false },
 ];
 const percVals = {};
 
 function buildPerception() {
   const c = document.getElementById('percepcionContainer');
+  c.innerHTML = '';
   PERC_Q.forEach(pq => {
-    percVals[pq.id] = 0;
+    if (pq.soloConNinos && sinMenores) return; // skip if adults-only household
+    percVals[pq.id] = percVals[pq.id] || 0;
     const d = document.createElement('div');
     d.style.cssText = 'border-top:1px solid var(--border);padding:9px 11px';
+    d.id = 'percRow_' + pq.id;
     d.innerHTML = `
       <strong style="font-size:12px;color:var(--text);display:block;line-height:1.4;margin-bottom:2px">${pq.q}</strong>
       <em style="font-size:10px;color:var(--light);display:block;margin-bottom:7px">${pq.hint}</em>
@@ -1207,6 +1271,13 @@ function buildPerception() {
         ${[1,2,3,4,5].map(n=>`<button onclick="setPerc('${pq.id}',${n},this)" style="flex:1;height:42px;border-radius:8px;border:2px solid var(--border);background:white;font-size:15px;font-weight:700;cursor:pointer;color:var(--mid);transition:all .12s">${n}</button>`).join('')}
       </div>`;
     c.appendChild(d);
+    // Restore existing value if any
+    if (percVals[pq.id] > 0) {
+      const btns = d.querySelectorAll('button');
+      btns.forEach((b,i) => {
+        if (i+1 <= percVals[pq.id]) { const col = i+1<=2?'#991B1B':i+1===3?'#B45309':'#1A6B5A'; b.style.background=col; b.style.borderColor=col; b.style.color='white'; }
+      });
+    }
   });
 }
 
@@ -1241,24 +1312,59 @@ function aplicarSinMenores() {
   const btn = document.getElementById('btnSinMenores');
   const ninosArea = document.getElementById('ninosArea');
   if (sinMenores) {
-    if (btn) { btn.style.background='#B45309'; btn.style.color='white'; btn.textContent='✅ No viven menores de edad en este hogar (activo — toca para desactivar)'; }
+    if (btn) { btn.style.background='#B45309'; btn.style.color='white'; btn.textContent='✅ No viven menores de edad — solo adultos (toca para desactivar)'; }
     if (ninosArea) ninosArea.style.display='none';
     ninos=[]; childData={}; renderNinos();
   } else {
     if (btn) { btn.style.background='white'; btn.style.color='#B45309'; btn.textContent='🚫 No viven menores de edad en este hogar'; }
     if (ninosArea) ninosArea.style.display='block';
   }
-  ['sinMenoresBanner2','sinMenoresBanner5','sinMenoresBanner6'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.style.display = sinMenores ? 'block' : 'none';
+
+  // SEC2 — mostrar/ocultar contenido hijos
+  ['sinMenoresBanner2','childNavFamiliar','childDataFamiliar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === 'sinMenoresBanner2') el.style.display = sinMenores ? 'block' : 'none';
+    else el.style.display = sinMenores ? 'none' : 'block';
   });
-  ['childNavFamiliar','childDataFamiliar','childNavEduc','childNavSalud'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.style.display = sinMenores ? 'none' : 'block';
+
+  // SEC5 educación — toggle adulto vs niño
+  const navEduc = document.getElementById('childNavEduc');
+  const navEducLabel = document.getElementById('childNavEducLabel');
+  if (navEduc) navEduc.style.display = 'block';
+  if (navEducLabel) navEducLabel.textContent = sinMenores ? '👤 Selecciona el adulto/a:' : '👶 Selecciona el miembro:';
+  const adultoToggle = document.getElementById('adultoEstudiaToggle');
+  const bloqueEducNino = document.getElementById('bloqueEducNino');
+  if (adultoToggle) adultoToggle.style.display = sinMenores ? 'block' : 'none';
+  if (bloqueEducNino) bloqueEducNino.style.display = sinMenores ? 'none' : 'block';
+
+  // SEC6 salud — toggle adulto vs niño
+  const navSalud = document.getElementById('childNavSalud');
+  const navAdultosSalud = document.getElementById('childNavAdultosSalud');
+  const cardSaludAdultos = document.getElementById('cardSaludAdultos');
+  if (navSalud) navSalud.style.display = sinMenores ? 'none' : 'block';
+  if (navAdultosSalud) navAdultosSalud.style.display = sinMenores ? 'block' : 'none';
+  if (cardSaludAdultos) cardSaludAdultos.style.display = sinMenores ? 'block' : 'none';
+
+  // SEC7 — ocultar bloques solo-niños
+  ['bloqueHorasSolo','bloqueSinComer','bloquePeleas','bloqueDisciplina'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = sinMenores ? 'none' : 'block';
   });
+  // Chicha niños
+  const chichaDetalleNinos = document.getElementById('chichaDetalleNinosCard');
+  if (chichaDetalleNinos) chichaDetalleNinos.style.display = (sinMenores) ? 'none' : 'none'; // siempre empieza oculto
+
+  // SEC9 — rebuild percepcion respetando sinMenores
+  buildPerception();
+
+  // Tabs opacity
   ['tab2','tab5','tab6'].forEach(id => {
     const tab = document.getElementById(id);
     if (!tab) return;
-    tab.style.opacity = sinMenores ? '0.5' : '';
+    tab.style.opacity = sinMenores ? '0.6' : '';
   });
+
   buildChildTabs();
 }
 
@@ -1614,9 +1720,127 @@ function syncNinosFromFamilia() {
   renderNinos();
 }
 
+function getAdultos() {
+  // Adults = famRows members >= 18 years old with a name
+  return famRows.filter(r => r.nombre && r.nombre.trim() && r.edad !== '' && Number(r.edad) >= 18);
+}
+
+let currentAdulto = 0;
+let adultosData = {}; // {idx: {saludAt, discap, condSalud, brigada, odontologo, condBucal, estudia, asiste, nivelEduc, institucion, ...}}
+
+function selectAdulto(idx) {
+  saveCurrentAdultoData();
+  currentAdulto = idx;
+  loadAdultoData(idx);
+  updateAdultoNavs();
+}
+
+function saveCurrentAdultoData() {
+  if (!adultosData[currentAdulto]) adultosData[currentAdulto] = {};
+  // Salud adulto
+  ['saludAtAdulto','discapAdulto','brigadaAdulto','odontologoAdulto','condBucalAdulto'].forEach(name => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    adultosData[currentAdulto][name] = el ? el.value : '';
+  });
+  const condEl = document.getElementById('condSaludAdulto');
+  if (condEl) adultosData[currentAdulto].condSalud = condEl.value;
+  // Educación adulto
+  adultosData[currentAdulto].adultoEstudia = childData[currentNino]?.adultoEstudia ?? null;
+  ['asiste','nivelEduc','modalidad','idiomaEduc'].forEach(name => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    adultosData[currentAdulto][name] = el ? el.value : '';
+  });
+  const instEl = document.getElementById('institucion');
+  if (instEl) adultosData[currentAdulto].institucion = instEl.value;
+  const gradoEl = document.getElementById('gradoAnio');
+  if (gradoEl) adultosData[currentAdulto].gradoAnio = gradoEl.value;
+}
+
+function loadAdultoData(idx) {
+  const d = adultosData[idx] || {};
+  // Clear salud adulto fields
+  document.querySelectorAll('input[name="saludAtAdulto"],input[name="discapAdulto"],input[name="brigadaAdulto"],input[name="odontologoAdulto"],input[name="condBucalAdulto"]')
+    .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+  const condEl = document.getElementById('condSaludAdulto');
+  if (condEl) condEl.value = d.condSalud || '';
+  // Restore salud
+  ['saludAtAdulto','discapAdulto','brigadaAdulto','odontologoAdulto','condBucalAdulto'].forEach(name => {
+    if (d[name]) {
+      const el = document.querySelector(`input[name="${name}"][value="${d[name]}"]`);
+      if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
+    }
+  });
+  // Clear educ fields
+  document.querySelectorAll('#sec5 input[type=radio],#sec5 input[type=text]').forEach(el => { if(el.type==='radio'){el.checked=false;el.closest('.opt')?.classList.remove('sel');}else{el.value='';} });
+  const instEl = document.getElementById('institucion');
+  if (instEl) instEl.value = d.institucion || '';
+  const gradoEl = document.getElementById('gradoAnio');
+  if (gradoEl) gradoEl.value = d.gradoAnio || '';
+  // Restore educ
+  ['asiste','nivelEduc','modalidad','idiomaEduc'].forEach(name => {
+    if (d[name]) {
+      const el = document.querySelector(`input[name="${name}"][value="${d[name]}"]`);
+      if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
+    }
+  });
+  // Restore estudia toggle
+  if (d.adultoEstudia !== undefined && d.adultoEstudia !== null) {
+    setAdultoEstudia(d.adultoEstudia);
+  } else {
+    // Reset buttons
+    const btnSi = document.getElementById('btnAdultoSi');
+    const btnNo = document.getElementById('btnAdultoNo');
+    if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
+    if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
+    toggleInstitucion(false);
+    const bloqueEscolar = document.getElementById('bloqueEscolar');
+    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
+  }
+}
+
+function updateAdultoNavs() {
+  const adultos = getAdultos();
+  // Educ nav
+  const cEduc = document.getElementById('childBtnsEduc');
+  if (cEduc && sinMenores) {
+    cEduc.innerHTML = '';
+    adultos.forEach((a, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'child-btn' + (currentAdulto===i?' active':'');
+      btn.textContent = a.nombre || `Adulto/a ${i+1}`;
+      btn.onclick = () => selectAdulto(i);
+      cEduc.appendChild(btn);
+    });
+    const labelEduc = document.getElementById('ninoEducLabel');
+    if (labelEduc && adultos[currentAdulto]) {
+      labelEduc.textContent = '👤 ' + adultos[currentAdulto].nombre + (adultos[currentAdulto].edad ? ' · ' + adultos[currentAdulto].edad + 'a' : '');
+    }
+  }
+  // Salud nav adultos
+  const cSalud = document.getElementById('childBtnsAdultosSalud');
+  if (cSalud && sinMenores) {
+    cSalud.innerHTML = '';
+    adultos.forEach((a, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'child-btn' + (currentAdulto===i?' active':'');
+      btn.textContent = a.nombre || `Adulto/a ${i+1}`;
+      btn.onclick = () => { saveCurrentAdultoData(); currentAdulto=i; loadAdultoData(i); updateAdultoNavs(); };
+      cSalud.appendChild(btn);
+    });
+    const labelSalud = document.getElementById('adultoSaludLabel');
+    if (labelSalud && adultos[currentAdulto]) {
+      labelSalud.textContent = '👤 ' + adultos[currentAdulto].nombre + (adultos[currentAdulto].edad ? ' · ' + adultos[currentAdulto].edad + 'a' : '');
+    }
+  }
+}
+
 function buildChildTabs() {
   updateCuidadorOptions();
-  updateChildNavs();
+  if (sinMenores) {
+    updateAdultoNavs();
+  } else {
+    updateChildNavs();
+  }
   updateChildTabs();
 }
 
@@ -1861,12 +2085,18 @@ function goTo(idx) {
   const tabs = document.getElementById('tabsBar');
   tabs.querySelectorAll('.tab')[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   if (idx === 10) calcScore();
-  // Al entrar a sección 2, 5 o 6 siempre empezar en el primer niño
+  // Al entrar a sección 2, 5 o 6 — primer niño o primer adulto según modo
   if (idx === 2 || idx === 5 || idx === 6) {
-    currentNino = 0;
-    loadChildData(0);
-    renderAbuelos(0);
-    updateChildNavs();
+    if (sinMenores && (idx === 5 || idx === 6)) {
+      currentAdulto = 0;
+      loadAdultoData(0);
+      updateAdultoNavs();
+    } else {
+      currentNino = 0;
+      loadChildData(0);
+      renderAbuelos(0);
+      updateChildNavs();
+    }
   }
   autoSave();
 }
@@ -2370,6 +2600,32 @@ function setGrado(val) {
   if (g) g.value = val;
 }
 
+// ── ADULTO ESTUDIA TOGGLE ────────────────────────────────────────────
+function setAdultoEstudia(estudia) {
+  const btnSi = document.getElementById('btnAdultoSi');
+  const btnNo = document.getElementById('btnAdultoNo');
+  const bloqueEduc = document.getElementById('bloqueInstitucion');
+  const bloqueEscolar = document.getElementById('bloqueEscolar');
+  // Save to current adult data
+  if (!childData[currentNino]) childData[currentNino] = {};
+  childData[currentNino].adultoEstudia = estudia;
+  if (estudia) {
+    if (btnSi) { btnSi.style.background='#1A6B5A'; btnSi.style.color='white'; btnSi.style.borderColor='#1A6B5A'; }
+    if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
+    // Show only asiste + nivelEduc + institucion + modalidad + idioma
+    toggleInstitucion(true);
+    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
+    // Show asiste/nivelEduc options
+    const asisteBlock = document.querySelector('#sec5 .card-lbl[data-asiste]');
+  } else {
+    if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
+    if (btnNo) { btnNo.style.background='#991B1B'; btnNo.style.color='white'; btnNo.style.borderColor='#991B1B'; }
+    toggleInstitucion(false);
+    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
+  }
+  autoSave();
+}
+
 // ── TOGGLE BLOQUE INSTITUCIÓN ─────────────────────────────────────────
 function toggleInstitucion(show) {
   ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
@@ -2396,8 +2652,11 @@ function toggleInstitucion(show) {
 function toggleChichaDetalle(show) {
   const el = document.getElementById('chichaDetalleCard');
   if (el) el.style.display = show ? 'block' : 'none';
+  // Show niños block only if there are minors AND chicha is selected
+  const elNinos = document.getElementById('chichaDetalleNinosCard');
+  if (elNinos) elNinos.style.display = (show && !sinMenores) ? 'block' : 'none';
   if (!show) {
-    document.querySelectorAll('input[name="chichaDetalle"]').forEach(r => { r.checked = false; r.closest('.opt')?.classList.remove('sel'); });
+    document.querySelectorAll('input[name="chichaDetalle"], input[name="chichaDetalleNinos"]').forEach(r => { r.checked = false; r.closest('.opt')?.classList.remove('sel'); });
   }
 }
 
