@@ -782,6 +782,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
   </div>
+  <div id="bloqueNinoSalud">
   <div class="child-nav" id="childNavSalud">
     <p>👶 Selecciona el niño/a:</p>
     <div class="child-nav-btns" id="childBtnsSalud"></div>
@@ -916,6 +917,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
     </div>
   </div>
+  </div><!-- fin bloqueNinoSalud -->
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
     <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){goTo(7)}">Siguiente →</button>
@@ -1339,12 +1341,14 @@ function aplicarSinMenores() {
   if (bloqueEducNino) bloqueEducNino.style.display = sinMenores ? 'none' : 'block';
 
   // SEC6 salud — toggle adulto vs niño
-  const navSalud = document.getElementById('childNavSalud');
+  const bloqueNinoSalud = document.getElementById('bloqueNinoSalud');
   const navAdultosSalud = document.getElementById('childNavAdultosSalud');
   const cardSaludAdultos = document.getElementById('cardSaludAdultos');
-  if (navSalud) navSalud.style.display = sinMenores ? 'none' : 'block';
+  if (bloqueNinoSalud) bloqueNinoSalud.style.display = sinMenores ? 'none' : 'block';
   if (navAdultosSalud) navAdultosSalud.style.display = sinMenores ? 'block' : 'none';
   if (cardSaludAdultos) cardSaludAdultos.style.display = sinMenores ? 'block' : 'none';
+  // Load first adulto when entering salud in sinMenores mode
+  if (sinMenores) { currentAdulto=0; updateAdultoNavs(); }
 
   // SEC7 — ocultar bloques solo-niños
   ['bloqueHorasSolo','bloqueSinComer','bloquePeleas','bloqueDisciplina'].forEach(id => {
@@ -1787,14 +1791,15 @@ function loadAdultoData(idx) {
   if (d.adultoEstudia !== undefined && d.adultoEstudia !== null) {
     setAdultoEstudia(d.adultoEstudia);
   } else {
-    // Reset buttons
+    // Reset buttons — no selection yet
     const btnSi = document.getElementById('btnAdultoSi');
     const btnNo = document.getElementById('btnAdultoNo');
     if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
     if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
-    toggleInstitucion(false);
-    const bloqueEscolar = document.getElementById('bloqueEscolar');
-    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
+    // Hide all educ blocks until selection
+    ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.style.display='none';
+    });
   }
 }
 
@@ -2604,24 +2609,44 @@ function setGrado(val) {
 function setAdultoEstudia(estudia) {
   const btnSi = document.getElementById('btnAdultoSi');
   const btnNo = document.getElementById('btnAdultoNo');
-  const bloqueEduc = document.getElementById('bloqueInstitucion');
-  const bloqueEscolar = document.getElementById('bloqueEscolar');
-  // Save to current adult data
-  if (!childData[currentNino]) childData[currentNino] = {};
-  childData[currentNino].adultoEstudia = estudia;
+
+  // Save to adultos data (not childData)
+  if (!adultosData[currentAdulto]) adultosData[currentAdulto] = {};
+  adultosData[currentAdulto].adultoEstudia = estudia;
+
+  // IDs que SOLO se muestran cuando el adulto estudia
+  const idsEstudia = ['bloqueInstitucion'];
+  // IDs que SIEMPRE se ocultan para adultos (sin importar si estudia o no)
+  const idsOcultar = ['bloqueEscolar','bloqueInfraestructura'];
+
   if (estudia) {
+    // Botones
     if (btnSi) { btnSi.style.background='#1A6B5A'; btnSi.style.color='white'; btnSi.style.borderColor='#1A6B5A'; }
     if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
-    // Show only asiste + nivelEduc + institucion + modalidad + idioma
-    toggleInstitucion(true);
-    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
-    // Show asiste/nivelEduc options
-    const asisteBlock = document.querySelector('#sec5 .card-lbl[data-asiste]');
+    // Mostrar asiste + nivelEduc (están dentro de bloqueEducNino pero necesitamos solo ellos)
+    // Mostramos el bloque de asistencia y nivel (primeros hijos de bloqueEducNino)
+    const asisteLbl = document.querySelector('#sec5 [data-bloque="asiste"]');
+    // Mostrar institucion
+    idsEstudia.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='block'; });
+    // Ocultar abandono, infraestructura
+    idsOcultar.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+    // Mostrar las preguntas de asiste y nivelEduc dentro del bloque
+    const bloqueNino = document.getElementById('bloqueEducNino');
+    if (bloqueNino) bloqueNino.style.display = 'block';
   } else {
+    // Botones
     if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
     if (btnNo) { btnNo.style.background='#991B1B'; btnNo.style.color='white'; btnNo.style.borderColor='#991B1B'; }
-    toggleInstitucion(false);
-    if (bloqueEscolar) bloqueEscolar.style.display = 'none';
+    // Ocultar todo el bloque educativo
+    const bloqueNino = document.getElementById('bloqueEducNino');
+    if (bloqueNino) bloqueNino.style.display = 'none';
+    idsEstudia.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+    idsOcultar.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+    // Limpiar campos
+    document.querySelectorAll('input[name="asiste"],input[name="nivelEduc"],input[name="modalidad"],input[name="idiomaEduc"],input[name="desayunoEscolar"]')
+      .forEach(el => { el.checked=false; el.closest('.opt')?.classList.remove('sel'); });
+    const inst=document.getElementById('institucion'); if(inst) inst.value='';
+    const grado=document.getElementById('gradoAnio'); if(grado) grado.value='';
   }
   autoSave();
 }
