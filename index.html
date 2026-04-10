@@ -997,7 +997,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="chicha" value="Sí toman" onclick="toggleChichaDetalle(true)"><span>Sí toman</span></label>
     </div>
     <div id="chichaDetalleCard" style="display:none">
-      <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN ADULTOS</div>
+      <div class="card-lbl" id="chichaDetalleTitle" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN ADULTOS</div>
       <div class="opts c2">
         <label class="opt"><input type="radio" name="chichaDetalle" value="Chicha sin fermentar (recién hecha)"><span>Chicha sin fermentar (recién hecha)</span></label>
         <label class="opt risk"><input type="radio" name="chichaDetalle" value="Chicha fermentada"><span>Chicha fermentada</span></label>
@@ -1987,6 +1987,12 @@ function loadChildData(idx) {
   ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'block';
   });
+  // Restaurar opciones nivel educativo para niños (pueden estar ocultas por modo adulto)
+  ['opNivelInicial1','opNivelInicial2','opNivelKinder'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = '';
+  });
+  const desayunoBlq = document.getElementById('bloqueDesayunoEscolar');
+  if (desayunoBlq) desayunoBlq.style.display = 'block';
 
   // Si no hay datos guardados para este niño, quedamos con todo limpio
   if (!childData[idx] || Object.keys(d).length === 0) {
@@ -2677,6 +2683,9 @@ function toggleInstitucion(show) {
 function toggleChichaDetalle(show) {
   const el = document.getElementById('chichaDetalleCard');
   if (el) el.style.display = show ? 'block' : 'none';
+  // Update title dynamically
+  const titulo = document.getElementById('chichaDetalleTitle');
+  if (titulo) titulo.textContent = sinMenores ? 'USO DE CHICHA EN ADULTOS' : 'USO DE CHICHA EN NIÑOS';
   // Show niños block only if there are minors AND chicha is selected
   const elNinos = document.getElementById('chichaDetalleNinosCard');
   if (elNinos) elNinos.style.display = (show && !sinMenores) ? 'block' : 'none';
