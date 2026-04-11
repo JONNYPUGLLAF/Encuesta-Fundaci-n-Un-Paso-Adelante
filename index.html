@@ -616,6 +616,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <button id="btnAdultoNo" onclick="setAdultoEstudia(false)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">🚫 No estudia</button>
       </div>
     </div>
+    <!-- Bloque exclusivo para adultos que estudian -->
+    <div id="bloqueEducAdulto" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Forma de estudio</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 1 (8vo, 9no, 10mo)"><span>📚 Intensivo 1 — terminar 8vo, 9no, 10mo (Secundaria)</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>🎓 Intensivo 2 — terminar 1ro, 2do, 3ro Bach.</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Regular presencial"><span>Regular presencial</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Regular virtual/distancia"><span>Regular virtual / distancia</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
+      <div class="card-body">
+        <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucionAdulto" placeholder="Nombre del centro educativo"></div>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Modalidad</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Presencial"><span>Presencial</span></label>
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Semipresencial"><span>Semipresencial</span></label>
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Virtual"><span>Virtual</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Idioma de instrucción</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Español"><span>Español</span></label>
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Shuar Chicham"><span>Shuar Chicham</span></label>
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Bilingüe"><span>Bilingüe</span></label>
+      </div>
+    </div><!-- fin bloqueEducAdulto -->
     <div id="bloqueEducNino">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
