@@ -616,6 +616,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <button id="btnAdultoNo" onclick="setAdultoEstudia(false)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">🚫 No estudia</button>
       </div>
     </div>
+    <!-- Bloque exclusivo para adultos que estudian -->
+    <div id="bloqueEducAdulto" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Forma de estudio</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 1 (8vo, 9no, 10mo)"><span>📚 Intensivo 1 — terminar 8vo, 9no, 10mo (Secundaria)</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>🎓 Intensivo 2 — terminar 1ro, 2do, 3ro Bach.</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Regular presencial"><span>Regular presencial</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Regular virtual/distancia"><span>Regular virtual / distancia</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
+      <div class="card-body">
+        <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucionAdulto" placeholder="Nombre del centro educativo"></div>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Modalidad</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Presencial"><span>Presencial</span></label>
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Semipresencial"><span>Semipresencial</span></label>
+        <label class="opt"><input type="radio" name="modalidadAdulto" value="Virtual"><span>Virtual</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Idioma de instrucción</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Español"><span>Español</span></label>
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Shuar Chicham"><span>Shuar Chicham</span></label>
+        <label class="opt"><input type="radio" name="idiomaAdulto" value="Bilingüe"><span>Bilingüe</span></label>
+      </div>
+    </div><!-- fin bloqueEducAdulto -->
     <div id="bloqueEducNino">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
@@ -626,17 +652,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Nivel educativo</div>
     <div class="opts c2" id="nivelEducOpts">
-      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 1" onclick="setGrado('Inicial 1');toggleInstitucion(true)"><span>Inicial 1</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Inicial 2" onclick="setGrado('Inicial 2');toggleInstitucion(true)"><span>Inicial 2</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="Kinder" onclick="setGrado('Kinder');toggleInstitucion(true)"><span>Kinder</span></label>
-      <label class="opt" style="grid-column:1/-1;background:#EFF6FF;font-weight:600;font-size:11px;pointer-events:none;color:#1D4ED8">▸ Primaria (A.E.B.)</label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="1ro AEB" onclick="setGrado('1ro AEB');toggleInstitucion(true)"><span>1ro AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="2do AEB" onclick="setGrado('2do AEB');toggleInstitucion(true)"><span>2do AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="3ro AEB" onclick="setGrado('3ro AEB');toggleInstitucion(true)"><span>3ro AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="4to AEB" onclick="setGrado('4to AEB');toggleInstitucion(true)"><span>4to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="5to AEB" onclick="setGrado('5to AEB');toggleInstitucion(true)"><span>5to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="6to AEB" onclick="setGrado('6to AEB');toggleInstitucion(true)"><span>6to AEB</span></label>
-      <label class="opt"><input type="radio" name="nivelEduc" value="7mo AEB" onclick="setGrado('7mo AEB');toggleInstitucion(true)"><span>7mo AEB</span></label>
+      <!-- Opciones solo para niños (ocultas cuando sinMenores) -->
+      <label class="opt" id="opNivelInicial1"><input type="radio" name="nivelEduc" value="Inicial 1" onclick="setGrado('Inicial 1');toggleInstitucion(true)"><span>Inicial 1</span></label>
+      <label class="opt" id="opNivelInicial2"><input type="radio" name="nivelEduc" value="Inicial 2" onclick="setGrado('Inicial 2');toggleInstitucion(true)"><span>Inicial 2</span></label>
+      <label class="opt" id="opNivelKinder"><input type="radio" name="nivelEduc" value="Kinder" onclick="setGrado('Kinder');toggleInstitucion(true)"><span>Kinder</span></label>
+      <label class="opt" id="opNivelPrimariaHdr" style="grid-column:1/-1;background:#EFF6FF;font-weight:600;font-size:11px;pointer-events:none;color:#1D4ED8">▸ Primaria (A.E.B.)</label>
+      <label class="opt" id="opNivel1AEB"><input type="radio" name="nivelEduc" value="1ro AEB" onclick="setGrado('1ro AEB');toggleInstitucion(true)"><span>1ro AEB</span></label>
+      <label class="opt" id="opNivel2AEB"><input type="radio" name="nivelEduc" value="2do AEB" onclick="setGrado('2do AEB');toggleInstitucion(true)"><span>2do AEB</span></label>
+      <label class="opt" id="opNivel3AEB"><input type="radio" name="nivelEduc" value="3ro AEB" onclick="setGrado('3ro AEB');toggleInstitucion(true)"><span>3ro AEB</span></label>
+      <label class="opt" id="opNivel4AEB"><input type="radio" name="nivelEduc" value="4to AEB" onclick="setGrado('4to AEB');toggleInstitucion(true)"><span>4to AEB</span></label>
+      <label class="opt" id="opNivel5AEB"><input type="radio" name="nivelEduc" value="5to AEB" onclick="setGrado('5to AEB');toggleInstitucion(true)"><span>5to AEB</span></label>
+      <label class="opt" id="opNivel6AEB"><input type="radio" name="nivelEduc" value="6to AEB" onclick="setGrado('6to AEB');toggleInstitucion(true)"><span>6to AEB</span></label>
+      <label class="opt" id="opNivel7AEB"><input type="radio" name="nivelEduc" value="7mo AEB" onclick="setGrado('7mo AEB');toggleInstitucion(true)"><span>7mo AEB</span></label>
+      <!-- Secundaria y Bachillerato — visibles siempre -->
       <label class="opt" style="grid-column:1/-1;background:#F0FDF4;font-weight:600;font-size:11px;pointer-events:none;color:#15803D">▸ Secundaria Básica</label>
       <label class="opt"><input type="radio" name="nivelEduc" value="8vo AEB" onclick="setGrado('8vo AEB');toggleInstitucion(true)"><span>8vo AEB</span></label>
       <label class="opt"><input type="radio" name="nivelEduc" value="9no AEB" onclick="setGrado('9no AEB');toggleInstitucion(true)"><span>9no AEB</span></label>
@@ -650,7 +678,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="bloqueInstitucion">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
     <div class="card-body">
-      <div style="margin-bottom:8px">
+      <!-- Botón misma institución: solo para niños -->
+      <div id="btnMismaInstitucionWrap" style="margin-bottom:8px">
         <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
       </div>
       <div class="frow">
@@ -672,6 +701,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="idiomaEduc" value="Bilingüe"><span>Bilingüe</span></label>
       <label class="opt"><input type="radio" name="idiomaEduc" value="Otro"><span>Otro</span></label>
     </div>
+    <!-- Desayuno escolar: solo para niños -->
+    <div id="bloqueDesayunoEscolar">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="desayunoEscolar" value="Sí, todos los días"><span>Sí, todos los días</span></label>
@@ -679,6 +710,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="desayunoEscolar" value="No recibe"><span>No recibe</span></label>
       <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
+    </div><!-- fin bloqueDesayunoEscolar -->
+    <!-- Forma de estudio: solo para adultos -->
+    <div id="bloqueFormaEstudio" style="display:none">
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Forma de estudio</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 1 (8vo, 9no, 10mo)"><span>Intensivo 1 — terminar 8vo, 9no, 10mo</span></label>
+      <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>Intensivo 2 — terminar 1ro, 2do, 3ro Bach.</span></label>
+      <label class="opt"><input type="radio" name="formaEstudio" value="Regular presencial"><span>Regular presencial</span></label>
+      <label class="opt"><input type="radio" name="formaEstudio" value="Regular virtual/distancia"><span>Regular virtual / distancia</span></label>
+    </div>
+    </div><!-- fin bloqueFormaEstudio -->
     </div><!-- fin bloqueInstitucion -->
     <div id="bloqueEscolar">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
@@ -1749,15 +1791,13 @@ function saveCurrentAdultoData() {
   const condEl = document.getElementById('condSaludAdulto');
   if (condEl) adultosData[currentAdulto].condSalud = condEl.value;
   // Educación adulto
-  adultosData[currentAdulto].adultoEstudia = childData[currentNino]?.adultoEstudia ?? null;
-  ['asiste','nivelEduc','modalidad','idiomaEduc'].forEach(name => {
+  adultosData[currentAdulto].adultoEstudia = adultosData[currentAdulto]?.adultoEstudia ?? null;
+  ['formaEstudio','modalidadAdulto','idiomaAdulto'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     adultosData[currentAdulto][name] = el ? el.value : '';
   });
-  const instEl = document.getElementById('institucion');
-  if (instEl) adultosData[currentAdulto].institucion = instEl.value;
-  const gradoEl = document.getElementById('gradoAnio');
-  if (gradoEl) adultosData[currentAdulto].gradoAnio = gradoEl.value;
+  const instAdEl = document.getElementById('institucionAdulto');
+  if (instAdEl) adultosData[currentAdulto].institucionAdulto = instAdEl.value;
 }
 
 function loadAdultoData(idx) {
@@ -1781,12 +1821,14 @@ function loadAdultoData(idx) {
   const gradoEl = document.getElementById('gradoAnio');
   if (gradoEl) gradoEl.value = d.gradoAnio || '';
   // Restore educ
-  ['asiste','nivelEduc','modalidad','idiomaEduc'].forEach(name => {
+  ['formaEstudio','modalidadAdulto','idiomaAdulto'].forEach(name => {
     if (d[name]) {
       const el = document.querySelector(`input[name="${name}"][value="${d[name]}"]`);
       if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
     }
   });
+  const instAdEl = document.getElementById('institucionAdulto');
+  if (instAdEl) instAdEl.value = d.institucionAdulto || '';
   // Restore estudia toggle
   if (d.adultoEstudia !== undefined && d.adultoEstudia !== null) {
     setAdultoEstudia(d.adultoEstudia);
@@ -1797,7 +1839,7 @@ function loadAdultoData(idx) {
     if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
     if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
     // Hide all educ blocks until selection
-    ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+    ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura','bloqueEducAdulto'].forEach(id => {
       const el = document.getElementById(id); if(el) el.style.display='none';
     });
   }
@@ -2616,43 +2658,29 @@ function setAdultoEstudia(estudia) {
   const btnSi = document.getElementById('btnAdultoSi');
   const btnNo = document.getElementById('btnAdultoNo');
 
-  // Save to adultos data (not childData)
   if (!adultosData[currentAdulto]) adultosData[currentAdulto] = {};
   adultosData[currentAdulto].adultoEstudia = estudia;
 
-  // IDs que SOLO se muestran cuando el adulto estudia
-  const idsEstudia = ['bloqueInstitucion'];
-  // IDs que SIEMPRE se ocultan para adultos (sin importar si estudia o no)
-  const idsOcultar = ['bloqueEscolar','bloqueInfraestructura'];
+  // Siempre ocultar el bloque de niños completo
+  ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.style.display='none';
+  });
 
   if (estudia) {
-    // Botones
     if (btnSi) { btnSi.style.background='#1A6B5A'; btnSi.style.color='white'; btnSi.style.borderColor='#1A6B5A'; }
     if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
-    // Mostrar asiste + nivelEduc (están dentro de bloqueEducNino pero necesitamos solo ellos)
-    // Mostramos el bloque de asistencia y nivel (primeros hijos de bloqueEducNino)
-    const asisteLbl = document.querySelector('#sec5 [data-bloque="asiste"]');
-    // Mostrar institucion
-    idsEstudia.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='block'; });
-    // Ocultar abandono, infraestructura
-    idsOcultar.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
-    // Mostrar las preguntas de asiste y nivelEduc dentro del bloque
-    const bloqueNino = document.getElementById('bloqueEducNino');
-    if (bloqueNino) bloqueNino.style.display = 'block';
+    // Mostrar solo el bloque adulto
+    const ba = document.getElementById('bloqueEducAdulto');
+    if (ba) ba.style.display = 'block';
   } else {
-    // Botones
     if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
     if (btnNo) { btnNo.style.background='#991B1B'; btnNo.style.color='white'; btnNo.style.borderColor='#991B1B'; }
-    // Ocultar todo el bloque educativo
-    const bloqueNino = document.getElementById('bloqueEducNino');
-    if (bloqueNino) bloqueNino.style.display = 'none';
-    idsEstudia.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
-    idsOcultar.forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
-    // Limpiar campos
-    document.querySelectorAll('input[name="asiste"],input[name="nivelEduc"],input[name="modalidad"],input[name="idiomaEduc"],input[name="desayunoEscolar"]')
+    // Ocultar bloque adulto y limpiar
+    const ba = document.getElementById('bloqueEducAdulto');
+    if (ba) ba.style.display = 'none';
+    document.querySelectorAll('input[name="formaEstudio"],input[name="modalidadAdulto"],input[name="idiomaAdulto"]')
       .forEach(el => { el.checked=false; el.closest('.opt')?.classList.remove('sel'); });
-    const inst=document.getElementById('institucion'); if(inst) inst.value='';
-    const grado=document.getElementById('gradoAnio'); if(grado) grado.value='';
+    const inst = document.getElementById('institucionAdulto'); if(inst) inst.value='';
   }
   autoSave();
 }
@@ -2663,6 +2691,15 @@ function toggleInstitucion(show) {
     const el = document.getElementById(id);
     if (el) el.style.display = show ? 'block' : 'none';
   });
+  // Para niños: mostrar desayuno, ocultar forma de estudio; mostrar botón misma institución
+  if (!sinMenores) {
+    const bd = document.getElementById('bloqueDesayunoEscolar');
+    if (bd) bd.style.display = show ? 'block' : 'none';
+    const bf = document.getElementById('bloqueFormaEstudio');
+    if (bf) bf.style.display = 'none';
+    const bm = document.getElementById('btnMismaInstitucionWrap');
+    if (bm) bm.style.display = show ? 'block' : 'none';
+  }
   if (!show) {
     // Limpiar todos los campos del bloque institución
     const inst = document.getElementById('institucion');
