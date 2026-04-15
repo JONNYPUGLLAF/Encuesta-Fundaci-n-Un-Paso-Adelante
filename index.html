@@ -201,10 +201,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="tab" onclick="goTo(4)" id="tab4">4. Infraestr.</button>
   <button class="tab" onclick="goTo(5)" id="tab5">5. Educación</button>
   <button class="tab" onclick="goTo(6)" id="tab6">6. Salud</button>
-  <button class="tab" onclick="goTo(7)" id="tab7">7. Dinámica</button>
-  <button class="tab" onclick="goTo(8)" id="tab8">🔒 Técnico</button>
-  <button class="tab" onclick="goTo(9)" id="tab9">9. Percepción</button>
-  <button class="tab" onclick="goTo(10)" id="tab10">10. Cierre</button>
+  <button class="tab" onclick="goTo(7)" id="tab7">7. Adultos</button>
+  <button class="tab" onclick="goTo(8)" id="tab8">8. Dinámica</button>
+  <button class="tab" onclick="goTo(9)" id="tab9">🔒 Técnico</button>
+  <button class="tab" onclick="goTo(10)" id="tab10">10. Percepción</button>
+  <button class="tab" onclick="goTo(11)" id="tab11">11. Cierre</button>
 </div>
 
 <div class="main">
@@ -944,12 +945,107 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div><!-- fin bloqueNinoSalud -->
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
-    <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){goTo(7)}">Siguiente →</button>
+    <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){saveCurrentChildData();goTo(7)}">Siguiente →</button>
   </div>
 </div>
 
-<!-- ═══════ SEC 7 — DINÁMICA ═══════ -->
+<!-- ═══════ SEC 7 — ADULTOS ═══════ -->
 <div class="sec" id="sec7">
+  <div class="sec-hdr">
+    <div class="sec-num-bar">
+      <div class="sec-num" style="background:#7C3AED">7</div>
+      <div class="sec-info">
+        <h2>ADULTOS DEL HOGAR <span class="badge" style="background:#EDE9FE;color:#7C3AED">Por cada adulto/a</span></h2>
+        <p>Educación y salud de adultos registrados (≥ 18 años)</p>
+      </div>
+    </div>
+  </div>
+  <div class="child-nav" id="childNavAdultos" style="background:#F5F3FF;border-color:#7C3AED">
+    <p style="color:#7C3AED">👤 Selecciona el adulto/a:</p>
+    <div class="child-nav-btns" id="childBtnsAdultos"></div>
+  </div>
+  <div id="adultoDataContainer">
+    <div class="card">
+      <div class="card-lbl" id="adultoLabel" style="background:#F5F3FF;color:#7C3AED">Adulto/a: —</div>
+      <div class="sub" style="border-color:#7C3AED;background:#F5F3FF;color:#7C3AED">▸ Educación</div>
+      <div style="padding:7px">
+        <div style="font-size:12px;font-weight:600;color:var(--mid);margin-bottom:6px">¿Esta persona estudia actualmente?</div>
+        <div style="display:flex;gap:8px">
+          <button id="btnAdultoSecSi" onclick="setAdultoSecEstudia(true)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">✅ Sí estudia</button>
+          <button id="btnAdultoSecNo" onclick="setAdultoSecEstudia(false)" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--mid);font-size:13px;font-weight:700;cursor:pointer">🚫 No estudia</button>
+        </div>
+      </div>
+      <div id="bloqueEducAdultoSec" style="display:none">
+        <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Forma de estudio</div>
+        <div class="opts c2">
+          <label class="opt"><input type="radio" name="formaEstudioSec" value="Intensivo 1 (8vo, 9no, 10mo A.E.B.)"><span>📚 Intensivo 1 — 8vo, 9no, 10mo A.E.B.</span></label>
+          <label class="opt"><input type="radio" name="formaEstudioSec" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>🎓 Intensivo 2 — 1ro, 2do, 3ro Bach.</span></label>
+        </div>
+        <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
+        <div class="card-body">
+          <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucionAdultoSec" placeholder="Nombre del centro educativo"></div>
+        </div>
+        <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Modalidad</div>
+        <div class="opts c2">
+          <label class="opt"><input type="radio" name="modalidadAdultoSec" value="Presencial"><span>Presencial</span></label>
+          <label class="opt"><input type="radio" name="modalidadAdultoSec" value="Semipresencial"><span>Semipresencial</span></label>
+          <label class="opt"><input type="radio" name="modalidadAdultoSec" value="Virtual"><span>Virtual</span></label>
+        </div>
+        <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Idioma de instrucción</div>
+        <div class="opts c2">
+          <label class="opt"><input type="radio" name="idiomaAdultoSec" value="Español"><span>Español</span></label>
+          <label class="opt"><input type="radio" name="idiomaAdultoSec" value="Shuar Chicham"><span>Shuar Chicham</span></label>
+          <label class="opt"><input type="radio" name="idiomaAdultoSec" value="Bilingüe"><span>Bilingüe</span></label>
+        </div>
+      </div>
+      <div class="sub" style="border-color:#7C3AED;background:#F5F3FF;color:#7C3AED">▸ Salud</div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Atención en salud</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="saludAtAdultoSec" value="Hospital IESS"><span>Hospital IESS</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdultoSec" value="Ministerio Salud Pública"><span>Ministerio Salud Pública</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdultoSec" value="Clínica privada"><span>Clínica privada</span></label>
+        <label class="opt"><input type="radio" name="saludAtAdultoSec" value="Medicina ancestral"><span>Medicina ancestral</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Presenta alguna discapacidad?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="discapAdultoSec" value="No"><span>No</span></label>
+        <label class="opt"><input type="radio" name="discapAdultoSec" value="Física/motriz"><span>Física / motriz</span></label>
+        <label class="opt"><input type="radio" name="discapAdultoSec" value="Intelectual/cognitiva"><span>Intelectual / cognitiva</span></label>
+        <label class="opt"><input type="radio" name="discapAdultoSec" value="Sensorial (vista/oído)"><span>Sensorial (vista / oído)</span></label>
+      </div>
+      <div class="card-body">
+        <div class="fg"><label>Observaciones de salud</label><input type="text" id="obsAdultoSec" placeholder="Ej: diabetes, hipertensión, cirugías..."></div>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha tenido brigada médica alguna vez?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="brigadaAdultoSec" value="Sí"><span>Sí</span></label>
+        <label class="opt"><input type="radio" name="brigadaAdultoSec" value="No"><span>No</span></label>
+        <label class="opt"><input type="radio" name="brigadaAdultoSec" value="No sabe/no recuerda"><span>No sabe / no recuerda</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Le faltan dientes?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="dientesAdultoSec" value="No, dentadura completa"><span>No, dentadura completa</span></label>
+        <label class="opt warn"><input type="radio" name="dientesAdultoSec" value="Sí, algunos dientes"><span>Sí, algunos dientes</span></label>
+        <label class="opt warn"><input type="radio" name="dientesAdultoSec" value="Sí, la mayoría"><span>Sí, la mayoría</span></label>
+        <label class="opt risk"><input type="radio" name="dientesAdultoSec" value="No tiene dientes"><span>No tiene dientes</span></label>
+      </div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo fue la última visita al odontólogo?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="ultimaVisitaDentistaSec" value="Menos de 1 año"><span>Menos de 1 año</span></label>
+        <label class="opt warn"><input type="radio" name="ultimaVisitaDentistaSec" value="Entre 1 y 3 años"><span>Entre 1 y 3 años</span></label>
+        <label class="opt risk"><input type="radio" name="ultimaVisitaDentistaSec" value="Más de 3 años"><span>Más de 3 años</span></label>
+        <label class="opt risk"><input type="radio" name="ultimaVisitaDentistaSec" value="Nunca ha ido"><span>Nunca ha ido</span></label>
+      </div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(6)">← Atrás</button>
+    <button class="btn btn-primary" onclick="saveCurrentAdultoSecData();goTo(8)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ═══════ SEC 8 — DINÁMICA ═══════ -->
+<div class="sec" id="sec11">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--red)">7</div>
@@ -1097,8 +1193,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(6)">← Atrás</button>
-    <button class="btn btn-primary" onclick="updateMiembroSignosOptions();goTo(8)">Siguiente →</button>
+    <button class="btn btn-secondary" onclick="goTo(7)">← Atrás</button>
+    <button class="btn btn-primary" onclick="updateMiembroSignosOptions();goTo(9)">Siguiente →</button>
   </div>
 </div>
 
@@ -1189,8 +1285,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(7)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(9)">Siguiente →</button>
+    <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
+    <button class="btn btn-primary" onclick="goTo(10)">Siguiente →</button>
   </div>
 </div>
 
@@ -1210,8 +1306,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="percepcionContainer"></div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
-    <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(10)">Siguiente →</button>
+    <button class="btn btn-secondary" onclick="goTo(10)">← Atrás</button>
+    <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(11)">Siguiente →</button>
   </div>
 </div>
 
@@ -2080,33 +2176,30 @@ function loadChildData(idx) {
 
 // ── NAVIGATION ────────────────────────────────────────────────────────
 let curSec = 0;
-const TOTAL_SECS = 11;
+const TOTAL_SECS = 12;
 
 function goTo(idx) {
   // Bloquear entrada a Educación (5) y Salud (6) desde los tabs si no se ha completado lo anterior
   // Solo bloquear si viene desde un tab (no desde botón Siguiente que ya valida)
   const vieneDeSiguiente = (idx === curSec + 1);
-  if (!vieneDeSiguiente && !sinMenores) {
-    if (idx === 5 || idx === 6) {
-      if (ninos.length === 0) {
-        alert('⚠️ Primero registra los niños/as en la sección 2 (Familiar).');
-        return;
-      }
-      // Validar que sec5 esté completa si va a sec6 saltando
-      if (idx === 6) {
-        saveCurrentChildData();
-        for (let i = 0; i < ninos.length; i++) {
-          const d = childData[i] || {};
-          if (!d.asiste || !d.nivelEduc) {
-            alert('⚠️ Completa la sección Educación para todos los niños/as antes de continuar a Salud.\nFalta: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)));
-            return;
-          }
+  if (!vieneDeSiguiente) {
+    if ((idx === 5 || idx === 6) && ninos.length === 0 && !sinMenores) {
+      alert('⚠️ No hay niños/as registrados. Si el hogar es solo adultos, activa el botón "No viven menores" en la sección 1.');
+      return;
+    }
+    if (idx === 6 && ninos.length > 0) {
+      saveCurrentChildData();
+      for (let i = 0; i < ninos.length; i++) {
+        const d = childData[i] || {};
+        if (!d.asiste || !d.nivelEduc) {
+          alert('⚠️ Completa la sección Educación para todos los niños/as antes de continuar a Salud.\nFalta: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)));
+          return;
         }
       }
     }
   }
 
-  if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
+  if (curSec === 2 || curSec === 5 || curSec === 6 || curSec === 7) saveCurrentChildData();
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
   document.getElementById('sec'+idx).classList.add('active');
   document.querySelectorAll('.tab').forEach((t,i) => { t.classList.remove('active'); if(i===idx) t.classList.add('active'); });
@@ -2116,19 +2209,20 @@ function goTo(idx) {
   window.scrollTo({top:0,behavior:'smooth'});
   const tabs = document.getElementById('tabsBar');
   tabs.querySelectorAll('.tab')[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  if (idx === 10) calcScore();
-  // Al entrar a sección 2, 5 o 6 — primer niño o primer adulto según modo
+  if (idx === 11) calcScore();
+  // Al entrar a sección 2, 5 o 6 — primer niño
   if (idx === 2 || idx === 5 || idx === 6) {
-    if (sinMenores && (idx === 5 || idx === 6)) {
-      currentAdulto = 0;
-      loadAdultoData(0);
-      updateAdultoNavs();
-    } else {
-      currentNino = 0;
-      loadChildData(0);
-      renderAbuelos(0);
-      updateChildNavs();
-    }
+    currentNino = 0;
+    loadChildData(0);
+    renderAbuelos(0);
+    updateChildNavs();
+  }
+  // Al entrar a sección 7 — adultos
+  if (idx === 7) {
+    saveCurrentAdultoSecData();
+    currentAdultoSec = 0;
+    buildAdultosNav();
+    loadAdultoSecData(0);
   }
   autoSave();
 }
@@ -2207,7 +2301,7 @@ function saveDraft() {
 
 function collectAllData() {
   saveCurrentChildData();
-  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals };
+  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals, sinMenores, adultosSecData };
   // Global fields
   ['numEncuesta','comunidad','fechaVisita','fechaVisita','totalPersonas','habitaciones',
    'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre',
@@ -2381,6 +2475,30 @@ ${percTexto}
 *OBSERVACIONES GENERALES*
 ${v(f.obsGenerales)}
 ━━━━━━━━━━━━━━━━━━━━━━
+*7. ADULTOS DEL HOGAR*
+${(()=>{
+  const adultos=(f.famRows||[]).filter(r=>r.nombre&&r.nombre.trim()&&r.edad!==''&&Number(r.edad)>=18);
+  if(!adultos.length) return '  Sin adultos registrados\n';
+  return adultos.map((a,i)=>{
+    const d=(f.adultosSecData||{})[i]||{};
+    const v2=s=>s||'—';
+    let txt='\n👤 *'+a.nombre+'* ('+( a.edad||'?')+'a, '+(a.sexo||'—')+')\n';
+    txt+='  Estudia: '+(d.adultoSecEstudia===true?'Sí':d.adultoSecEstudia===false?'No':'—')+'\n';
+    if(d.adultoSecEstudia){
+      txt+='  Forma: '+v2(d.formaEstudioSec)+'\n';
+      txt+='  Institución: '+v2(d.institucionAdultoSec)+'\n';
+      txt+='  Modalidad: '+v2(d.modalidadAdultoSec)+'\n';
+    }
+    txt+='  Atención salud: '+v2(d.saludAtAdultoSec)+'\n';
+    txt+='  Discapacidad: '+v2(d.discapAdultoSec)+'\n';
+    if(d.obsAdultoSec) txt+='  Obs: '+d.obsAdultoSec+'\n';
+    txt+='  Brigada médica: '+v2(d.brigadaAdultoSec)+'\n';
+    txt+='  Faltan dientes: '+v2(d.dientesAdultoSec)+'\n';
+    txt+='  Última visita odontólogo: '+v2(d.ultimaVisitaDentistaSec)+'\n';
+    return txt;
+  }).join('');
+})()}
+━━━━━━━━━━━━━━━━━━━━━━
 ${emoji} *VULNERABILIDAD: ${v(f.nivelVulnerabilidad)} (${f.puntajeVulnerabilidad||'?'} pts)*
 Prioridad: ${v(f.prioridadAt)}
 ID: ${v(f.id)}`;
@@ -2416,12 +2534,8 @@ function showFichasGuardadas() {
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────
-function exportCSV() {
-  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
-  if (!fichas.length) { alert('No hay fichas para exportar.'); return; }
-
+function buildCSVRows(fichas) {
   const rows = [];
-
   fichas.forEach(f => {
     // Base de la ficha (campos del hogar)
     const base = {
@@ -2496,13 +2610,14 @@ function exportCSV() {
     // Una fila por niño (si hay varios niños, se repite la info del hogar)
     const ninos = f.ninos || [];
     if (ninos.length === 0) {
-      rows.push(base);
+      rows.push({...base, 'TIPO_FILA': 'HOGAR'});
     } else {
       ninos.forEach((n, i) => {
         const d = (f.childData || {})[i] || {};
         const fila = {
           ...base,
           // Identificación del niño
+          'TIPO_FILA': 'NIÑO',
           'Niño N°': i + 1,
           'Nombre niño/a': n.nombre || '',
           'Edad niño/a': n.edad || '',
@@ -2557,20 +2672,79 @@ function exportCSV() {
     }
   });
 
-  // Construir CSV
-  const keys = Object.keys(rows[0] || {});
-  const csv = [
-    keys.join(','),
-    ...rows.map(r => keys.map(k => `"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))
-  ].join('\n');
+    // Filas de adultos
+    const adultosFam = (f.famRows||[]).filter(r=>r.nombre&&r.nombre.trim()&&r.edad!==''&&Number(r.edad)>=18);
+    adultosFam.forEach((a, ai) => {
+      const da = (f.adultosSecData||{})[ai]||{};
+      rows.push({
+        ...base,
+        'TIPO_FILA': 'ADULTO',
+        'Nombre adulto/a': a.nombre||'',
+        'Edad adulto/a': a.edad||'',
+        'Sexo adulto/a': a.sexo||'',
+        'Adulto estudia': da.adultoSecEstudia===true?'Sí':da.adultoSecEstudia===false?'No':'—',
+        'Adulto forma estudio': da.formaEstudioSec||'',
+        'Adulto institución': da.institucionAdultoSec||'',
+        'Adulto modalidad': da.modalidadAdultoSec||'',
+        'Adulto idioma': da.idiomaAdultoSec||'',
+        'Adulto atención salud': da.saludAtAdultoSec||'',
+        'Adulto discapacidad': da.discapAdultoSec||'',
+        'Adulto obs salud': da.obsAdultoSec||'',
+        'Adulto brigada': da.brigadaAdultoSec||'',
+        'Adulto faltan dientes': da.dientesAdultoSec||'',
+        'Adulto última visita odontólogo': da.ultimaVisitaDentistaSec||'',
+      });
+    });
+  });
+  return rows;
+}
 
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+function csvFromRows(rows) {
+  if (!rows.length) return '';
+  const keys = Object.keys(rows[0]);
+  return [keys.join(','), ...rows.map(r=>keys.map(k=>`"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+}
+
+function exportCSV() {
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
+  if (!fichas.length) { alert('No hay fichas para exportar.'); return; }
+  if (fichas.length === 1) {
+    const csv = csvFromRows(buildCSVRows(fichas));
+    const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url;
+    a.download = `ficha_${(fichas[0].comunidad||'shuar').replace(/\s/g,'_')}_${fichas[0].fechaVisita||new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  } else {
+    const opcion = confirm('¿Exportar todas las fichas en UN solo archivo CSV?\n\nAceptar = Un CSV con todas las fichas\nCancelar = ZIP con un CSV por ficha');
+    if (opcion) {
+      const csv = csvFromRows(buildCSVRows(fichas));
+      const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url;
+      a.download = `fichas_shuar_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+    } else {
+      exportZIP(fichas);
+    }
+  }
+}
+
+async function exportZIP(fichas) {
+  if (typeof JSZip === 'undefined') {
+    await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  }
+  const zip = new JSZip();
+  fichas.forEach((f,i)=>{
+    const csv = csvFromRows(buildCSVRows([f]));
+    const nom = `ficha_${String(i+1).padStart(3,'0')}_${(f.comunidad||'comunidad').replace(/[^a-zA-Z0-9]/g,'_')}_${f.fechaVisita||new Date().toISOString().slice(0,10)}.csv`;
+    zip.file(nom, '\uFEFF'+csv);
+  });
+  const blob = await zip.generateAsync({type:'blob',compression:'DEFLATE'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `fichas_shuar_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href=url;
+  a.download = `fichas_shuar_${new Date().toISOString().slice(0,10)}.zip`;
+  a.click(); URL.revokeObjectURL(url);
 }
 
 // ── OFFLINE ───────────────────────────────────────────────────────────
@@ -2583,6 +2757,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── SIEMPRE INICIAR LIMPIO ──
   localStorage.removeItem('ficha_draft_v2');
   sinMenores = false;
+  adultosSecData = {};
+  currentAdultoSec = 0;
   // Reset all text/number/tel inputs except encuestador
   document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
     if (el.id !== 'encuestador') el.value = '';
@@ -2704,12 +2880,14 @@ function mismaInstitucionTodos() {
   if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
   saveCurrentChildData();
   // Encadenar: institución, idioma de instrucción, estado aulas, baños escuela, desayuno escolar
+  // Solo encadenar: institución, modalidad, idioma, aulas, baños
+  // NO encadenar: asistencia, nivel, grado, desayuno, abandono (son individuales por niño)
   const inst = {
     institucion: document.getElementById('institucion')?.value || '',
+    modalidad: document.querySelector('input[name="modalidad"]:checked')?.value || '',
     idiomaEduc: document.querySelector('input[name="idiomaEduc"]:checked')?.value || '',
     aulas: document.querySelector('input[name="aulas"]:checked')?.value || '',
-    banosEsc: document.querySelector('input[name="banosEsc"]:checked')?.value || '',
-    desayunoEscolar: document.querySelector('input[name="desayunoEscolar"]:checked')?.value || ''
+    banosEsc: document.querySelector('input[name="banosEsc"]:checked')?.value || ''
   };
   if (!inst.institucion) { alert('Primero escribe el nombre de la institución educativa.'); return; }
 
@@ -2724,7 +2902,12 @@ function mismaInstitucionTodos() {
     if (noEstudia || noAsiste) {
       omitidos.push(n.nombre || 'Niño/a ' + (idx + 1));
     } else {
-      Object.assign(childData[idx], inst);
+      // Solo copiar campos encadenados, preservar campos individuales
+      childData[idx].institucion = inst.institucion;
+      childData[idx].modalidad = inst.modalidad;
+      childData[idx].idiomaEduc = inst.idiomaEduc;
+      childData[idx].aulas = inst.aulas;
+      childData[idx].banosEsc = inst.banosEsc;
       copiados++;
     }
   });
@@ -3010,6 +3193,117 @@ function toggleSignosRiesgo(show) {
     document.querySelectorAll('input[name="signosFis"],input[name="riesgos"],input[name="factoresR"]')
       .forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
   }
+}
+
+
+// ── SECCIÓN ADULTOS (SEC7) ────────────────────────────────────────────
+let adultosSecData = {}; // {idx: {estudia, formaEstudio, institucion, modalidad, idioma, saludAt, discap, obs, brigada, dientes, ultimaVisitaDentista}}
+let currentAdultoSec = 0;
+
+function getAdultosFromFam() {
+  return famRows.filter(r => r.nombre && r.nombre.trim() && r.edad !== '' && Number(r.edad) >= 18);
+}
+
+function buildAdultosNav() {
+  const adultos = getAdultosFromFam();
+  const c = document.getElementById('childBtnsAdultos');
+  if (!c) return;
+  c.innerHTML = '';
+  if (adultos.length === 0) {
+    c.innerHTML = '<span style="font-size:11px;color:var(--light)">No hay adultos registrados. Agrégalos en la sección 1.</span>';
+    document.getElementById('adultoDataContainer') && (document.getElementById('adultoDataContainer').style.display='none');
+    return;
+  }
+  document.getElementById('adultoDataContainer') && (document.getElementById('adultoDataContainer').style.display='block');
+  adultos.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'child-btn' + (currentAdultoSec===i?' active':'');
+    btn.textContent = a.nombre || `Adulto/a ${i+1}`;
+    btn.onclick = () => selectAdultoSec(i);
+    c.appendChild(btn);
+  });
+  const cur = adultos[currentAdultoSec];
+  if (cur) {
+    const lbl = document.getElementById('adultoLabel');
+    if (lbl) lbl.textContent = '👤 ' + cur.nombre + (cur.edad ? ' · ' + cur.edad + 'a' : '') + (cur.sexo ? ' · ' + cur.sexo : '');
+  }
+}
+
+function selectAdultoSec(idx) {
+  saveCurrentAdultoSecData();
+  currentAdultoSec = idx;
+  loadAdultoSecData(idx);
+  buildAdultosNav();
+}
+
+function saveCurrentAdultoSecData() {
+  if (!adultosSecData[currentAdultoSec]) adultosSecData[currentAdultoSec] = {};
+  const d = adultosSecData[currentAdultoSec];
+  // Radio fields
+  ['formaEstudioSec','modalidadAdultoSec','idiomaAdultoSec','saludAtAdultoSec',
+   'discapAdultoSec','brigadaAdultoSec','dientesAdultoSec','ultimaVisitaDentistaSec'].forEach(name => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    d[name] = el ? el.value : '';
+  });
+  // Text
+  const inst = document.getElementById('institucionAdultoSec');
+  if (inst) d.institucionAdultoSec = inst.value;
+  const obs = document.getElementById('obsAdultoSec');
+  if (obs) d.obsAdultoSec = obs.value;
+  // estudia flag
+  d.adultoSecEstudia = adultosSecData[currentAdultoSec].adultoSecEstudia ?? null;
+}
+
+function loadAdultoSecData(idx) {
+  const d = adultosSecData[idx] || {};
+  // Clear all
+  document.querySelectorAll('#sec7 input[type=radio]').forEach(el => { el.checked=false; el.closest('.opt')?.classList.remove('sel'); });
+  const inst = document.getElementById('institucionAdultoSec'); if(inst) inst.value='';
+  const obs = document.getElementById('obsAdultoSec'); if(obs) obs.value='';
+  // Hide educ block
+  const bloqueEduc = document.getElementById('bloqueEducAdultoSec');
+  if (bloqueEduc) bloqueEduc.style.display='none';
+  // Reset estudia buttons
+  const btnSi = document.getElementById('btnAdultoSecSi');
+  const btnNo = document.getElementById('btnAdultoSecNo');
+  if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
+  if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
+
+  // Restore
+  ['formaEstudioSec','modalidadAdultoSec','idiomaAdultoSec','saludAtAdultoSec',
+   'discapAdultoSec','brigadaAdultoSec','dientesAdultoSec','ultimaVisitaDentistaSec'].forEach(name => {
+    if (d[name]) {
+      const el = document.querySelector(`input[name="${name}"][value="${d[name]}"]`);
+      if (el) { el.checked=true; el.closest('.opt')?.classList.add('sel'); }
+    }
+  });
+  if (inst && d.institucionAdultoSec) inst.value = d.institucionAdultoSec;
+  if (obs && d.obsAdultoSec) obs.value = d.obsAdultoSec;
+  // Restore estudia
+  if (d.adultoSecEstudia === true) setAdultoSecEstudia(true);
+  else if (d.adultoSecEstudia === false) setAdultoSecEstudia(false);
+}
+
+function setAdultoSecEstudia(estudia) {
+  if (!adultosSecData[currentAdultoSec]) adultosSecData[currentAdultoSec] = {};
+  adultosSecData[currentAdultoSec].adultoSecEstudia = estudia;
+  const btnSi = document.getElementById('btnAdultoSecSi');
+  const btnNo = document.getElementById('btnAdultoSecNo');
+  const bloqueEduc = document.getElementById('bloqueEducAdultoSec');
+  if (estudia) {
+    if (btnSi) { btnSi.style.background='#1A6B5A'; btnSi.style.color='white'; btnSi.style.borderColor='#1A6B5A'; }
+    if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
+    if (bloqueEduc) bloqueEduc.style.display='block';
+  } else {
+    if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
+    if (btnNo) { btnNo.style.background='#991B1B'; btnNo.style.color='white'; btnNo.style.borderColor='#991B1B'; }
+    if (bloqueEduc) bloqueEduc.style.display='none';
+    // Clear educ fields
+    document.querySelectorAll('input[name="formaEstudioSec"],input[name="modalidadAdultoSec"],input[name="idiomaAdultoSec"]')
+      .forEach(el => { el.checked=false; el.closest('.opt')?.classList.remove('sel'); });
+    const inst = document.getElementById('institucionAdultoSec'); if(inst) inst.value='';
+  }
+  autoSave();
 }
 
 
