@@ -1045,7 +1045,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <!-- ═══════ SEC 8 — DINÁMICA ═══════ -->
-<div class="sec" id="sec11">
+<div class="sec" id="sec8">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--red)">7</div>
@@ -1198,8 +1198,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- ═══════ SEC 8 — TÉCNICO ═══════ -->
-<div class="sec" id="sec8">
+<!-- ═══════ SEC 9 — TÉCNICO ═══════ -->
+<div class="sec" id="sec9">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--purple)">8</div>
@@ -1290,8 +1290,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- ═══════ SEC 9 — PERCEPCIÓN ═══════ -->
-<div class="sec" id="sec9">
+<!-- ═══════ SEC 10 — PERCEPCIÓN ═══════ -->
+<div class="sec" id="sec10">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--teal)">9</div>
@@ -1306,13 +1306,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="percepcionContainer"></div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(10)">← Atrás</button>
+    <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
     <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(11)">Siguiente →</button>
   </div>
 </div>
 
-<!-- ═══════ SEC 10 — CIERRE ═══════ -->
-<div class="sec" id="sec10">
+<!-- ═══════ SEC 11 — CIERRE ═══════ -->
+<div class="sec" id="sec11">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--blue)">10</div>
@@ -1339,7 +1339,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div id="scoreSection"></div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
+    <button class="btn btn-secondary" onclick="goTo(10)">← Atrás</button>
     <button class="btn btn-success" onclick="guardarFicha()">💾 Guardar Ficha</button>
   </div>
   <div style="height:14px"></div>
@@ -2761,7 +2761,7 @@ document.addEventListener('DOMContentLoaded', () => {
   currentAdultoSec = 0;
   // Reset all text/number/tel inputs except encuestador
   document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
-    if (el.id !== 'encuestador') el.value = '';
+    if (el.id !== 'encuestador' && el.id !== 'fechaVisita') el.value = '';
   });
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
   document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
