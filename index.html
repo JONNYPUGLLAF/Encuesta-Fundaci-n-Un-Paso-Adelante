@@ -2199,7 +2199,8 @@ function goTo(idx) {
     }
   }
 
-  if (curSec === 2 || curSec === 5 || curSec === 6 || curSec === 7) saveCurrentChildData();
+  if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
+  if (curSec === 7) { try { saveCurrentAdultoSecData(); } catch(e) { console.warn(e); } }
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
   document.getElementById('sec'+idx).classList.add('active');
   document.querySelectorAll('.tab').forEach((t,i) => { t.classList.remove('active'); if(i===idx) t.classList.add('active'); });
@@ -2670,8 +2671,6 @@ function buildCSVRows(fichas) {
         rows.push(fila);
       });
     }
-  });
-
     // Filas de adultos
     const adultosFam = (f.famRows||[]).filter(r=>r.nombre&&r.nombre.trim()&&r.edad!==''&&Number(r.edad)>=18);
     adultosFam.forEach((a, ai) => {
@@ -2754,30 +2753,32 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // ── SIEMPRE INICIAR LIMPIO ──
+  // ── FECHA PRIMERO — antes de cualquier reset ──
+  const today = new Date().toISOString().slice(0,10);
+  const fe = document.getElementById('fechaVisita');
+  if (fe) fe.value = today;
+
+  // ── INICIAR LIMPIO ──
   localStorage.removeItem('ficha_draft_v2');
   sinMenores = false;
   adultosSecData = {};
   currentAdultoSec = 0;
-  // Reset all text/number/tel inputs except encuestador
-  document.querySelectorAll('input[type=text],input[type=number],input[type=tel],input[type=date]').forEach(el => {
-    if (el.id !== 'encuestador' && el.id !== 'fechaVisita') el.value = '';
+  // Reset inputs excepto encuestador y fechaVisita
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel]').forEach(el => {
+    if (el.id !== 'encuestador') el.value = '';
   });
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
   document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
   document.querySelectorAll('select:not(#encuestador)').forEach(el => el.selectedIndex = 0);
 
   buildPerception();
-  // Add initial family rows with tel field
   for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
   renderFamTable();
-  // Set today's date
-  const today = new Date().toISOString().slice(0,10);
-  const fe = document.getElementById('fechaVisita');
+  // Restaurar fecha (por si renderFamTable la borró)
   if (fe) fe.value = today;
   showFichasGuardadas();
   buildChildTabs();
-  aplicarSinMenores();
+  try { aplicarSinMenores(); } catch(e) { console.warn('aplicarSinMenores error:', e); }
 });
 
 // ── OFFLINE ───────────────────────────────────────────────────────────}
