@@ -3024,7 +3024,7 @@ function renderAbuelos(ninoIdx) {
     const div = document.createElement('div');
     div.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:#FAFAFA';
 
-    const esFallecidoDesc = d.estado === 'Fallecido' || d.estado === 'Desconocido';
+    const esFallecidoDesc = d.estado === 'Fallecido' || d.estado === 'Desconocido' || d.estado === 'Vive en otra casa';
 
     // Dropdown de abuelos de la familia para nombre
     const abOptions = abuelosEnFamilia.map(r =>
@@ -3036,6 +3036,7 @@ function renderAbuelos(ninoIdx) {
       <div style="font-weight:700;font-size:12px;color:var(--blue);margin-bottom:8px">${label}</div>
       <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:${esFallecidoDesc?'0':'8px'}">
         <button onclick="setAbEstado(${ninoIdx},'${key}','Vive')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Vive'?'#166534':'var(--border)'};background:${d.estado==='Vive'?'#DCFCE7':'white'};color:${d.estado==='Vive'?'#166534':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">✅ Vive</button>
+        <button onclick="setAbEstado(${ninoIdx},'${key}','Vive en otra casa')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Vive en otra casa'?'#0369A1':'var(--border)'};background:${d.estado==='Vive en otra casa'?'#E0F2FE':'white'};color:${d.estado==='Vive en otra casa'?'#0369A1':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">🏠 Vive en otra casa</button>
         <button onclick="setAbEstado(${ninoIdx},'${key}','Fallecido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Fallecido'?'#991B1B':'var(--border)'};background:${d.estado==='Fallecido'?'#FEE2E2':'white'};color:${d.estado==='Fallecido'?'#991B1B':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">⚫ Fallecido/a</button>
         <button onclick="setAbEstado(${ninoIdx},'${key}','Desconocido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Desconocido'?'#6B7280':'var(--border)'};background:${d.estado==='Desconocido'?'#F3F4F6':'white'};color:${d.estado==='Desconocido'?'#374151':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">❓ Desconocido/a</button>
       </div>
@@ -3068,7 +3069,7 @@ function renderAbuelos(ninoIdx) {
       ${hasAbOptions && (!abuelosEnFamilia.find(r=>r.nombre===d.nombre)) && d.nombre ? `
       <input type="text" value="${d.nombre}" placeholder="Escribir nombre manualmente" oninput="setAbNombreManual(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;margin-top:6px">
       ` : ''}
-      ` : `<div style="font-size:11px;color:#6B7280;padding:4px 0;font-style:italic">${d.estado==='Fallecido'?'Fallecido/a — no se registran más datos':'Desconocido/a — no se registran más datos'}</div>`}
+      ` : `<div style="font-size:11px;color:#6B7280;padding:4px 0;font-style:italic">${d.estado==='Fallecido'?'Fallecido/a — no se registran más datos':d.estado==='Vive en otra casa'?'Vive en otra casa — no convive en este hogar':'Desconocido/a — no se registran más datos'}</div>`}
     `;
     c.appendChild(div);
   });
@@ -3078,7 +3079,7 @@ function setAbEstado(ninoIdx, key, estado) {
   const d = getAbData(ninoIdx, key);
   d.estado = estado;
   // Si fallecido o desconocido, limpiar nombre/edad/convive/aCargo
-  if (estado === 'Fallecido' || estado === 'Desconocido') {
+  if (estado === 'Fallecido' || estado === 'Desconocido' || estado === 'Vive en otra casa') {
     d.nombre = ''; d.edad = ''; d.convive = false; d.aCargo = false;
   }
   renderAbuelos(ninoIdx);
