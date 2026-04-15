@@ -623,6 +623,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="opts c2">
         <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 1 (8vo, 9no, 10mo A.E.B.)"><span>📚 Intensivo 1 — 8vo, 9no, 10mo A.E.B.</span></label>
         <label class="opt"><input type="radio" name="formaEstudio" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>🎓 Intensivo 2 — 1ro, 2do, 3ro Bach.</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="Universidad (3er nivel)"><span>🏛️ Universidad (3er nivel)</span></label>
+        <label class="opt"><input type="radio" name="formaEstudio" value="4to nivel (posgrado)"><span>🎖️ 4to nivel (posgrado)</span></label>
       </div>
       <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
       <div class="card-body">
@@ -980,6 +982,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="opts c2">
           <label class="opt"><input type="radio" name="formaEstudioSec" value="Intensivo 1 (8vo, 9no, 10mo A.E.B.)"><span>📚 Intensivo 1 — 8vo, 9no, 10mo A.E.B.</span></label>
           <label class="opt"><input type="radio" name="formaEstudioSec" value="Intensivo 2 (1ro, 2do, 3ro Bach.)"><span>🎓 Intensivo 2 — 1ro, 2do, 3ro Bach.</span></label>
+          <label class="opt"><input type="radio" name="formaEstudioSec" value="Universidad (3er nivel)"><span>🏛️ Universidad (3er nivel)</span></label>
+          <label class="opt"><input type="radio" name="formaEstudioSec" value="4to nivel (posgrado)"><span>🎖️ 4to nivel (posgrado)</span></label>
         </div>
         <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
         <div class="card-body">
@@ -1589,7 +1593,7 @@ function renderFamTable() {
       </td>
       <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncPadreMadreFields();autoSave()" onblur="renderNinos()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncPadreMadreFields();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">--</option>
-        ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel','Cuarto nivel','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
+        ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel (Universitario)','Maestría/Postgrado','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
       </select></td>`;
   });
   // ── AUTO-CHAIN: padre/madre → campos abajo ──
