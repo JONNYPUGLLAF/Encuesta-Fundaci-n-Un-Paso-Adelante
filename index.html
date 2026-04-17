@@ -926,13 +926,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <!-- Estado nutricional y última comida — al final de la sección salud -->
   <div class="card">
     <div class="sub">▸ Estado nutricional (medición objetiva)</div>
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:9px 12px;margin:6px 12px 4px;font-size:11px;color:#1E40AF;line-height:1.5">
+      ℹ️ <strong>¿Cómo funciona el cálculo?</strong><br>
+      • <strong>Menores de 5 años</strong> (o talla ≤ 120cm): compara el peso con el rango normal para esa talla exacta (tabla Peso/Talla OMS).<br>
+      • <strong>5 a 19 años</strong>: calcula el IMC y lo compara con los valores normales para la edad y sexo del niño/a (tabla IMC/Edad OMS).<br>
+      • La edad y sexo se toman automáticamente de lo registrado en la sección 1.
+    </div>
     <div class="card-body">
       <div class="frow">
         <div class="fg sm"><label>Peso (kg)</label><input type="number" id="pesoNino" min="1" max="150" step="0.1" placeholder="Ej: 18.5" oninput="calcNutri()"></div>
         <div class="fg sm"><label>Talla (cm)</label><input type="number" id="tallaNino" min="30" max="220" step="0.1" placeholder="Ej: 110" oninput="calcNutri()"></div>
       </div>
       <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
-      <div id="notaOMS" style="display:none;margin-top:4px;font-size:10px;color:#6B7280;font-style:italic">📊 Calculado con tablas IMC para niños/as según OMS (5–19 años)</div>
+      <div id="notaOMS" style="display:none;margin-top:4px;font-size:10px;color:#6B7280;font-style:italic"></div>
       <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
