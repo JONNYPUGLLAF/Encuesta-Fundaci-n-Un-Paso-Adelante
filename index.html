@@ -1157,7 +1157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar más de 2</p>
     <div class="opts c2">
       <label class="opt"><input type="checkbox" name="disciplina" value="Diálogo/restricción salidas"><span>Diálogo / restricción de salidas</span></label>
-      <label class="opt"><input type="checkbox" name="disciplina" value="No ir a clases/partido"><span>No ir a clases / no ir a partido</span></label>
+      <label class="opt"><input type="checkbox" name="disciplina" value="Restricción de permisos/salidas"><span>Restricción de permisos / salidas</span></label>
       <label class="opt warn"><input type="checkbox" name="disciplina" value="Correazo/chancletazo"><span>Correazo / chancletazo</span></label>
       <label class="opt"><input type="checkbox" name="disciplina" value="Ortiga (justicia indígena)"><span>Ortiga (justicia indígena)</span></label>
       <label class="opt warn"><input type="checkbox" name="disciplina" value="Palo/rama de árbol"><span>Palo / rama de árbol</span></label>
@@ -1479,9 +1479,7 @@ function aplicarSinMenores() {
     const el = document.getElementById(id);
     if (el) el.style.display = sinMenores ? 'none' : 'block';
   });
-  // Chicha niños
-  const chichaDetalleNinos = document.getElementById('chichaDetalleNinosCard');
-  if (chichaDetalleNinos) chichaDetalleNinos.style.display = (sinMenores) ? 'none' : 'none'; // siempre empieza oculto
+
 
   // SEC9 — rebuild percepcion respetando sinMenores
   buildPerception();
@@ -2582,7 +2580,7 @@ function buildCSVRows(fichas) {
       'Sin comer (frecuencia)': f.sinComer || '',
       'Sin comida en hogar': f.sinComidaHogar || '',
       'Chicha en hogar': f.chicha || '',
-      'Chicha detalle niños': f.chichaDetalle || '',
+      'Chicha detalle (niños/adultos)': f.chichaDetalle || '',
       'Peleas entre adultos': f.peleas || '',
       'Alcohol en hogar': f.alcohol || '',
       'Forma de disciplina': f.disciplina || '',
@@ -2671,6 +2669,15 @@ function buildCSVRows(fichas) {
           'Talla (cm)': d.tallaNino || '',
           'Estado nutricional': d.nutricion || '',
           'Última comida': d.ultimaComida || '',
+          // Abuelos
+          'Abuelo paterno estado': ((f.childData||{})[i]?._abData?.pp?.estado)||'',
+          'Abuelo paterno nombre': ((f.childData||{})[i]?._abData?.pp?.nombre)||'',
+          'Abuela paterna estado': ((f.childData||{})[i]?._abData?.pa?.estado)||'',
+          'Abuela paterna nombre': ((f.childData||{})[i]?._abData?.pa?.nombre)||'',
+          'Abuelo materno estado': ((f.childData||{})[i]?._abData?.mp?.estado)||'',
+          'Abuelo materno nombre': ((f.childData||{})[i]?._abData?.mp?.nombre)||'',
+          'Abuela materna estado': ((f.childData||{})[i]?._abData?.ma?.estado)||'',
+          'Abuela materna nombre': ((f.childData||{})[i]?._abData?.ma?.nombre)||'',
         };
         rows.push(fila);
       });
@@ -2869,14 +2876,10 @@ function toggleInstitucion(show) {
 function toggleChichaDetalle(show) {
   const el = document.getElementById('chichaDetalleCard');
   if (el) el.style.display = show ? 'block' : 'none';
-  // Update title dynamically
   const titulo = document.getElementById('chichaDetalleTitle');
   if (titulo) titulo.textContent = sinMenores ? 'USO DE CHICHA EN ADULTOS' : 'USO DE CHICHA EN NIÑOS';
-  // Show niños block only if there are minors AND chicha is selected
-  const elNinos = document.getElementById('chichaDetalleNinosCard');
-  if (elNinos) elNinos.style.display = (show && !sinMenores) ? 'block' : 'none';
   if (!show) {
-    document.querySelectorAll('input[name="chichaDetalle"], input[name="chichaDetalleNinos"]').forEach(r => { r.checked = false; r.closest('.opt')?.classList.remove('sel'); });
+    document.querySelectorAll('input[name="chichaDetalle"]').forEach(r => { r.checked = false; r.closest('.opt')?.classList.remove('sel'); });
   }
 }
 
