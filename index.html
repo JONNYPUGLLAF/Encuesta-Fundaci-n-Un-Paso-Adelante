@@ -2952,30 +2952,115 @@ function updateControlesVacunas() {
 }
 
 // ── CÁLCULO NUTRICIONAL OMS ───────────────────────────────────────────
+// ── TABLAS OMS NUTRICIÓN ─────────────────────────────────────────────
+// Peso/Talla para <5 años: [talla_cm, p3_kg, p15_kg, p85_kg, p97_kg]
+// Fuente: OMS Child Growth Standards
+const OMS_PESO_TALLA = [
+  [45,1.9,2.1,2.7,3.0],[50,2.4,2.7,3.5,3.9],[55,3.1,3.5,4.5,5.0],
+  [60,3.9,4.4,5.6,6.3],[65,4.8,5.4,6.9,7.7],[70,5.7,6.4,8.1,9.0],
+  [75,6.5,7.3,9.2,10.2],[80,7.2,8.0,10.1,11.2],[85,7.9,8.8,11.0,12.2],
+  [90,8.5,9.5,11.8,13.1],[95,9.1,10.1,12.6,14.0],[100,9.7,10.8,13.4,14.9],
+  [105,10.3,11.5,14.3,15.9],[110,11.0,12.3,15.3,17.0],[115,11.8,13.2,16.4,18.3],
+  [120,12.7,14.2,17.7,19.8]
+];
+
+// IMC por edad y sexo para 5-19 años: {edad: [p3, p15, p85, p97]}
+// M=masculino, F=femenino — Fuente: OMS Growth Reference 5-19 years
+const OMS_IMC_M = {
+  5:[13.0,13.8,16.5,17.8], 6:[13.0,13.8,16.8,18.3], 7:[12.9,13.8,17.2,18.9],
+  8:[13.0,13.9,17.7,19.7], 9:[13.1,14.1,18.3,20.6], 10:[13.4,14.4,18.9,21.5],
+  11:[13.7,14.8,19.6,22.5], 12:[14.1,15.3,20.4,23.5], 13:[14.6,15.9,21.2,24.5],
+  14:[15.2,16.6,22.0,25.4], 15:[15.8,17.2,22.7,26.2], 16:[16.4,17.9,23.4,27.0],
+  17:[16.9,18.4,24.0,27.6], 18:[17.3,18.9,24.5,28.1], 19:[17.5,19.1,24.8,28.4]
+};
+const OMS_IMC_F = {
+  5:[12.9,13.7,16.8,18.2], 6:[12.8,13.7,17.2,18.8], 7:[12.8,13.7,17.7,19.5],
+  8:[12.9,13.8,18.3,20.4], 9:[13.1,14.1,19.0,21.4], 10:[13.4,14.5,19.8,22.5],
+  11:[13.8,15.0,20.6,23.6], 12:[14.3,15.6,21.5,24.7], 13:[14.9,16.3,22.3,25.7],
+  14:[15.5,16.9,23.0,26.6], 15:[16.0,17.5,23.6,27.3], 16:[16.4,17.9,24.0,27.8],
+  17:[16.7,18.2,24.3,28.1], 18:[16.9,18.4,24.5,28.3], 19:[17.0,18.5,24.6,28.4]
+};
+
 function calcNutri() {
   const peso = parseFloat(document.getElementById('pesoNino')?.value);
   const talla = parseFloat(document.getElementById('tallaNino')?.value);
   const result = document.getElementById('resultNutri');
   const hidden = document.getElementById('nutricionResult');
+  const notaOMS = document.getElementById('notaOMS');
   if (!result) return;
-  if (!peso || !talla || talla < 30) { result.style.display='none'; return; }
-  const tallaMt = talla / 100;
-  const imc = peso / (tallaMt * tallaMt);
-  let estado, color, bgColor;
-  if (imc < 14) { estado = '⚠️ Desnutrición severa'; color='#991B1B'; bgColor='#FEE2E2'; }
-  else if (imc < 16) { estado = '🟠 Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
-  else if (imc < 18.5) { estado = '🟡 Desnutrición leve'; color='#B45309'; bgColor='#FFFBEB'; }
-  else if (imc < 25) { estado = '✅ Normal'; color='#166534'; bgColor='#DCFCE7'; }
-  else if (imc < 30) { estado = '🟡 Sobrepeso'; color='#B45309'; bgColor='#FFFBEB'; }
-  else { estado = '🔴 Obesidad'; color='#991B1B'; bgColor='#FEE2E2'; }
+  if (!peso || !talla || talla < 30 || peso < 1) {
+    result.style.display='none';
+    if (notaOMS) notaOMS.style.display='none';
+    return;
+  }
+
+  // Obtener edad y sexo del niño actual
+  const nino = ninos[currentNino] || {};
+  const edadAnios = parseInt(nino.edad) || 0;
+  const sexo = (nino.sexo || '').toUpperCase(); // M o F
+
+  let estado, color, bgColor, metodo;
+
+  if (edadAnios < 5 || talla <= 120) {
+    // ── MÉTODO 1: Peso/Talla OMS para <5 años ──
+    metodo = 'Peso/Talla OMS (<5 años)';
+    // Encontrar fila más cercana en tabla
+    let fila = OMS_PESO_TALLA[0];
+    for (let i = 0; i < OMS_PESO_TALLA.length; i++) {
+      if (OMS_PESO_TALLA[i][0] <= talla) fila = OMS_PESO_TALLA[i];
+      else break;
+    }
+    const [,p3,p15,p85,p97] = fila;
+    if (peso < p3)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
+    else if (peso < p15) { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
+    else if (peso < p85) { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
+    else if (peso < p97) { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
+    else                 { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
+    result.textContent = `Peso/Talla: ${peso}kg / ${talla}cm — ${estado}`;
+
+  } else if (edadAnios >= 5 && edadAnios <= 19 && (sexo === 'M' || sexo === 'F')) {
+    // ── MÉTODO 2: IMC por edad y sexo OMS para 5-19 años ──
+    metodo = 'IMC/Edad OMS (5-19 años)';
+    const tablaIMC = sexo === 'M' ? OMS_IMC_M : OMS_IMC_F;
+    const tallaMt = talla / 100;
+    const imc = peso / (tallaMt * tallaMt);
+    const ref = tablaIMC[edadAnios] || tablaIMC[Math.min(19, Math.max(5, edadAnios))];
+    const [p3,p15,p85,p97] = ref;
+    if (imc < p3)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
+    else if (imc < p15) { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
+    else if (imc < p85) { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
+    else if (imc < p97) { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
+    else                { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
+    result.textContent = `IMC: ${imc.toFixed(1)} — ${estado} (${edadAnios}a, ${sexo==='M'?'M':'F'})`;
+
+  } else {
+    // ── FALLBACK: IMC simple si no hay edad/sexo ──
+    metodo = 'IMC referencial';
+    const tallaMt = talla / 100;
+    const imc = peso / (tallaMt * tallaMt);
+    if (imc < 14)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
+    else if (imc < 16)  { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
+    else if (imc < 18.5){ estado='Desnutrición leve';     color='#B45309'; bgColor='#FFFBEB'; }
+    else if (imc < 25)  { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
+    else if (imc < 30)  { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
+    else                { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
+    result.textContent = `IMC: ${(peso/((talla/100)**2)).toFixed(1)} — ${estado}`;
+  }
+
   result.style.display = 'block';
   result.style.background = bgColor;
   result.style.color = color;
   result.style.border = '1.5px solid ' + color;
-  result.textContent = 'IMC: ' + imc.toFixed(1) + ' — ' + estado;
-  const notaOMS = document.getElementById('notaOMS');
-  if (notaOMS) notaOMS.style.display = 'block';
-  if (hidden) hidden.value = estado.replace(/[⚠️🟠🟡✅🔴]/g,'').trim();
+  result.style.borderRadius = '8px';
+  result.style.padding = '8px 12px';
+  result.style.fontWeight = '700';
+  result.style.fontSize = '13px';
+
+  if (notaOMS) {
+    notaOMS.style.display = 'block';
+    notaOMS.textContent = `📊 ${metodo} · Referencia OMS`;
+  }
+  if (hidden) hidden.value = estado;
 }
 
 // ── SUGERENCIA PRIORIDAD POR PUNTAJE ─────────────────────────────────
