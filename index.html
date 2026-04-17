@@ -2383,6 +2383,16 @@ function compartirWhatsApp(idx) {
     ninosDetalle += `  Padre: ${v(d.estadoPadre)} | Madre: ${v(d.estadoMadre)}\n`;
     ninosDetalle += `  Orfandad: ${v(d.orfandad)}\n`;
     ninosDetalle += `  Convive con: ${v(d.convive)}\n`;
+    // Abuelos
+    const ab = d._abData || {};
+    const abLabels = {pp:'Abuelo paterno', pa:'Abuela paterna', mp:'Abuelo materno', ma:'Abuela materna'};
+    ['pp','pa','mp','ma'].forEach(k => {
+      if (ab[k] && ab[k].estado) {
+        let abTxt = `  ${abLabels[k]}: ${ab[k].estado}`;
+        if (ab[k].nombre && ab[k].estado === 'Vive') abTxt += ` — ${ab[k].nombre}${ab[k].edad?' ('+ab[k].edad+'a)':''}`;
+        ninosDetalle += abTxt + '\n';
+      }
+    });
 
     // Educación
     ninosDetalle += `  ── Educación ──\n`;
@@ -2413,8 +2423,15 @@ function compartirWhatsApp(idx) {
 
     // Nutricional
     ninosDetalle += `  ── Nutrición ──\n`;
-    if (d.pesoNino || d.tallaNino) ninosDetalle += `  Peso: ${v(d.pesoNino)}kg | Talla: ${v(d.tallaNino)}cm\n`;
-    if (d.nutricion) ninosDetalle += `  Estado nutricional: ${d.nutricion}\n`;
+    if (d.pesoNino || d.tallaNino) {
+      ninosDetalle += `  Peso: ${v(d.pesoNino)}kg | Talla: ${v(d.tallaNino)}cm\n`;
+      if (d.pesoNino && d.tallaNino) {
+        const tallaMt = parseFloat(d.tallaNino)/100;
+        const imc = (parseFloat(d.pesoNino)/(tallaMt*tallaMt)).toFixed(1);
+        ninosDetalle += `  IMC calculado: ${imc}\n`;
+      }
+    }
+    if (d.nutricion) ninosDetalle += `  Estado nutricional (OMS): ${d.nutricion}\n`;
     ninosDetalle += `  Última comida: ${v(d.ultimaComida)}\n`;
   });
 
@@ -2676,7 +2693,8 @@ function buildCSVRows(fichas) {
           // Nutrición
           'Peso (kg)': d.pesoNino || '',
           'Talla (cm)': d.tallaNino || '',
-          'Estado nutricional': d.nutricion || '',
+          'IMC calculado': (d.pesoNino && d.tallaNino) ? (parseFloat(d.pesoNino)/Math.pow(parseFloat(d.tallaNino)/100,2)).toFixed(1) : '',
+          'Estado nutricional (OMS)': d.nutricion || '',
           'Última comida': d.ultimaComida || '',
           // Abuelos
           'Abuelo paterno estado': ((f.childData||{})[i]?._abData?.pp?.estado)||'',
