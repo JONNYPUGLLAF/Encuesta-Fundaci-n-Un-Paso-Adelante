@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#1B3A6B">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ficha Shuar">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Ficha Shuar">
+<link rel="manifest" href="manifest.json">
 <title>Ficha Diagnóstico – Fundación Dar un Paso Adelante</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -2817,6 +2821,9 @@ document.addEventListener('DOMContentLoaded', () => {
   showFichasGuardadas();
   buildChildTabs();
   try { aplicarSinMenores(); } catch(e) { console.warn('aplicarSinMenores error:', e); }
+  buildAdultosNav();
+  verificarYRecuperarBackup();
+  autoBackup();
 });
 
 // ── OFFLINE ───────────────────────────────────────────────────────────}
@@ -3433,5 +3440,15 @@ function setAdultoSecEstudia(estudia) {
 
 </script>
 
+<script>
+// ── SERVICE WORKER REGISTRO ───────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registrado:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+</script>
 </body>
 </html>
