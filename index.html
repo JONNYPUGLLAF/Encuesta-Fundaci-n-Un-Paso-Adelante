@@ -1366,9 +1366,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-body" style="padding-top:0;display:flex;flex-direction:column;gap:7px">
       <button class="btn" onclick="compartirWhatsApp()" style="background:#25D366;color:white;font-size:13px;padding:11px">📲 Compartir última ficha por WhatsApp</button>
       <button class="btn btn-green-outline" onclick="exportCSV()" style="font-size:12px;padding:9px">📤 Exportar todas las fichas (CSV para Excel)</button>
-      <button class="btn" onclick="respaldarTextoPlano()" style="background:#7C3AED;color:white;font-size:12px;padding:9px">📋 Descargar respaldo de seguridad (.txt)</button>
-      <button class="btn" onclick="restaurarDesdeRespaldo()" style="background:#0369A1;color:white;font-size:12px;padding:9px">🔄 Restaurar desde respaldo</button>
-      <button class="btn" onclick="nuevaFicha()" style="background:#1B3A6B;color:white;font-size:13px;padding:11px;margin-top:6px">➕ Nueva ficha desde cero</button>
     </div>
   </div>
 </div>
@@ -3038,8 +3035,8 @@ function calcNutri() {
 
   let estado, color, bgColor, metodo;
 
-  if (edadAnios < 5 || talla <= 120) {
-    // ── MÉTODO 1: Peso/Talla OMS para <5 años ──
+  if (edadAnios < 5 || (edadAnios === 0 && talla <= 120)) {
+    // ── MÉTODO 1: Peso/Talla OMS para <5 años (o sin edad registrada y talla pequeña) ──
     metodo = 'Peso/Talla OMS (<5 años)';
     // Encontrar fila más cercana en tabla
     let fila = OMS_PESO_TALLA[0];
@@ -3451,91 +3448,6 @@ if ('serviceWorker' in navigator) {
       .then(reg => console.log('SW registrado:', reg.scope))
       .catch(err => console.log('SW error:', err));
   });
-}
-</script>
-
-<script>
-// ── RESPALDO Y RESTAURACIÓN ───────────────────────────────────────────
-function respaldarTextoPlano() {
-  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
-  if (!fichas.length) { alert('No hay fichas para respaldar.'); return; }
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(fichas))));
-  const blob = new Blob([encoded],{type:'text/plain;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url;
-  a.download='respaldo_fichas_'+new Date().toISOString().slice(0,10)+'.txt';
-  a.click(); URL.revokeObjectURL(url);
-  alert('Respaldo descargado. ' + fichas.length + ' ficha(s).\nGuardalo en Google Drive o envíalo por WhatsApp.');
-}
-
-function restaurarDesdeRespaldo() {
-  const texto = prompt('Pega aquí el contenido del archivo de respaldo (.txt):');
-  if (!texto || !texto.trim()) return;
-  try {
-    const decoded = decodeURIComponent(escape(atob(texto.trim())));
-    const fichas = JSON.parse(decoded);
-    if (!Array.isArray(fichas)) throw new Error('invalido');
-    const existentes = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
-    const ids = new Set(existentes.map(f=>f.id));
-    const nuevas = fichas.filter(f=>!ids.has(f.id));
-    localStorage.setItem('fichas_shuar_v2', JSON.stringify([...existentes,...nuevas]));
-    showFichasGuardadas();
-    alert('Restauradas: ' + nuevas.length + ' fichas nuevas. ' + existentes.length + ' ya existian.');
-  } catch(e) { alert('Error al restaurar. Verifica el archivo.'); }
-}
-
-function nuevaFicha() {
-  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
-  if (!confirm('Nueva ficha desde cero?\n\nLas ' + fichas.length + ' ficha(s) guardadas NO se perderan.')) return;
-  ninos=[]; childData={}; famRows=[]; abData={};
-  if(typeof adultosSecData!=='undefined') adultosSecData={};
-  if(typeof currentAdultoSec!=='undefined') currentAdultoSec=0;
-  sinMenores=false; currentNino=0;
-  if (typeof percVals!=='undefined') Object.keys(percVals).forEach(k=>percVals[k]=0);
-  document.querySelectorAll('input[type=text],input[type=number],input[type=tel]').forEach(el=>{
-    if(el.id!=='encuestador') el.value='';
-  });
-  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el=>el.checked=false);
-  document.querySelectorAll('.opt').forEach(el=>el.classList.remove('sel'));
-  document.querySelectorAll('select:not(#encuestador)').forEach(el=>el.selectedIndex=0);
-  document.querySelectorAll('textarea').forEach(el=>el.value='');
-  const fe=document.getElementById('fechaVisita'); if(fe) fe.value=new Date().toISOString().slice(0,10);
-  const numEl=document.getElementById('numEncuesta'); if(numEl) numEl.value=String(fichas.length+1).padStart(3,'0');
-  for(let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
-  renderFamTable(); buildPerception(); buildChildTabs();
-  try{aplicarSinMenores();}catch(e){}
-  ['chichaDetalleCard','motivoAbandonoCard','brigadaDetalles','vphCard',
-   'bloqueInstitucion','bloqueEscolar','bloqueInfraestructura','resultNutri','notaOMS',
-   'bloqueEducAdulto','bloqueEducAdultoSec'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.display='none';
-  });
-  goTo(0);
-  alert('Nueva ficha lista. Las ' + fichas.length + ' fichas anteriores siguen guardadas.');
-}
-
-function autoBackup() {
-  try {
-    const fichas = localStorage.getItem('fichas_shuar_v2');
-    if (fichas && fichas!=='[]') {
-      localStorage.setItem('fichas_shuar_backup', fichas);
-      localStorage.setItem('fichas_shuar_backup_ts', new Date().toISOString());
-    }
-  } catch(e) {}
-}
-
-function verificarYRecuperarBackup() {
-  try {
-    const fichas = localStorage.getItem('fichas_shuar_v2');
-    const backup = localStorage.getItem('fichas_shuar_backup');
-    if ((!fichas||fichas==='[]') && backup && backup!=='[]') {
-      const ts = (localStorage.getItem('fichas_shuar_backup_ts')||'').slice(0,10);
-      if (confirm('Respaldo automatico encontrado'+(ts?' del '+ts:'')+'. Recuperar fichas?')) {
-        localStorage.setItem('fichas_shuar_v2', backup);
-        showFichasGuardadas();
-        alert('Fichas recuperadas.');
-      }
-    }
-  } catch(e) {}
 }
 </script>
 </body>
