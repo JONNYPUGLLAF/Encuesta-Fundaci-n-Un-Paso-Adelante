@@ -10,6 +10,27 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Ficha Shuar">
 <link rel="manifest" href="manifest.json">
+<script>
+// Inline manifest para PWA
+const manifestData = {
+  "name": "Ficha Diagnóstico - Fundación Dar un Paso Adelante",
+  "short_name": "Ficha Shuar",
+  "description": "Ficha de Diagnóstico de Vulnerabilidad Familiar - Pueblo Shuar, Morona Santiago",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1B3A6B",
+  "theme_color": "#1B3A6B",
+  "orientation": "portrait",
+  "icons": [
+    {"src": "https://jonnypugllaf.github.io/Encuesta-Fundaci-n-Un-Paso-Adelante/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "https://jonnypugllaf.github.io/Encuesta-Fundaci-n-Un-Paso-Adelante/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+const manifestUrl = URL.createObjectURL(manifestBlob);
+document.querySelector('link[rel="manifest"]').href = manifestUrl;
+</script>
+
 <title>Ficha Diagnóstico – Fundación Dar un Paso Adelante</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -189,6 +210,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </style>
 </head>
 <body>
+
+<!-- Banner actualización PWA -->
+<div id="updateBanner" style="display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1B3A6B;color:white;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;gap:12px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.3)">
+  🔄 Hay una versión nueva disponible
+  <button onclick="window.location.reload()" style="background:#F59E0B;color:#1B3A6B;border:none;padding:5px 12px;border-radius:8px;font-weight:700;cursor:pointer;font-size:12px">Actualizar</button>
+</div>
+
 
 <div class="hdr">
   <img id="logoImg" alt="Un Paso Adelante">
@@ -3450,5 +3478,70 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<script>
+// ── SERVICE WORKER — OFFLINE PWA ─────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  // Inline Service Worker via Blob
+  const swCode = `
+const CACHE = 'ficha-shuar-v3';
+const URLS = [self.location.href.replace('/sw.js','/')];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => {
+      return fetch(self.registration.scope)
+        .then(r => cache.put(self.registration.scope, r))
+        .catch(() => {});
+    }).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request)
+      .then(response => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(e.request))
+  );
+});
+`;
+
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+
+  navigator.serviceWorker.register(swUrl, {scope: './'})
+    .then(reg => {
+      console.log('SW registrado OK');
+      // Detectar actualización disponible
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // Hay versión nueva disponible
+            const banner = document.getElementById('updateBanner');
+            if (banner) banner.style.display = 'flex';
+          }
+        });
+      });
+    })
+    .catch(e => console.warn('SW error:', e));
+}
+</script>
+
 </body>
 </html>
