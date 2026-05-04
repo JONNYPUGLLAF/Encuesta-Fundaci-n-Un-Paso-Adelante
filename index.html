@@ -3473,5 +3473,12 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log('SW OK'))
+    .catch(e => console.warn('SW error:', e));
+}
+</script>
 </body>
 </html>
