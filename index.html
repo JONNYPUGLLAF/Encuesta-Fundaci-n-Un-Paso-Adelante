@@ -1489,25 +1489,19 @@ function aplicarSinMenores() {
     else el.style.display = sinMenores ? 'none' : 'block';
   });
 
-  // SEC5 educación — toggle adulto vs niño
+  // SEC5 — banner si sinMenores, ocultar contenido niños
+  const banner5 = document.getElementById('sinMenoresBanner5');
   const navEduc = document.getElementById('childNavEduc');
-  const navEducLabel = document.getElementById('childNavEducLabel');
-  if (navEduc) navEduc.style.display = 'block';
-  if (navEducLabel) navEducLabel.textContent = sinMenores ? '👤 Selecciona el adulto/a:' : '👶 Selecciona el miembro:';
-  const adultoToggle = document.getElementById('adultoEstudiaToggle');
   const bloqueEducNino = document.getElementById('bloqueEducNino');
-  if (adultoToggle) adultoToggle.style.display = sinMenores ? 'block' : 'none';
+  if (banner5) banner5.style.display = sinMenores ? 'block' : 'none';
+  if (navEduc) navEduc.style.display = sinMenores ? 'none' : 'block';
   if (bloqueEducNino) bloqueEducNino.style.display = sinMenores ? 'none' : 'block';
 
-  // SEC6 salud — toggle adulto vs niño
+  // SEC6 — banner si sinMenores, ocultar contenido niños
+  const banner6 = document.getElementById('sinMenoresBanner6');
   const bloqueNinoSalud = document.getElementById('bloqueNinoSalud');
-  const navAdultosSalud = document.getElementById('childNavAdultosSalud');
-  const cardSaludAdultos = document.getElementById('cardSaludAdultos');
+  if (banner6) banner6.style.display = sinMenores ? 'block' : 'none';
   if (bloqueNinoSalud) bloqueNinoSalud.style.display = sinMenores ? 'none' : 'block';
-  if (navAdultosSalud) navAdultosSalud.style.display = sinMenores ? 'block' : 'none';
-  if (cardSaludAdultos) cardSaludAdultos.style.display = sinMenores ? 'block' : 'none';
-  // Load first adulto when entering salud in sinMenores mode
-  if (sinMenores) { currentAdulto=0; updateAdultoNavs(); }
 
   // SEC7 — ocultar bloques solo-niños
   ['bloqueHorasSolo','bloqueSinComer','bloquePeleas','bloqueDisciplina'].forEach(id => {
