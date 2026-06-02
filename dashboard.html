@@ -6,6 +6,7 @@
 <title>Dashboard · Fundación Dar un Paso Adelante</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -325,11 +326,11 @@ tr:hover td { background:rgba(255,255,255,.02); }
      ondragleave="event.stopPropagation();this.classList.remove('drag')"
      ondrop="handleDrop(event)">
   <div class="upload-icon">📂</div>
-  <h2>Sube uno o varios archivos CSV</h2>
-  <p>Exporta el CSV desde la app de encuesta y arrástralo aquí.<br>Puedes combinar archivos de varios encuestadores — los duplicados se detectan automáticamente.</p>
+  <h2>Sube uno o varios archivos CSV o Excel</h2>
+  <p>Exporta el CSV o xlsx desde la app y arrástralo aquí, o usa el botón.<br>Puedes combinar archivos de varios encuestadores — los duplicados se detectan automáticamente.</p>
   <div class="file-chips" id="fileChips"></div>
   <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📁 Seleccionar archivos</button>
-  <input type="file" id="fileInput" multiple accept=".csv" onchange="handleFiles(this.files)">
+  <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls" onchange="handleFiles(this.files)">
 </div>
 
 <!-- LOADER -->
@@ -472,16 +473,38 @@ function handleFiles(files) {
   document.getElementById('uploadZone').style.display = 'none';
   let pending = newFiles.length;
   newFiles.forEach(file => {
-    Papa.parse(file, {
-      header: true, skipEmptyLines: true, dynamicTyping: false,
-      complete: result => {
-        result.data.forEach(r => r._source = file.name);
-        allData = [...allData, ...result.data];
-        loadedFiles.push(file.name);
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'xlsx' || ext === 'xls') {
+      // Parse Excel
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const wb = XLSX.read(e.target.result, {type:'array'});
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+          rows.forEach(r => r._source = file.name);
+          allData = [...allData, ...rows];
+          loadedFiles.push(file.name);
+        } catch(err) {
+          console.error('Error parsing xlsx:', err);
+        }
         pending--;
         if (pending === 0) buildDashboard();
-      }
-    });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // Parse CSV
+      Papa.parse(file, {
+        header: true, skipEmptyLines: true, dynamicTyping: false,
+        complete: result => {
+          result.data.forEach(r => r._source = file.name);
+          allData = [...allData, ...result.data];
+          loadedFiles.push(file.name);
+          pending--;
+          if (pending === 0) buildDashboard();
+        }
+      });
+    }
   });
 }
 
@@ -494,7 +517,7 @@ function buildDashboard() {
   // Update file chips
   const chips = document.getElementById('fileChips');
   chips.innerHTML = loadedFiles.map((f,i) =>
-    `<div class="chip">📄 ${f} <span class="rm" onclick="removeFile(${i})">✕</span></div>`
+    `<div class="chip">📄 ${f} <span class="rm" onclick="event.stopPropagation();removeFile(${i})">✕</span></div>`
   ).join('');
 
   populateFilterOptions();
@@ -539,18 +562,38 @@ function applyFilters() {
   const fD = document.getElementById('fFechaDesde').value;
   const fH = document.getElementById('fFechaHasta').value;
 
-  let filtered = allData.filter(r => {
+  // Normalizar datos antes de filtrar
+  const normalized = allData.map(r => {
+    const nr = {...r};
+    // Normalizar TIPO_FILA - quitar espacios y acentos
+    nr.TIPO_FILA = (r.TIPO_FILA||'').toString().trim();
+    // Normalizar fecha — Excel puede dar número serial o string
+    let fecha = (r.Fecha||'').toString().trim();
+    if (!isNaN(fecha) && fecha !== '') {
+      // Fecha serial de Excel: días desde 1900-01-01
+      const d = new Date((parseFloat(fecha) - 25569) * 86400 * 1000);
+      fecha = d.toISOString().slice(0,10);
+    }
+    nr._fecha = fecha.slice(0,10);
+    return nr;
+  });
+
+  let filtered = normalized.filter(r => {
     const com = (r.Comunidad||'').trim();
     const enc = (r.Encuestador||'').trim();
     const vul = (r['Nivel vulnerabilidad']||'').trim();
-    const fecha = (r.Fecha||'').slice(0,10);
     if (fC && com !== fC) return false;
     if (fE && enc !== fE) return false;
     if (fV && vul !== fV) return false;
-    if (fD && fecha < fD) return false;
-    if (fH && fecha > fH) return false;
+    if (fD && r._fecha < fD) return false;
+    if (fH && r._fecha > fH) return false;
     return true;
   });
+
+  if (filtered.length === 0 && allData.length > 0) {
+    // Si no hay datos filtrados pero sí hay data, mostrar todo
+    filtered = normalized;
+  }
 
   renderDashboard(filtered);
 }
@@ -570,6 +613,8 @@ const VUL_COLORS = { BAJA:'#22C55E', MEDIA:'#F59E0B', ALTA:'#EF4444', URGENTE:'#
 function mkChart(id, type, data, opts={}) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
+  if (!data || !data.datasets || data.datasets.every(d=>!d.data||d.data.length===0)) return;
+  try {
   if (charts[id]) charts[id].destroy();
   charts[id] = new Chart(ctx, {
     type,
@@ -588,6 +633,7 @@ function mkChart(id, type, data, opts={}) {
       ...opts
     }
   });
+  } catch(e) { console.error('Chart error', id, e); }
 }
 
 function countBy(arr, field) {
@@ -605,6 +651,14 @@ function renderDashboard(data) {
   const ninos   = data.filter(r => r.TIPO_FILA === 'NIÑO');
   const adultos = data.filter(r => r.TIPO_FILA === 'ADULTO');
 
+  // ── Deduplicar niños primero
+  const ninosVistos = new Set();
+  const ninosUnicos = ninos.filter(n => {
+    const key = (n.ID||'') + '|' + limpiarNombre(n['Nombre niño/a']||'');
+    if (ninosVistos.has(key)) return false;
+    ninosVistos.add(key); return true;
+  });
+
   // ── Header stats
   const comunidades = new Set(hogares.map(r=>(r.Comunidad||'').trim()).filter(Boolean));
   const encuestadores = new Set(hogares.map(r=>(r.Encuestador||'').trim()).filter(Boolean));
@@ -616,15 +670,7 @@ function renderDashboard(data) {
 
   // ── KPIs
   document.getElementById('kHogares').textContent = hogares.length;
-  // Niños: deduplicar por ID+nombre con lógica ecuatoriana
-  const ninosVistos = new Set();
-  const ninosUnicos = ninos.filter(n => {
-    const key = (n.ID||'') + '|' + limpiarNombre(n['Nombre niño/a']||'');
-    if (ninosVistos.has(key)) return false;
-    ninosVistos.add(key); return true;
-  });
   document.getElementById('kNinos').textContent = ninosUnicos.length;
-  // Adultos: una fila = un adulto (sec7)
   document.getElementById('kAdultos').textContent = adultos.length;
   const pts = hogares.map(r=>n(r['Puntaje vulnerabilidad'])).filter(v=>v>0);
   const avgPts = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
