@@ -166,7 +166,7 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align
   <div class="sec-title">📚 Educación (Niños/as)</div>
   <div class="grid grid-3">
     <div class="card"><div class="card-title">Asistencia escolar</div><canvas id="cAsistencia"></canvas></div>
-    <div class="card"><div class="card-title">Nivel educativo</div><canvas id="cNivel"></canvas></div>
+    <div class="card"><div class="card-title">Nivel educativo (5+ años)</div><canvas id="cNivel"></canvas><div style="font-size:10px;color:#8B949E;margin-top:6px;text-align:center">Solo niños/as en edad escolar</div></div>
     <div class="card"><div class="card-title">Abandono escolar</div><canvas id="cAbandono"></canvas></div>
   </div>
   <div class="grid grid-3">
@@ -201,13 +201,10 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align
   <div class="grid grid-3">
     <div class="card"><div class="card-title">Convive con</div><canvas id="cConvive"></canvas></div>
     <div class="card"><div class="card-title">Tipo de orfandad</div><canvas id="cOrfandad"></canvas></div>
-    <div class="card"><div class="card-title">Parentesco del cuidador</div><canvas id="cParentesco"></canvas></div>
+    <div class="card"><div class="card-title">Quién cuida durante trabajo</div><canvas id="cCuidaDurante"></canvas></div>
   </div>
   <div class="grid grid-3">
-    <div class="card"><div class="card-title">Situación laboral cuidador</div><canvas id="cLaboral"></canvas></div>
-    <div class="card"><div class="card-title">Quién cuida durante trabajo</div><canvas id="cCuidaDurante"></canvas></div>
     <div class="card"><div class="card-title">Horas solo el niño/a</div><canvas id="cHorasSolo"></canvas></div>
-  </div>
 
   <div class="sec-title">🍽️ Alimentación y Nutrición</div>
   <div class="grid grid-3">
@@ -459,7 +456,7 @@ function mkChart(id, type, data, opts={}) {
   try {
   if (charts[id]) charts[id].destroy();
 
-  // Tooltip enriquecido: número + porcentaje
+  // Tooltip enriquecido: número + porcentaje con contexto claro
   const richTooltip = {
     backgroundColor:'#1C2128',
     titleColor:'#E6EDF3',
@@ -474,7 +471,7 @@ function mkChart(id, type, data, opts={}) {
         const val = ctx.parsed.y !== undefined ? ctx.parsed.y : (ctx.parsed || ctx.raw);
         const num = typeof val === 'number' ? val : ctx.raw;
         const pct = total > 0 ? Math.round(num/total*100) : 0;
-        return `  ${num} niños/hogares  (${pct}%)`;
+        return `  ${num} registros — ${pct}% del grupo`;
       },
       title: function(ctx) {
         return '  ' + ctx[0].label;
@@ -495,7 +492,7 @@ function mkChart(id, type, data, opts={}) {
         const val = ds.data[el.index];
         const total = ds.data.reduce((a,b)=>a+b,0);
         const pct = total > 0 ? Math.round(val/total*100) : 0;
-        showInfoPanel(label, val, pct, id);
+        showInfoPanel(label, val, pct, id, total);
       },
       plugins: {
         legend: { labels:{ color:'#8B949E', font:{size:11}, boxWidth:12 } },
@@ -550,7 +547,21 @@ const CHART_DESCRIPTIONS = {
   'Frecuentemente': '⚠️ Conflictos frecuentes. Riesgo para los niños/as.',
 };
 
-function showInfoPanel(label, val, pct, chartId) {
+function showInfoPanel(label, val, pct, chartId, total) {
+  // Determinar contexto según el gráfico
+  const esNinos = ['cAsistencia','cNivel','cAbandono','cInstitucion','cModalidad','cDesayuno',
+    'cAulas','cBanos','cIdioma','cNutri','cVacunas','cAtencion','cControles','cBrigada',
+    'cDiscapacidad','cDientes','cOdontologo','cPsicologia','cConvive','cOrfandad',
+    'cParentesco','cLaboral','cCuidaDurante'].includes(chartId);
+  const esHogares = ['cVulPie','cAgua','cElectricidad','cIngreso','cVivienda','cMaterial',
+    'cExcretas','cFuentesIngreso','cApoyos','cInternet','cAdultoEstudia','cAlcohol',
+    'cDisciplina','cPerfil','cGrupos','cReligion','cComidas','cFrutas','cProteinas',
+    'cSinComer','cSinComida','cChicha','cHorasSolo'].includes(chartId);
+
+  const contexto = esNinos ? `de ${total} niños/as evaluados`
+                 : esHogares ? `de ${total} hogares evaluados`
+                 : `del total evaluado`;
+
   let panel = document.getElementById('infoPanel');
   if (!panel) {
     panel = document.createElement('div');
@@ -562,7 +573,6 @@ function showInfoPanel(label, val, pct, chartId) {
       font-family:inherit; color:#E6EDF3; animation:slideIn .2s ease;
     `;
     document.body.appendChild(panel);
-    // Add animation style
     if (!document.getElementById('infoPanelStyle')) {
       const s = document.createElement('style');
       s.id = 'infoPanelStyle';
@@ -576,27 +586,27 @@ function showInfoPanel(label, val, pct, chartId) {
       <span style="font-size:13px;font-weight:600;color:#58A6FF">${label}</span>
       <span onclick="this.parentElement.parentElement.remove()" style="cursor:pointer;color:#8B949E;font-size:18px;line-height:1">×</span>
     </div>
-    <div style="display:flex;gap:20px;margin-bottom:10px">
+    <div style="display:flex;gap:20px;margin-bottom:10px;align-items:center">
       <div style="text-align:center">
-        <div style="font-size:28px;font-weight:700;color:#E6EDF3">${val}</div>
-        <div style="font-size:10px;color:#8B949E">casos</div>
+        <div style="font-size:32px;font-weight:700;color:#E6EDF3;line-height:1">${val}</div>
+        <div style="font-size:11px;color:#8B949E;margin-top:4px">${contexto}</div>
       </div>
       <div style="text-align:center">
-        <div style="font-size:28px;font-weight:700;color:#58A6FF">${pct}%</div>
-        <div style="font-size:10px;color:#8B949E">del total</div>
+        <div style="font-size:32px;font-weight:700;color:#58A6FF;line-height:1">${pct}%</div>
+        <div style="font-size:11px;color:#8B949E;margin-top:4px">de este grupo</div>
       </div>
     </div>
     <div style="font-size:12px;color:#8B949E;line-height:1.5;border-top:1px solid #30363D;padding-top:10px">${desc}</div>
   `;
-  // Auto-cerrar después de 6s
   clearTimeout(panel._timer);
-  panel._timer = setTimeout(() => panel.remove(), 6000);
+  panel._timer = setTimeout(() => panel.remove(), 7000);
 }
 
 function countBy(arr, field) {
   const counts = {};
   arr.forEach(r => {
-    const v = (r[field]||'Sin datos').trim();
+    const v = (r[field]||'').toString().trim();
+    if (!v || v === 'nan' || v === '0' || v === 'Sin datos') return; // excluir vacíos
     counts[v] = (counts[v]||0) + 1;
   });
   return counts;
@@ -653,7 +663,28 @@ function renderDashboard(data) {
   }).join('');
 
   // ── Chart helpers
-  function pieChart(id, field, src, colorMap={}) {
+  function addUniverseLegend(id, field, src, total) {
+    const conDato = src.filter(r => {
+      const v = (r[field]||'').trim();
+      return v && v !== 'Sin datos' && v !== 'nan';
+    }).length;
+    const sinDato = total - conDato;
+    const el = document.getElementById(id);
+    if (!el) return;
+    let legend = el.parentElement.querySelector('.universe-legend');
+    if (!legend) {
+      legend = document.createElement('div');
+      legend.className = 'universe-legend';
+      legend.style.cssText = 'font-size:10px;color:#8B949E;margin-top:6px;text-align:center;line-height:1.5;border-top:1px solid #21262D;padding-top:6px';
+      el.parentElement.appendChild(legend);
+    }
+    const pctCon = total > 0 ? Math.round(conDato/total*100) : 0;
+    legend.innerHTML = sinDato > 0
+      ? `📊 <strong style="color:#C9D1D9">${conDato}</strong> de <strong style="color:#C9D1D9">${total}</strong> con dato (${pctCon}%) · <span style="color:#EF4444">Sin dato: ${sinDato}</span>`
+      : `📊 <strong style="color:#22C55E">${conDato}</strong> de <strong style="color:#C9D1D9">${total}</strong> — dato completo ✓`;
+  }
+
+  function pieChart(id, field, src, colorMap={}, totalOverride=null) {
     const counts = countBy(src, field);
     const labels = Object.keys(counts);
     const colors = labels.map(l => colorMap[l] || `hsl(${Math.random()*360},55%,55%)`);
@@ -661,9 +692,11 @@ function renderDashboard(data) {
       labels, datasets:[{ data:Object.values(counts), backgroundColor:colors,
         borderWidth:2, borderColor:'#1C2128' }]
     },{plugins:{legend:{position:'bottom'}}});
+    const total = totalOverride !== null ? totalOverride : src.length;
+    addUniverseLegend(id, field, src, total);
   }
 
-  function barChart(id, field, src, horizontal=false) {
+  function barChart(id, field, src, horizontal=false, totalOverride=null) {
     const counts = countBy(src, field);
     const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
     const labels = sorted.map(e=>e[0].length>18?e[0].slice(0,18)+'…':e[0]);
@@ -673,6 +706,8 @@ function renderDashboard(data) {
       labels, datasets:[{ data:vals, backgroundColor:colors,
         borderRadius:6, borderSkipped:false }]
     },{indexAxis: horizontal?'y':'x', plugins:{legend:{display:false}}});
+    const total = totalOverride !== null ? totalOverride : src.length;
+    addUniverseLegend(id, field, src, total);
   }
 
   // ── VULNERABILIDAD
@@ -745,19 +780,26 @@ function renderDashboard(data) {
   }
 
   // ── EDUCACIÓN
-  pieChart('cAsistencia','Asiste a escuela',ninos,{
+  // Solo niños en edad escolar (5+ años) para asistencia y nivel
+  const ninosEscolar = ninos.filter(r => {
+    const e = parseFloat((r['Edad niño/a']||'0').toString().replace('a',''));
+    return e >= 5;
+  });
+  const nTotalEscolar = ninosEscolar.length;
+
+  pieChart('cAsistencia','Asiste a escuela',ninosEscolar,{
     'Sí, de manera regular':'#22C55E','Sí, de manera irregular':'#F59E0B',
-    'No asiste':'#EF4444','Edad pre-escolar':'#58A6FF','No estudia':'#8B949E'});
-  barChart('cNivel','Nivel educativo',ninos,true);
-  pieChart('cAbandono','Abandono escolar',ninos,{'No':'#22C55E','Sí, 1 vez':'#F59E0B','Sí, varias veces':'#EF4444'});
-  barChart('cInstitucion','Institución educativa',ninos,true);
-  pieChart('cModalidad','Modalidad',ninos,{'Presencial':'#22C55E','Semipresencial':'#F59E0B','Virtual':'#58A6FF'});
-  pieChart('cDesayuno','Desayuno escolar',ninos,{'Sí, todos los días':'#22C55E','No recibe':'#EF4444'});
-  pieChart('cAulas','Estado aulas',ninos,{
+    'No asiste':'#EF4444','Edad pre-escolar':'#58A6FF'});
+  barChart('cNivel','Nivel educativo',ninosEscolar,true);
+  pieChart('cAbandono','Abandono escolar',ninosEscolar,{'No':'#22C55E','Sí, 1 vez':'#F59E0B','Sí, varias veces':'#EF4444'});
+  barChart('cInstitucion','Institución educativa',ninosEscolar,true);
+  pieChart('cModalidad','Modalidad',ninosEscolar,{'Presencial':'#22C55E','Semipresencial':'#F59E0B','Virtual':'#58A6FF'});
+  pieChart('cDesayuno','Desayuno escolar',ninosEscolar,{'Sí, todos los días':'#22C55E','No recibe':'#EF4444'});
+  pieChart('cAulas','Estado aulas',ninosEscolar,{
     'Cemento/buen estado':'#22C55E','Madera operables':'#F59E0B','Madera podrida/mal estado':'#EF4444'});
-  pieChart('cBanos','Baños escuela',ninos,{
+  pieChart('cBanos','Baños escuela',ninosEscolar,{
     'Funcionales y limpios':'#22C55E','Inservibles/mal olor':'#F59E0B','No tiene baños':'#EF4444'});
-  pieChart('cIdioma','Idioma instrucción',ninos,{'Bilingüe':'#58A6FF','Español':'#8B949E'});
+  pieChart('cIdioma','Idioma instrucción',ninosEscolar,{'Bilingüe':'#58A6FF','Español':'#8B949E'});
 
   // ── SALUD NIÑOS
   const nutField = 'Estado nutricional (OMS)';
@@ -797,10 +839,6 @@ function renderDashboard(data) {
   pieChart('cOrfandad','Tipo orfandad',ninos,{
     'Sin orfandad':'#22C55E','Orfandad paterna':'#F59E0B',
     'Orfandad materna':'#EF4444','Doble orfandad':'#7C2D12'});
-  pieChart('cParentesco','Parentesco cuidador',ninos,{
-    'Madre':'#22C55E','Padre':'#58A6FF','Abuela/o':'#F59E0B','Tía/o':'#8B949E'});
-  pieChart('cLaboral','Situación laboral cuidador',ninos,{
-    'Agricultor/a':'#22C55E','Sueldo fijo':'#58A6FF','Sin trabajo':'#EF4444','Jornalero/a':'#F59E0B'});
   pieChart('cCuidaDurante','Quién cuida durante trabajo',ninos,{
     'Siempre acompañado/a':'#22C55E','Vecinos/familiares':'#F59E0B','Solo/a (riesgo)':'#EF4444'});
   pieChart('cHorasSolo','Horas solo el niño',hogares,{
