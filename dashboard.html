@@ -268,21 +268,22 @@ tr:hover td { background:rgba(255,255,255,.02); }
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="header-top">
-      <div class="logo-circle" style="background:transparent;border:none;width:56px;height:56px">
-        <img src="https://raw.githubusercontent.com/JONNYPUGLLAF/Encuesta-Fundaci-n-Un-Paso-Adelante/main/logo.png" 
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-             style="width:100%;height:100%;object-fit:contain;border-radius:50%">
-        <span style="display:none;width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.15);align-items:center;justify-content:center;font-size:24px;border:1.5px solid rgba(255,255,255,0.2)">🦅</span>
-      </div>
-      <div>
-        <h1>Dashboard de Vulnerabilidad Familiar</h1>
-        <div class="header-sub">Fundación Dar un Paso Adelante · Pueblo Shuar · Morona Santiago</div>
-      </div>
+<header style="background:#FFFFFF;padding:0;box-shadow:0 2px 16px rgba(0,0,0,0.08)">
+  <!-- Franja superior con logo -->
+  <div style="background:#F8FAFC;border-bottom:3px solid #1B3A6B;padding:20px 40px;display:flex;align-items:center;gap:24px">
+    <img src="https://raw.githubusercontent.com/JONNYPUGLLAF/Encuesta-Fundaci-n-Un-Paso-Adelante/main/logo.png"
+         onerror="this.style.display='none'"
+         style="height:80px;object-fit:contain;flex-shrink:0">
+    <div style="width:2px;height:60px;background:#E2E8F0;flex-shrink:0"></div>
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1A6B5A;margin-bottom:4px">Sistema de Diagnóstico</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#1B3A6B;line-height:1.1;margin-bottom:4px">Dashboard de Vulnerabilidad Familiar</h1>
+      <div style="font-size:13px;color:#64748B;font-weight:400">Pueblo Shuar · Morona Santiago · Ecuador</div>
     </div>
-    <div class="header-stats" id="headerStats">
+  </div>
+  <!-- Franja inferior con stats -->
+  <div style="background:linear-gradient(135deg,#1B3A6B 0%,#1A6B5A 100%);padding:16px 40px">
+    <div class="header-stats" id="headerStats" style="margin-top:0">
       <div class="hstat"><div class="hstat-val" id="hFichas">—</div><div class="hstat-lbl">Fichas cargadas</div></div>
       <div class="hstat"><div class="hstat-val" id="hNinos">—</div><div class="hstat-lbl">Niños/as</div></div>
       <div class="hstat"><div class="hstat-val" id="hAdultos">—</div><div class="hstat-lbl">Adultos/as</div></div>
