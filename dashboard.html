@@ -295,7 +295,7 @@ function removeFile(idx) {
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('fileChips').innerHTML = '';
     // Reset header stats
-    ['hFichas','hNinos','hAdultos','hComunidades','hEncuestadores'].forEach(id => {
+    ['hFichas','hHogares','hNinos','hAdultos','hComunidades'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.textContent = '—';
     });
@@ -446,10 +446,10 @@ function renderDashboard(data) {
   const comunidades = new Set(hogares.map(r=>(r.Comunidad||'').trim()).filter(Boolean));
   const encuestadores = new Set(hogares.map(r=>(r.Encuestador||'').trim()).filter(Boolean));
   document.getElementById('hFichas').textContent = loadedFiles.length;
+  document.getElementById('hHogares').textContent = hogares.length;
   document.getElementById('hNinos').textContent = ninosUnicos.length;
   document.getElementById('hAdultos').textContent = adultos.length;
   document.getElementById('hComunidades').textContent = comunidades.size;
-  document.getElementById('hEncuestadores').textContent = encuestadores.size;
 
   // ── KPIs
   document.getElementById('kHogares').textContent = hogares.length;
@@ -457,7 +457,7 @@ function renderDashboard(data) {
   document.getElementById('kAdultos').textContent = adultos.length;
   const pts = hogares.map(r=>n(r['Puntaje vulnerabilidad'])).filter(v=>v>0);
   const avgPts = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
-  document.getElementById('kPuntajePromedio').textContent = avgPts;
+  document.getElementById('kPuntaje').textContent = avgPts;
 
   // ── Duplicados (mismo ID repetido)
   const ids = hogares.map(r=>r.ID).filter(Boolean);
