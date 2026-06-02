@@ -72,6 +72,8 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
   cursor:pointer;
   transition:all .2s;
   background:var(--surface);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 #uploadZone:hover, #uploadZone.drag { border-color:var(--accent);background:#1C2B3A; }
 #uploadZone h2 { font-family:'Syne',sans-serif;font-size:18px;color:var(--text);margin-bottom:8px; }
@@ -81,9 +83,11 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
 .btn-upload {
   display:inline-block;margin-top:16px;
   background:var(--accent);color:#0D1117;
-  padding:10px 24px;border-radius:8px;
-  font-weight:600;font-size:13px;cursor:pointer;
+  padding:12px 28px;border-radius:8px;
+  font-weight:600;font-size:14px;cursor:pointer;
   border:none;transition:opacity .2s;
+  min-height:44px;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
 .btn-upload:hover { opacity:.85; }
 .file-chips { display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px; }
@@ -139,10 +143,32 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
 
 @media(max-width:900px){
   .grid-3,.grid-2 { grid-template-columns:1fr; }
-  header,#uploadZone,#filters,#dashboard { padding-left:16px;padding-right:16px; }
-  #uploadZone { margin:16px; }
-  #filters { margin:0 16px 16px; }
-  #dashboard { padding:0 16px 32px; }
+  header { padding:0 !important; }
+  header > div:first-child { padding:14px 16px !important; gap:12px !important; }
+  header > div:first-child img { height:50px !important; }
+  header > div:first-child h1 { font-size:17px !important; }
+  header > div:last-child { padding:12px 16px !important; }
+  .header-stats { gap:8px !important; flex-wrap:wrap; }
+  .hstat { min-width:calc(50% - 8px) !important; padding:8px 10px !important; }
+  .hstat-val { font-size:20px !important; }
+  #uploadZone { margin:12px !important; padding:24px 16px !important; }
+  #filters { margin:0 12px 12px !important; padding:12px !important; flex-direction:column !important; gap:10px !important; }
+  #filters select, #filters input { width:100% !important; }
+  .btn-clear, .btn-export { margin-top:4px !important; width:100% !important; justify-content:center; }
+  #dashboard { padding:0 12px 32px !important; }
+  .kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
+  .kpi-val { font-size:22px !important; }
+  table { font-size:11px !important; }
+  th, td { padding:6px 8px !important; }
+  .card { padding:14px !important; }
+  .upload-icon { font-size:36px !important; }
+  #uploadZone h2 { font-size:15px !important; }
+  .btn-upload { width:100%; }
+  .section-title { font-size:10px !important; }
+}
+@media(max-width:480px){
+  .grid-3,.grid-2,.kpi-grid { grid-template-columns:1fr !important; }
+  .hstat { min-width:100% !important; }
 }
 
 /* ── CARDS ───────────────────────────────────────────────── */
@@ -574,7 +600,8 @@ function countBy(arr, field) {
 }
 
 function renderDashboard(data) {
-  const hogares = data.filter(r => r.TIPO_FILA === 'HOGAR');
+  const hogaresRaw = data.filter(r => r.TIPO_FILA === 'HOGAR');
+  const hogares = deduplicarFamilias(hogaresRaw);
   const ninos   = data.filter(r => r.TIPO_FILA === 'NIÑO');
   const adultos = data.filter(r => r.TIPO_FILA === 'ADULTO');
 
@@ -582,14 +609,22 @@ function renderDashboard(data) {
   const comunidades = new Set(hogares.map(r=>(r.Comunidad||'').trim()).filter(Boolean));
   const encuestadores = new Set(hogares.map(r=>(r.Encuestador||'').trim()).filter(Boolean));
   document.getElementById('hFichas').textContent = loadedFiles.length;
-  document.getElementById('hNinos').textContent = ninos.length;
+  document.getElementById('hNinos').textContent = ninosUnicos.length;
   document.getElementById('hAdultos').textContent = adultos.length;
   document.getElementById('hComunidades').textContent = comunidades.size;
   document.getElementById('hEncuestadores').textContent = encuestadores.size;
 
   // ── KPIs
   document.getElementById('kHogares').textContent = hogares.length;
-  document.getElementById('kNinos').textContent = ninos.length;
+  // Niños: deduplicar por ID+nombre con lógica ecuatoriana
+  const ninosVistos = new Set();
+  const ninosUnicos = ninos.filter(n => {
+    const key = (n.ID||'') + '|' + limpiarNombre(n['Nombre niño/a']||'');
+    if (ninosVistos.has(key)) return false;
+    ninosVistos.add(key); return true;
+  });
+  document.getElementById('kNinos').textContent = ninosUnicos.length;
+  // Adultos: una fila = un adulto (sec7)
   document.getElementById('kAdultos').textContent = adultos.length;
   const pts = hogares.map(r=>n(r['Puntaje vulnerabilidad'])).filter(v=>v>0);
   const avgPts = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
@@ -780,6 +815,55 @@ function renderDashboard(data) {
       <td><span class="vul-badge vul-${vul}">${vul||'—'}</span></td>
     </tr>`;
   }).join('');
+}
+
+// ── LÓGICA NOMBRES ECUATORIANOS ──────────────────────────────────────────
+function limpiarNombre(s) {
+  return (s||'').toString().trim().toLowerCase().replace(/\s+/g,' ').replace(/nan/g,'');
+}
+
+function similitud(a, b) {
+  if (!a || !b) return 0;
+  const longer = a.length > b.length ? a : b;
+  const shorter = a.length > b.length ? b : a;
+  if (longer.length === 0) return 1.0;
+  let matches = 0;
+  for (let i = 0; i < shorter.length; i++) {
+    if (longer.includes(shorter[i])) matches++;
+  }
+  // Usar Levenshtein simple
+  const m = a.length, n = b.length;
+  const dp = Array.from({length:m+1}, (_,i) => Array.from({length:n+1}, (_,j) => i===0?j:j===0?i:0));
+  for (let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return 1 - dp[m][n]/Math.max(m,n);
+}
+
+function parsearNombreEC(nombre) {
+  // Ecuador: nombre1 nombre2 apellido1 apellido2
+  const partes = limpiarNombre(nombre).split(' ').filter(Boolean);
+  if (partes.length >= 4) return { nombres: partes.slice(0,2).join(' '), apellidos: partes.slice(2).join(' ') };
+  if (partes.length === 3) return { nombres: partes[0], apellidos: partes.slice(1).join(' ') };
+  if (partes.length === 2) return { nombres: partes[0], apellidos: partes[1] };
+  return { nombres: limpiarNombre(nombre), apellidos: '' };
+}
+
+function esDuplicadoEC(nomA, nomB) {
+  if (!nomA || !nomB) return false;
+  const a = parsearNombreEC(nomA), b = parsearNombreEC(nomB);
+  const simApe = similitud(a.apellidos, b.apellidos);
+  const simNom = similitud(a.nombres, b.nombres);
+  return simApe >= 0.85 && simNom >= 0.75;
+}
+
+function deduplicarFamilias(hogares) {
+  const vistos = [];
+  return hogares.filter(h => {
+    const nom = limpiarNombre(h['Nombre padre'] || h['Nombre madre'] || '');
+    const isDup = vistos.some(v => esDuplicadoEC(nom, v));
+    if (!isDup && nom) vistos.push(nom);
+    return !isDup;
+  });
 }
 
 // ── EXPORT CSV CONSOLIDADO ────────────────────────────────────────────────
