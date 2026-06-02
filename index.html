@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* TABS */
 .tabs{display:flex;overflow-x:auto;background:var(--blue);padding:0 8px 8px;gap:4px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);background:transparent;white-space:nowrap;transition:all .15s}
+.tab{flex-shrink:0;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);background:transparent;white-space:nowrap;transition:all .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .tab.active{background:white;color:var(--blue);border-color:white}
 .tab.done{background:rgba(74,222,128,.2);color:#4ADE80;border-color:#4ADE80}
 .tab.child-tab{border-color:rgba(26,107,90,.5);color:rgba(255,255,255,.8)}
@@ -169,7 +169,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* BUTTONS */
 .btn-row{display:flex;gap:7px;margin-top:14px}
-.btn{padding:13px 18px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .12s;flex:1}
+.btn{padding:13px 18px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .12s;flex:1;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--blue);color:white}
 .btn-secondary{background:var(--gray);color:var(--mid)}
@@ -2818,10 +2818,7 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // ── FECHA PRIMERO — antes de cualquier reset ──
-  const now = new Date();
-  const today = now.getFullYear() + '-' +
-    String(now.getMonth()+1).padStart(2,'0') + '-' +
-    String(now.getDate()).padStart(2,'0');
+  const now = new Date(); const today = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
   const fe = document.getElementById('fechaVisita');
   if (fe) fe.value = today;
 
@@ -2847,11 +2844,9 @@ document.addEventListener('DOMContentLoaded', () => {
   buildChildTabs();
   try { aplicarSinMenores(); } catch(e) { console.warn('aplicarSinMenores error:', e); }
   buildAdultosNav();
-  verificarYRecuperarBackup();
-  autoBackup();
 });
 
-// ── OFFLINE ───────────────────────────────────────────────────────────
+// ── OFFLINE ───────────────────────────────────────────────────────────}
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
 function validarSeccionHijos(sec) {
@@ -3483,7 +3478,9 @@ if ('serviceWorker' in navigator) {
     .catch(e => console.warn('SW error:', e));
 }
 
-// ── ENCUESTADOR + NUMERACIÓN AUTOMÁTICA ──────────────────────────────────
+// ── iOS SAFARI FIX — forzar reconocimiento de tap en botones ──
+document.addEventListener('touchstart', function(){}, {passive:true});
+
 
 function getEncuestadorNombre() {
   const sel = document.getElementById('encuestador').value;
