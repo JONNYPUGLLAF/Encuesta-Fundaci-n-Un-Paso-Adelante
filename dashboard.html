@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · Fundación Dar un Paso Adelante</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --azul:#1B3A6B; --verde:#1A6B5A; --teal:#0F9B8E;
+  --naranja:#C2410C; --amber:#B45309;
+  --baja:#22C55E; --media:#F59E0B; --alta:#EF4444; --urgente:#7C2D12;
+  --bg:#0D1117; --surface:#161B22; --card:#1C2128;
+  --border:#30363D; --text:#E6EDF3; --muted:#8B949E;
+  --accent:#58A6FF;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+header {
+  background:linear-gradient(135deg,var(--azul) 0%,#0F2547 50%,var(--verde) 100%);
+  padding:32px 40px 24px;
+  position:relative;
+  overflow:hidden;
+}
+header::before {
+  content:'';
+  position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.header-inner { position:relative;z-index:1; }
+.header-top { display:flex;align-items:center;gap:16px;margin-bottom:8px; }
+.logo-circle {
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,0.2);
+}
+h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
+.header-sub { font-size:13px;color:rgba(255,255,255,0.65);font-weight:300; }
+.header-stats {
+  display:flex;gap:24px;margin-top:20px;flex-wrap:wrap;
+}
+.hstat {
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:10px;padding:10px 16px;backdrop-filter:blur(8px);
+  min-width:120px;
+}
+.hstat-val { font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:#fff; }
+.hstat-lbl { font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px; }
+
+/* ── UPLOAD ZONE ─────────────────────────────────────────── */
+#uploadZone {
+  margin:32px 40px;
+  border:2px dashed var(--border);
+  border-radius:16px;
+  padding:40px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--surface);
+}
+#uploadZone:hover, #uploadZone.drag { border-color:var(--accent);background:#1C2B3A; }
+#uploadZone h2 { font-family:'Syne',sans-serif;font-size:18px;color:var(--text);margin-bottom:8px; }
+#uploadZone p { color:var(--muted);font-size:13px; }
+#uploadZone .upload-icon { font-size:48px;margin-bottom:12px; }
+#fileInput { display:none; }
+.btn-upload {
+  display:inline-block;margin-top:16px;
+  background:var(--accent);color:#0D1117;
+  padding:10px 24px;border-radius:8px;
+  font-weight:600;font-size:13px;cursor:pointer;
+  border:none;transition:opacity .2s;
+}
+.btn-upload:hover { opacity:.85; }
+.file-chips { display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px; }
+.chip {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:4px 12px;font-size:12px;
+  color:var(--muted);display:flex;align-items:center;gap:6px;
+}
+.chip .rm { cursor:pointer;color:var(--alta);font-weight:700; }
+
+/* ── FILTERS ─────────────────────────────────────────────── */
+#filters {
+  display:none;
+  margin:0 40px 24px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;padding:16px 20px;
+  gap:16px;flex-wrap:wrap;align-items:center;
+}
+#filters label { font-size:12px;color:var(--muted);margin-bottom:4px;display:block; }
+#filters select, #filters input {
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:7px 12px;
+  font-size:13px;font-family:'DM Sans',sans-serif;
+  min-width:140px;
+}
+.filter-group { display:flex;flex-direction:column; }
+.btn-clear {
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);border-radius:8px;padding:7px 14px;
+  font-size:12px;cursor:pointer;margin-top:18px;
+  transition:all .15s;
+}
+.btn-clear:hover { border-color:var(--alta);color:var(--alta); }
+
+/* ── DASHBOARD GRID ──────────────────────────────────────── */
+#dashboard { display:none;padding:0 40px 40px; }
+
+.section-title {
+  font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin:28px 0 12px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title::after {
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+.grid-3 { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
+.grid-2 { display:grid;grid-template-columns:repeat(2,1fr);gap:16px; }
+.grid-1 { display:grid;grid-template-columns:1fr;gap:16px; }
+
+@media(max-width:900px){
+  .grid-3,.grid-2 { grid-template-columns:1fr; }
+  header,#uploadZone,#filters,#dashboard { padding-left:16px;padding-right:16px; }
+  #uploadZone { margin:16px; }
+  #filters { margin:0 16px 16px; }
+  #dashboard { padding:0 16px 32px; }
+}
+
+/* ── CARDS ───────────────────────────────────────────────── */
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--teal),var(--accent));
+  opacity:0;transition:opacity .2s;
+}
+.card:hover::before { opacity:1; }
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;
+}
+.card canvas { max-height:220px; }
+
+/* KPI cards */
+.kpi-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px; }
+@media(max-width:900px){ .kpi-grid { grid-template-columns:repeat(2,1fr); } }
+
+.kpi {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;gap:4px;
+  transition:transform .15s;
+}
+.kpi:hover { transform:translateY(-2px); }
+.kpi-icon { font-size:22px;margin-bottom:4px; }
+.kpi-val { font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text); }
+.kpi-lbl { font-size:11px;color:var(--muted); }
+.kpi-delta { font-size:11px;margin-top:4px; }
+
+/* Vulnerabilidad badges */
+.vul-badge {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+}
+.vul-BAJA { background:rgba(34,197,94,.15);color:#22C55E; }
+.vul-MEDIA { background:rgba(245,158,11,.15);color:#F59E0B; }
+.vul-ALTA { background:rgba(239,68,68,.15);color:#EF4444; }
+.vul-URGENTE { background:rgba(124,45,18,.3);color:#FB923C; }
+
+/* Table */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%;border-collapse:collapse;font-size:12px; }
+th {
+  text-align:left;padding:10px 12px;
+  background:rgba(255,255,255,.04);
+  border-bottom:1px solid var(--border);
+  font-family:'Syne',sans-serif;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;
+}
+td { padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,.02); }
+
+/* Percepción radar */
+.perc-bars { display:flex;flex-direction:column;gap:10px; }
+.perc-row { display:flex;align-items:center;gap:10px; }
+.perc-lbl { font-size:11px;color:var(--muted);min-width:140px;text-align:right; }
+.perc-track {
+  flex:1;height:6px;background:rgba(255,255,255,.06);
+  border-radius:3px;overflow:hidden;
+}
+.perc-fill {
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--teal),var(--accent));
+  transition:width .6s ease;
+}
+.perc-num { font-size:11px;font-weight:600;color:var(--text);min-width:24px; }
+
+/* Alert strip */
+.alert-strip {
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
+  border-radius:10px;padding:12px 16px;margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:10px;font-size:12px;
+}
+.alert-strip .icon { font-size:16px;flex-shrink:0;margin-top:1px; }
+.alert-strip strong { color:#EF4444; }
+
+/* Loader */
+#loader {
+  display:none;text-align:center;padding:40px;
+  color:var(--muted);font-size:14px;
+}
+.spinner {
+  width:32px;height:32px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;margin:0 auto 12px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* Duplicates warning */
+.dup-warning {
+  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);
+  border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:12px;
+}
+.dup-warning strong { color:#F59E0B; }
+
+/* Export btn */
+.btn-export {
+  background:linear-gradient(135deg,var(--verde),var(--teal));
+  color:#fff;border:none;border-radius:8px;
+  padding:10px 20px;font-size:13px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  font-family:'DM Sans',sans-serif;transition:opacity .2s;
+}
+.btn-export:hover { opacity:.85; }
+
+/* No data */
+.no-data { color:var(--muted);font-size:13px;text-align:center;padding:32px;opacity:.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo-circle">🦅</div>
+      <div>
+        <h1>Dashboard de Vulnerabilidad Familiar</h1>
+        <div class="header-sub">Fundación Dar un Paso Adelante · Pueblo Shuar · Morona Santiago</div>
+      </div>
+    </div>
+    <div class="header-stats" id="headerStats">
+      <div class="hstat"><div class="hstat-val" id="hFichas">—</div><div class="hstat-lbl">Fichas cargadas</div></div>
+      <div class="hstat"><div class="hstat-val" id="hNinos">—</div><div class="hstat-lbl">Niños/as</div></div>
+      <div class="hstat"><div class="hstat-val" id="hAdultos">—</div><div class="hstat-lbl">Adultos/as</div></div>
+      <div class="hstat"><div class="hstat-val" id="hComunidades">—</div><div class="hstat-lbl">Comunidades</div></div>
+      <div class="hstat"><div class="hstat-val" id="hEncuestadores">—</div><div class="hstat-lbl">Encuestadores</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- UPLOAD -->
+<div id="uploadZone" onclick="document.getElementById('fileInput').click()"
+     ondragover="ev.preventDefault();this.classList.add('drag')"
+     ondragleave="this.classList.remove('drag')"
+     ondrop="handleDrop(event)">
+  <div class="upload-icon">📂</div>
+  <h2>Sube uno o varios archivos CSV</h2>
+  <p>Exporta el CSV desde la app de encuesta y arrástralo aquí.<br>Puedes combinar archivos de varios encuestadores — los duplicados se detectan automáticamente.</p>
+  <div class="file-chips" id="fileChips"></div>
+  <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📁 Seleccionar archivos</button>
+  <input type="file" id="fileInput" multiple accept=".csv" onchange="handleFiles(this.files)">
+</div>
+
+<!-- LOADER -->
+<div id="loader"><div class="spinner"></div>Procesando datos…</div>
+
+<!-- FILTERS -->
+<div id="filters" style="display:flex">
+  <div class="filter-group">
+    <label>Comunidad</label>
+    <select id="fComunidad" onchange="applyFilters()">
+      <option value="">Todas</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Encuestador</label>
+    <select id="fEncuestador" onchange="applyFilters()">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Vulnerabilidad</label>
+    <select id="fVulnerabilidad" onchange="applyFilters()">
+      <option value="">Todas</option>
+      <option>BAJA</option><option>MEDIA</option><option>ALTA</option><option>URGENTE</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Fecha desde</label>
+    <input type="date" id="fFechaDesde" onchange="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <label>Fecha hasta</label>
+    <input type="date" id="fFechaHasta" onchange="applyFilters()">
+  </div>
+  <button class="btn-clear" onclick="clearFilters()">✕ Limpiar</button>
+  <button class="btn-export" onclick="exportConsolidado()" style="margin-top:18px;margin-left:auto">
+    ⬇️ Exportar consolidado
+  </button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <!-- Duplicados -->
+  <div id="dupWarning"></div>
+  <div id="alertas"></div>
+
+  <!-- KPIs -->
+  <div class="section-title">📊 Resumen General</div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-icon">🏠</div><div class="kpi-val" id="kHogares">0</div><div class="kpi-lbl">Hogares</div></div>
+    <div class="kpi"><div class="kpi-icon">👶</div><div class="kpi-val" id="kNinos">0</div><div class="kpi-lbl">Niños/as registrados</div></div>
+    <div class="kpi"><div class="kpi-icon">👤</div><div class="kpi-val" id="kAdultos">0</div><div class="kpi-lbl">Adultos/as</div></div>
+    <div class="kpi"><div class="kpi-icon">⚡</div><div class="kpi-val" id="kPuntajePromedio">0</div><div class="kpi-lbl">Puntaje vulnerabilidad promedio</div></div>
+  </div>
+
+  <!-- Row 1: Vulnerabilidad + Puntajes + Comunidades -->
+  <div class="section-title">🎯 Vulnerabilidad</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-title">Distribución general</div><canvas id="cVulPie"></canvas></div>
+    <div class="card"><div class="card-title">Puntaje por hogar</div><canvas id="cPuntajes"></canvas></div>
+    <div class="card"><div class="card-title">Por comunidad</div><canvas id="cVulComunidad"></canvas></div>
+  </div>
+
+  <!-- Row 2: Educación -->
+  <div class="section-title">📚 Educación (Niños/as)</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-title">Asistencia escolar</div><canvas id="cAsistencia"></canvas></div>
+    <div class="card"><div class="card-title">Nivel educativo</div><canvas id="cNivel"></canvas></div>
+    <div class="card"><div class="card-title">Abandono escolar</div><canvas id="cAbandono"></canvas></div>
+  </div>
+
+  <!-- Row 3: Salud niños -->
+  <div class="section-title">🏥 Salud (Niños/as)</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-title">Estado nutricional (OMS)</div><canvas id="cNutri"></canvas></div>
+    <div class="card"><div class="card-title">Vacunación</div><canvas id="cVacunas"></canvas></div>
+    <div class="card"><div class="card-title">Atención médica</div><canvas id="cAtencion"></canvas></div>
+  </div>
+
+  <!-- Row 4: Infraestructura + Economía -->
+  <div class="section-title">🏗️ Infraestructura y Economía</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-title">Fuente de agua</div><canvas id="cAgua"></canvas></div>
+    <div class="card"><div class="card-title">Electricidad</div><canvas id="cElectricidad"></canvas></div>
+    <div class="card"><div class="card-title">Ingreso mensual</div><canvas id="cIngreso"></canvas></div>
+  </div>
+
+  <!-- Row 5: Adultos -->
+  <div class="section-title">👥 Adultos del Hogar</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-title">Adultos que estudian</div><canvas id="cAdultoEstudia"></canvas></div>
+    <div class="card"><div class="card-title">Salud bucal (¿faltan dientes?)</div><canvas id="cDientes"></canvas></div>
+    <div class="card"><div class="card-title">Última visita al odontólogo</div><canvas id="cOdontologo"></canvas></div>
+  </div>
+
+  <!-- Row 6: Percepción -->
+  <div class="section-title">💬 Percepción del Cuidador (promedio 1–5)</div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Indicadores de percepción</div><div class="perc-bars" id="percBars"></div></div>
+    <div class="card"><div class="card-title">Dinámica familiar</div><canvas id="cDinamica"></canvas></div>
+  </div>
+
+  <!-- Row 7: Tabla hogares -->
+  <div class="section-title">📋 Detalle por Hogar</div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table id="tablaHogares">
+        <thead><tr>
+          <th>#</th><th>Comunidad</th><th>Fecha</th><th>Encuestador</th>
+          <th>Familia</th><th>Personas</th><th>Menores</th>
+          <th>Ingreso</th><th>Puntaje</th><th>Nivel</th>
+        </tr></thead>
+        <tbody id="tbodyHogares"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+let allData = []; // raw rows from all CSVs
+let loadedFiles = [];
+let charts = {};
+
+function handleDrop(ev) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag');
+  handleFiles(ev.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('uploadZone').style.display = 'none';
+  let pending = files.length;
+  Array.from(files).forEach(file => {
+    Papa.parse(file, {
+      header: true, skipEmptyLines: true, dynamicTyping: false,
+      complete: result => {
+        // Add source filename
+        result.data.forEach(r => r._source = file.name);
+        allData = [...allData, ...result.data];
+        loadedFiles.push(file.name);
+        pending--;
+        if (pending === 0) buildDashboard();
+      }
+    });
+  });
+}
+
+function buildDashboard() {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('filters').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // Update file chips
+  const chips = document.getElementById('fileChips');
+  chips.innerHTML = loadedFiles.map((f,i) =>
+    `<div class="chip">📄 ${f} <span class="rm" onclick="removeFile(${i})">✕</span></div>`
+  ).join('');
+
+  populateFilterOptions();
+  applyFilters();
+}
+
+function removeFile(idx) {
+  loadedFiles.splice(idx,1);
+  // Rebuild allData (keep rows from remaining files)
+  const remaining = new Set(loadedFiles);
+  allData = allData.filter(r => remaining.has(r._source));
+  if (allData.length === 0) {
+    document.getElementById('filters').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('fileChips').innerHTML = '';
+    return;
+  }
+  buildDashboard();
+}
+
+function populateFilterOptions() {
+  const hogares = allData.filter(r => r.TIPO_FILA === 'HOGAR');
+  const comunidades = [...new Set(hogares.map(r => (r.Comunidad||'').trim()).filter(Boolean))].sort();
+  const encuestadores = [...new Set(hogares.map(r => (r.Encuestador||'').trim()).filter(Boolean))].sort();
+
+  const fC = document.getElementById('fComunidad');
+  fC.innerHTML = '<option value="">Todas</option>' + comunidades.map(c=>`<option>${c}</option>`).join('');
+  const fE = document.getElementById('fEncuestador');
+  fE.innerHTML = '<option value="">Todos</option>' + encuestadores.map(e=>`<option>${e}</option>`).join('');
+}
+
+function clearFilters() {
+  ['fComunidad','fEncuestador','fVulnerabilidad','fFechaDesde','fFechaHasta']
+    .forEach(id => document.getElementById(id).value = '');
+  applyFilters();
+}
+
+function applyFilters() {
+  const fC = document.getElementById('fComunidad').value;
+  const fE = document.getElementById('fEncuestador').value;
+  const fV = document.getElementById('fVulnerabilidad').value;
+  const fD = document.getElementById('fFechaDesde').value;
+  const fH = document.getElementById('fFechaHasta').value;
+
+  let filtered = allData.filter(r => {
+    const com = (r.Comunidad||'').trim();
+    const enc = (r.Encuestador||'').trim();
+    const vul = (r['Nivel vulnerabilidad']||'').trim();
+    const fecha = (r.Fecha||'').slice(0,10);
+    if (fC && com !== fC) return false;
+    if (fE && enc !== fE) return false;
+    if (fV && vul !== fV) return false;
+    if (fD && fecha < fD) return false;
+    if (fH && fecha > fH) return false;
+    return true;
+  });
+
+  renderDashboard(filtered);
+}
+
+function n(v) { return parseFloat(v) || 0; }
+function pct(a,b) { return b ? Math.round(a/b*100)+'%' : '0%'; }
+
+const PALETTE = {
+  azul:'#1B3A6B', verde:'#1A6B5A', teal:'#0F9B8E',
+  accent:'#58A6FF', amber:'#F59E0B', naranja:'#EF4444',
+  baja:'#22C55E', media:'#F59E0B', alta:'#EF4444', urgente:'#FB923C',
+  muted:'#8B949E'
+};
+
+const VUL_COLORS = { BAJA:'#22C55E', MEDIA:'#F59E0B', ALTA:'#EF4444', URGENTE:'#FB923C' };
+
+function mkChart(id, type, data, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, {
+    type,
+    data,
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins: {
+        legend: { labels:{ color:'#8B949E', font:{size:11}, boxWidth:12 } },
+        tooltip: { backgroundColor:'#1C2128', titleColor:'#E6EDF3', bodyColor:'#8B949E',
+                   borderColor:'#30363D', borderWidth:1 }
+      },
+      scales: type==='bar'||type==='horizontalBar' ? {
+        x:{ ticks:{color:'#8B949E',font:{size:10}}, grid:{color:'rgba(255,255,255,.04)'} },
+        y:{ ticks:{color:'#8B949E',font:{size:10}}, grid:{color:'rgba(255,255,255,.04)'} }
+      } : undefined,
+      ...opts
+    }
+  });
+}
+
+function countBy(arr, field) {
+  const counts = {};
+  arr.forEach(r => {
+    const v = (r[field]||'Sin datos').trim();
+    counts[v] = (counts[v]||0) + 1;
+  });
+  return counts;
+}
+
+function renderDashboard(data) {
+  const hogares = data.filter(r => r.TIPO_FILA === 'HOGAR');
+  const ninos   = data.filter(r => r.TIPO_FILA === 'NIÑO');
+  const adultos = data.filter(r => r.TIPO_FILA === 'ADULTO');
+
+  // ── Header stats
+  const comunidades = new Set(hogares.map(r=>(r.Comunidad||'').trim()).filter(Boolean));
+  const encuestadores = new Set(hogares.map(r=>(r.Encuestador||'').trim()).filter(Boolean));
+  document.getElementById('hFichas').textContent = loadedFiles.length;
+  document.getElementById('hNinos').textContent = ninos.length;
+  document.getElementById('hAdultos').textContent = adultos.length;
+  document.getElementById('hComunidades').textContent = comunidades.size;
+  document.getElementById('hEncuestadores').textContent = encuestadores.size;
+
+  // ── KPIs
+  document.getElementById('kHogares').textContent = hogares.length;
+  document.getElementById('kNinos').textContent = ninos.length;
+  document.getElementById('kAdultos').textContent = adultos.length;
+  const pts = hogares.map(r=>n(r['Puntaje vulnerabilidad'])).filter(v=>v>0);
+  const avgPts = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
+  document.getElementById('kPuntajePromedio').textContent = avgPts;
+
+  // ── Duplicados (mismo ID repetido)
+  const ids = hogares.map(r=>r.ID).filter(Boolean);
+  const dupIds = ids.filter((id,i) => ids.indexOf(id) !== i);
+  const dupDiv = document.getElementById('dupWarning');
+  if (dupIds.length) {
+    const uDups = [...new Set(dupIds)];
+    dupDiv.innerHTML = `<div class="dup-warning">⚠️ <strong>Se detectaron ${uDups.length} fichas con ID duplicado</strong> — probablemente el mismo hogar subido por dos encuestadores. Se muestran todas las entradas. IDs: ${uDups.join(', ')}</div>`;
+  } else {
+    dupDiv.innerHTML = '<div style="font-size:11px;color:#22C55E;margin-bottom:8px">✅ Sin duplicados detectados</div>';
+  }
+
+  // ── Alertas (ALTA o URGENTE)
+  const alertas = hogares.filter(r => r['Nivel vulnerabilidad']==='ALTA'||r['Nivel vulnerabilidad']==='URGENTE');
+  const alertDiv = document.getElementById('alertas');
+  alertDiv.innerHTML = alertas.map(r => {
+    const familia = [r['Nombre padre'],r['Nombre madre']].filter(v=>v&&v.trim()&&v.trim()!=='nan').map(v=>v.trim()).join(' / ');
+    return `<div class="alert-strip"><span class="icon">🚨</span><div><strong>${r['Nivel vulnerabilidad']} — ${familia||'Familia sin nombre'}</strong><br><span style="color:#8B949E">${(r.Comunidad||'').trim()} · ${(r.Fecha||'').slice(0,10)} · Puntaje: ${r['Puntaje vulnerabilidad']}</span></div></div>`;
+  }).join('');
+
+  // ── Chart helpers
+  function pieChart(id, field, src, colorMap={}) {
+    const counts = countBy(src, field);
+    const labels = Object.keys(counts);
+    const colors = labels.map(l => colorMap[l] || `hsl(${Math.random()*360},55%,55%)`);
+    mkChart(id,'doughnut',{
+      labels, datasets:[{ data:Object.values(counts), backgroundColor:colors,
+        borderWidth:2, borderColor:'#1C2128' }]
+    },{plugins:{legend:{position:'bottom'}}});
+  }
+
+  function barChart(id, field, src, horizontal=false) {
+    const counts = countBy(src, field);
+    const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const labels = sorted.map(e=>e[0].length>18?e[0].slice(0,18)+'…':e[0]);
+    const vals = sorted.map(e=>e[1]);
+    const colors = vals.map((_,i)=>`hsla(${200+i*25},70%,55%,0.85)`);
+    mkChart(id, horizontal?'bar':'bar',{
+      labels, datasets:[{ data:vals, backgroundColor:colors,
+        borderRadius:6, borderSkipped:false }]
+    },{indexAxis: horizontal?'y':'x', plugins:{legend:{display:false}}});
+  }
+
+  // ── VULNERABILIDAD
+  const vulCounts = countBy(hogares,'Nivel vulnerabilidad');
+  mkChart('cVulPie','doughnut',{
+    labels: Object.keys(vulCounts),
+    datasets:[{ data:Object.values(vulCounts),
+      backgroundColor: Object.keys(vulCounts).map(k=>VUL_COLORS[k]||'#999'),
+      borderWidth:2, borderColor:'#1C2128' }]
+  },{plugins:{legend:{position:'bottom'}}});
+
+  // Puntajes por hogar
+  const pHogares = hogares.filter(r=>r['Puntaje vulnerabilidad']);
+  const pLabels = pHogares.map(r=>{
+    const p = (r['Nombre padre']||r['Nombre madre']||'Hogar').trim();
+    return p.split(' ')[0].slice(0,12);
+  });
+  mkChart('cPuntajes','bar',{
+    labels: pLabels,
+    datasets:[{
+      label:'Puntaje',
+      data: pHogares.map(r=>n(r['Puntaje vulnerabilidad'])),
+      backgroundColor: pHogares.map(r=>VUL_COLORS[r['Nivel vulnerabilidad']]||'#999'),
+      borderRadius:6, borderSkipped:false
+    }]
+  },{plugins:{legend:{display:false}},scales:{y:{max:35,beginAtZero:true}}});
+
+  // Por comunidad
+  const comVul = {};
+  hogares.forEach(r=>{
+    const c=(r.Comunidad||'').trim()||'Sin nombre';
+    if(!comVul[c]) comVul[c]={BAJA:0,MEDIA:0,ALTA:0,URGENTE:0};
+    comVul[c][r['Nivel vulnerabilidad']]=(comVul[c][r['Nivel vulnerabilidad']]||0)+1;
+  });
+  const comLabels=Object.keys(comVul);
+  mkChart('cVulComunidad','bar',{
+    labels:comLabels,
+    datasets:[
+      {label:'BAJA',data:comLabels.map(c=>comVul[c].BAJA||0),backgroundColor:'#22C55E',borderRadius:4},
+      {label:'MEDIA',data:comLabels.map(c=>comVul[c].MEDIA||0),backgroundColor:'#F59E0B',borderRadius:4},
+      {label:'ALTA',data:comLabels.map(c=>comVul[c].ALTA||0),backgroundColor:'#EF4444',borderRadius:4},
+      {label:'URGENTE',data:comLabels.map(c=>comVul[c].URGENTE||0),backgroundColor:'#FB923C',borderRadius:4},
+    ]
+  },{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}});
+
+  // ── EDUCACIÓN
+  pieChart('cAsistencia','Asiste a escuela',ninos,{
+    'Sí, de manera regular':'#22C55E','Sí, de manera irregular':'#F59E0B',
+    'No asiste':'#EF4444','Edad pre-escolar':'#58A6FF','No estudia':'#8B949E'});
+  barChart('cNivel','Nivel educativo',ninos,true);
+  pieChart('cAbandono','Abandono escolar',ninos,{'No':'#22C55E','Sí, 1 vez':'#F59E0B','Sí, varias veces':'#EF4444'});
+
+  // ── SALUD NIÑOS
+  const nutField = 'Estado nutricional (OMS)';
+  pieChart('cNutri', nutField, ninos,{
+    'Normal':'#22C55E','Sobrepeso':'#F59E0B','Obesidad':'#EF4444',
+    'Desnutrición leve':'#FB923C','Desnutrición moderada':'#DC2626','Desnutrición severa':'#7C2D12'});
+  pieChart('cVacunas','Vacunas',ninos,{
+    'Al día/completo':'#22C55E','Incompleto':'#F59E0B','No tiene/no sabe':'#EF4444'});
+  pieChart('cAtencion','Atención médica',ninos,{
+    'Ministerio Salud Pública':'#58A6FF','Hospital IESS':'#22C55E',
+    'Medicina ancestral':'#0F9B8E','Clínica privada':'#8B949E'});
+
+  // ── INFRAESTRUCTURA
+  pieChart('cAgua','Fuente agua',hogares);
+  pieChart('cElectricidad','Electricidad',hogares,{
+    'Red eléctrica':'#22C55E','Panel solar':'#F59E0B','Sin energía':'#EF4444'});
+  pieChart('cIngreso','Ingreso mensual',hogares,{
+    'Menos de $50':'#EF4444','$50–$200':'#F59E0B','$200–$500':'#22C55E',
+    'Más de $500':'#58A6FF','Sueldo Básico $482':'#0F9B8E'});
+
+  // ── ADULTOS
+  pieChart('cAdultoEstudia','Adulto estudia',adultos,{'Sí':'#22C55E','No':'#EF4444','—':'#8B949E'});
+  pieChart('cDientes','Adulto faltan dientes',adultos,{
+    'No, dentadura completa':'#22C55E','Sí, algunos dientes':'#F59E0B',
+    'Sí, la mayoría':'#EF4444','No tiene dientes':'#7C2D12'});
+  pieChart('cOdontologo','Adulto última visita odontólogo',adultos,{
+    'Menos de 1 año':'#22C55E','Entre 1 y 3 años':'#F59E0B',
+    'Más de 3 años':'#EF4444','Nunca ha ido':'#7C2D12'});
+
+  // ── PERCEPCIÓN
+  const percFields = [
+    ['Perc: Seguridad hogar','Seguridad en el hogar'],
+    ['Perc: Alimentación familia','Alimentación familiar'],
+    ['Perc: Capacidad cuidar hijos','Capacidad de cuidar hijos'],
+    ['Perc: Futuro de hijos','Futuro de los hijos'],
+    ['Perc: Importancia escuela','Importancia de la escuela'],
+    ['Perc: Control emocional adultos','Control emocional'],
+    ['Perc: Relación adultos hogar','Relación entre adultos'],
+    ['Perc: Confianza servicios salud','Confianza en salud'],
+    ['Perc: Confianza en Fundación','Confianza en Fundación'],
+  ];
+  const percDiv = document.getElementById('percBars');
+  percDiv.innerHTML = percFields.map(([field, label]) => {
+    const vals = hogares.map(r=>n(r[field])).filter(v=>v>0);
+    const avg = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+    const pct = avg/5*100;
+    const color = avg>=4?'#22C55E':avg>=3?'#F59E0B':'#EF4444';
+    return `<div class="perc-row">
+      <div class="perc-lbl">${label}</div>
+      <div class="perc-track"><div class="perc-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="perc-num">${avg.toFixed(1)}</div>
+    </div>`;
+  }).join('');
+
+  // ── DINÁMICA FAMILIAR
+  const dinFields = ['Peleas entre adultos','Alcohol en hogar','Chicha en hogar'];
+  const dinLabels = ['Peleas','Alcohol','Chicha'];
+  const dinCounts = dinFields.map(f => {
+    const c = countBy(hogares, f);
+    return {
+      si: (c['Frecuentemente']||0)+(c['Muy seguido/violencia']||0)+(c['Sí toman']||0)+(c['Frecuente']||0),
+      av: (c['Ocasionalmente']||0)+(c['Ocasional (fiestas)']||0)+(c['No/raramente']||0),
+      no: (c['No']||0)+(c['No toman']||0)
+    };
+  });
+  mkChart('cDinamica','bar',{
+    labels: dinLabels,
+    datasets:[
+      {label:'Frecuente',data:dinCounts.map(d=>d.si),backgroundColor:'#EF4444',borderRadius:4},
+      {label:'Ocasional',data:dinCounts.map(d=>d.av),backgroundColor:'#F59E0B',borderRadius:4},
+      {label:'No',data:dinCounts.map(d=>d.no),backgroundColor:'#22C55E',borderRadius:4},
+    ]
+  },{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}});
+
+  // ── TABLA HOGARES
+  const tbody = document.getElementById('tbodyHogares');
+  tbody.innerHTML = hogares.map((r,i) => {
+    const padre = (r['Nombre padre']||'').trim();
+    const madre = (r['Nombre madre']||'').trim();
+    const familia = [padre,madre].filter(v=>v&&v!=='nan').map(v=>v.split(' ').slice(0,2).join(' ')).join(' / ')||'—';
+    const vul = (r['Nivel vulnerabilidad']||'').trim();
+    return `<tr>
+      <td style="color:#8B949E">${i+1}</td>
+      <td>${(r.Comunidad||'').trim()}</td>
+      <td style="white-space:nowrap">${(r.Fecha||'').slice(0,10)}</td>
+      <td>${(r.Encuestador||'').trim()}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${familia}</td>
+      <td style="text-align:center">${r['Total personas']||'—'}</td>
+      <td style="text-align:center">${r['Menores de 18']||'0'}</td>
+      <td>${r['Ingreso mensual']||'—'}</td>
+      <td style="text-align:center;font-weight:700">${r['Puntaje vulnerabilidad']||'—'}</td>
+      <td><span class="vul-badge vul-${vul}">${vul||'—'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EXPORT CSV CONSOLIDADO ────────────────────────────────────────────────
+function exportConsolidado() {
+  if (!allData.length) return;
+  // Deduplicate by ID+TIPO_FILA+Niño N° (keep first occurrence)
+  const seen = new Set();
+  const deduped = allData.filter(r => {
+    const key = `${r.ID}|${r.TIPO_FILA}|${r['Niño N°']||''}|${r['Nombre adulto/a']||''}`;
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  const keys = Object.keys(deduped[0]).filter(k=>k!=='_source');
+  const csv = [
+    keys.join(','),
+    ...deduped.map(r => keys.map(k=>`"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))
+  ].join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url;
+  a.download = `fichas_consolidadas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
