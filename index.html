@@ -2333,7 +2333,11 @@ function saveDraft() {
 
 function collectAllData() {
   saveCurrentChildData();
-  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals, sinMenores, adultosSecData };
+  const encSel = document.getElementById('encuestador')?.value;
+  const encNombre = encSel === '__otro__'
+    ? (document.getElementById('encuestadorOtro')?.value || '').trim()
+    : encSel || '';
+  const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals, sinMenores, adultosSecData, encuestadorNombre: encNombre };
   // Global fields
   ['numEncuesta','comunidad','fechaVisita','fechaVisita','totalPersonas','habitaciones',
    'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre',
@@ -2361,6 +2365,7 @@ function collectAllData() {
 
 // ── SAVE FICHA ────────────────────────────────────────────────────────
 function guardarFicha() {
+  confirmarNumEncuesta();
   const data = collectAllData();
   const sc = calcScore();
   data.puntajeVulnerabilidad = sc.score;
@@ -2481,7 +2486,7 @@ function compartirWhatsApp(idx) {
 📋 N° Ficha: ${v(f.numEncuesta)}
 📅 Fecha: ${fecha}
 📍 Comunidad: ${v(f.comunidad)}
-👤 Encuestador/a: ${v(f.encuestador)}
+👤 Encuestador/a: ${v(f.encuestadorNombre || f.encuestador)}
 🛶 Acceso: ${v(f.acceso)}
 ━━━━━━━━━━━━━━━━━━━━━━
 *1. COMPOSICIÓN DEL HOGAR*
@@ -2591,7 +2596,7 @@ function buildCSVRows(fichas) {
       'ID': f.id || '',
       'Fecha': f.fechaVisita || f.timestamp?.slice(0,10) || '',
       'Comunidad': f.comunidad || '',
-      'Encuestador': f.encuestador || '',
+      'Encuestador': f.encuestadorNombre || f.encuestador || '',
       'Acceso': f.acceso || '',
       'N° Encuesta': f.numEncuesta || '',
       'Total personas': f.totalPersonas || '',
@@ -2656,11 +2661,12 @@ function buildCSVRows(fichas) {
       'Prioridad atención': f.prioridadAt || '',
     };
 
-    // Una fila por niño (si hay varios niños, se repite la info del hogar)
+    // Siempre una fila HOGAR primero
+    rows.push({...base, 'TIPO_FILA': 'HOGAR'});
+
+    // Una fila por niño
     const ninos = f.ninos || [];
-    if (ninos.length === 0) {
-      rows.push({...base, 'TIPO_FILA': 'HOGAR'});
-    } else {
+    if (ninos.length > 0) {
       ninos.forEach((n, i) => {
         const d = (f.childData || {})[i] || {};
         const fila = {
@@ -2823,7 +2829,7 @@ document.addEventListener('DOMContentLoaded', () => {
   currentAdultoSec = 0;
   // Reset inputs excepto encuestador y fechaVisita
   document.querySelectorAll('input[type=text],input[type=number],input[type=tel]').forEach(el => {
-    if (el.id !== 'encuestador') el.value = '';
+    if (el.id !== 'encuestador' && el.id !== 'fechaVisita' && el.id !== 'encuestadorOtro') el.value = '';
   });
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
   document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
@@ -3473,6 +3479,85 @@ if ('serviceWorker' in navigator) {
     .then(() => console.log('SW OK'))
     .catch(e => console.warn('SW error:', e));
 }
+
+// ── ENCUESTADOR + NUMERACIÓN AUTOMÁTICA ──────────────────────────────────
+
+function getEncuestadorNombre() {
+  const sel = document.getElementById('encuestador').value;
+  if (sel === '__otro__') {
+    return (document.getElementById('encuestadorOtro').value || '').trim();
+  }
+  return sel;
+}
+
+function getEncuestadorPrefijo(nombre) {
+  if (!nombre) return 'ENC';
+  const clean = nombre.trim().toUpperCase().replace(/[^A-ZÁÉÍÓÚÑ]/g,'');
+  return clean.slice(0,3) || 'ENC';
+}
+
+function getNextNumero(prefijo) {
+  const key = 'enc_contador_' + prefijo;
+  let current = parseInt(localStorage.getItem(key) || '0');
+  current++;
+  localStorage.setItem(key, current);
+  return current;
+}
+
+function onEncuestadorChange() {
+  const sel = document.getElementById('encuestador').value;
+  const otroInput = document.getElementById('encuestadorOtro');
+  if (sel === '__otro__') {
+    otroInput.style.display = 'block';
+    otroInput.focus();
+    document.getElementById('numEncuesta').value = '';
+  } else {
+    otroInput.style.display = 'none';
+    if (sel) {
+      const prefijo = getEncuestadorPrefijo(sel);
+      const key = 'enc_contador_' + prefijo;
+      const current = parseInt(localStorage.getItem(key) || '0') + 1;
+      document.getElementById('numEncuesta').value = prefijo + '-' + String(current).padStart(3,'0');
+    } else {
+      document.getElementById('numEncuesta').value = '';
+    }
+  }
+  autoSave();
+}
+
+function onEncuestadorNombreChange() {
+  const nombre = document.getElementById('encuestadorOtro').value.trim();
+  if (nombre.length >= 3) {
+    const prefijo = getEncuestadorPrefijo(nombre);
+    const key = 'enc_contador_' + prefijo;
+    const current = parseInt(localStorage.getItem(key) || '0') + 1;
+    document.getElementById('numEncuesta').value = prefijo + '-' + String(current).padStart(3,'0');
+  }
+  autoSave();
+}
+
+function confirmarNumEncuesta() {
+  const sel = document.getElementById('encuestador').value;
+  if (sel === '__otro__') {
+    const nombre = document.getElementById('encuestadorOtro').value.trim();
+    if (nombre) {
+      const prefijo = getEncuestadorPrefijo(nombre);
+      const key = 'enc_contador_' + prefijo;
+      let current = parseInt(localStorage.getItem(key) || '0');
+      current++;
+      localStorage.setItem(key, current);
+      document.getElementById('numEncuesta').value = prefijo + '-' + String(current).padStart(3,'0');
+    }
+  } else if (sel) {
+    const prefijo = getEncuestadorPrefijo(sel);
+    const key = 'enc_contador_' + prefijo;
+    let current = parseInt(localStorage.getItem(key) || '0');
+    current++;
+    localStorage.setItem(key, current);
+    document.getElementById('numEncuesta').value = prefijo + '-' + String(current).padStart(3,'0');
+  }
+}
+
 </script>
 </body>
 </html>
