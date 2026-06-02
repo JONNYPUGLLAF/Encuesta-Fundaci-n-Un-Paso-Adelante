@@ -2818,7 +2818,10 @@ if (!navigator.onLine) document.getElementById('offBanner').classList.add('show'
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // ── FECHA PRIMERO — antes de cualquier reset ──
-  const today = new Date().toISOString().slice(0,10);
+  const now = new Date();
+  const today = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0');
   const fe = document.getElementById('fechaVisita');
   if (fe) fe.value = today;
 
@@ -2848,7 +2851,7 @@ document.addEventListener('DOMContentLoaded', () => {
   autoBackup();
 });
 
-// ── OFFLINE ───────────────────────────────────────────────────────────}
+// ── OFFLINE ───────────────────────────────────────────────────────────
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
 function validarSeccionHijos(sec) {
