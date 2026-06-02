@@ -184,11 +184,11 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align
     <div class="card"><div class="card-title">Ingreso mensual</div><canvas id="cIngreso"></canvas></div>
   </div>
 
-  <div class="sec-title">👥 Adultos del Hogar</div>
+  <div class="sec-title">👥 Dinámica Familiar y Salud Bucal</div>
   <div class="grid grid-3">
-    <div class="card"><div class="card-title">¿Estudian?</div><canvas id="cAdultoEstudia"></canvas></div>
-    <div class="card"><div class="card-title">Salud bucal</div><canvas id="cDientes"></canvas></div>
-    <div class="card"><div class="card-title">Última visita odontólogo</div><canvas id="cOdontologo"></canvas></div>
+    <div class="card"><div class="card-title">Peleas entre adultos</div><canvas id="cAdultoEstudia"></canvas></div>
+    <div class="card"><div class="card-title">Condición bucal (niños)</div><canvas id="cDientes"></canvas></div>
+    <div class="card"><div class="card-title">Visita odontólogo (niños)</div><canvas id="cOdontologo"></canvas></div>
   </div>
 
   <div class="sec-title">💬 Percepción del Cuidador</div>
@@ -399,17 +399,50 @@ function mkChart(id, type, data, opts={}) {
   if (!data || !data.datasets || data.datasets.every(d=>!d.data||d.data.length===0)) return;
   try {
   if (charts[id]) charts[id].destroy();
+
+  // Tooltip enriquecido: número + porcentaje
+  const richTooltip = {
+    backgroundColor:'#1C2128',
+    titleColor:'#E6EDF3',
+    bodyColor:'#C9D1D9',
+    borderColor:'#30363D',
+    borderWidth:1,
+    padding:12,
+    cornerRadius:8,
+    callbacks:{
+      label: function(ctx) {
+        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+        const val = ctx.parsed.y !== undefined ? ctx.parsed.y : (ctx.parsed || ctx.raw);
+        const num = typeof val === 'number' ? val : ctx.raw;
+        const pct = total > 0 ? Math.round(num/total*100) : 0;
+        return `  ${num} niños/hogares  (${pct}%)`;
+      },
+      title: function(ctx) {
+        return '  ' + ctx[0].label;
+      }
+    }
+  };
+
   charts[id] = new Chart(ctx, {
     type,
     data,
     options: {
       responsive:true, maintainAspectRatio:true,
+      onClick: (evt, elements) => {
+        if (!elements.length) return;
+        const el = elements[0];
+        const ds = data.datasets[el.datasetIndex];
+        const label = data.labels ? data.labels[el.index] : '';
+        const val = ds.data[el.index];
+        const total = ds.data.reduce((a,b)=>a+b,0);
+        const pct = total > 0 ? Math.round(val/total*100) : 0;
+        showInfoPanel(label, val, pct, id);
+      },
       plugins: {
         legend: { labels:{ color:'#8B949E', font:{size:11}, boxWidth:12 } },
-        tooltip: { backgroundColor:'#1C2128', titleColor:'#E6EDF3', bodyColor:'#8B949E',
-                   borderColor:'#30363D', borderWidth:1 }
+        tooltip: richTooltip
       },
-      scales: type==='bar'||type==='horizontalBar' ? {
+      scales: type==='bar' ? {
         x:{ ticks:{color:'#8B949E',font:{size:10}}, grid:{color:'rgba(255,255,255,.04)'} },
         y:{ ticks:{color:'#8B949E',font:{size:10}}, grid:{color:'rgba(255,255,255,.04)'} }
       } : undefined,
@@ -417,6 +450,88 @@ function mkChart(id, type, data, opts={}) {
     }
   });
   } catch(e) { console.error('Chart error', id, e); }
+}
+
+// Descripciones por categoría para el panel informativo
+const CHART_DESCRIPTIONS = {
+  // Vulnerabilidad
+  'BAJA':    'Familia con recursos básicos cubiertos. Requiere seguimiento preventivo.',
+  'MEDIA':   'Familia con necesidades parcialmente cubiertas. Intervención prioritaria.',
+  'ALTA':    '⚠️ Familia en situación crítica. Requiere atención inmediata.',
+  'URGENTE': '🚨 Situación de emergencia. Intervención urgente requerida.',
+  // Educación
+  'Sí, de manera regular': 'Asistencia escolar regular — situación esperada.',
+  'No asiste':   '⚠️ Niño/a fuera del sistema escolar. Riesgo de rezago educativo.',
+  'No':          'Sin abandono escolar registrado.',
+  'Sí, 1 vez':   'Un episodio de abandono escolar. Requiere seguimiento.',
+  'Sí, varias veces': '⚠️ Abandono escolar reiterado. Situación de riesgo.',
+  // Salud
+  'Al día/completo': 'Vacunación al día — protección adecuada.',
+  'No tiene/no sabe': '⚠️ Sin registro de vacunación. Riesgo sanitario.',
+  'Ministerio Salud Pública': 'Atención médica formal del sistema público.',
+  'Medicina ancestral': 'Atención mediante prácticas médicas tradicionales Shuar.',
+  'Aparentemente sana': 'Condición bucal sin problemas visibles.',
+  'Caries visibles': '⚠️ Presencia de caries. Requiere atención odontológica.',
+  'Dientes faltantes/dañados': '⚠️ Daño dental significativo. Atención urgente.',
+  'Sí, recientemente': 'Visita odontológica reciente — buena práctica.',
+  'Nunca ha ido': '⚠️ Sin atención odontológica. Riesgo de problemas bucales.',
+  // Agua/Electricidad
+  'Agua entubada (no tratada)': '⚠️ Agua entubada sin tratamiento — riesgo de contaminación.',
+  'Agua lluvia': 'Recolección de agua lluvia — calidad variable.',
+  'Río/quebrada': '⚠️ Agua de fuentes abiertas — alto riesgo de contaminación.',
+  'Sin energía': '⚠️ Sin acceso a electricidad. Afecta estudios y refrigeración.',
+  'Panel solar': 'Energía solar — acceso básico a electricidad.',
+  'Red eléctrica': 'Acceso a red eléctrica formal.',
+  // Ingresos
+  'Menos de $50': '⚠️ Ingreso mensual extremadamente bajo. Pobreza severa.',
+  '$50–$200': 'Ingreso mensual bajo. Dificultad para cubrir necesidades básicas.',
+  // Dinámica familiar
+  'No/raramente': 'Sin conflictos frecuentes entre adultos — entorno estable.',
+  'Ocasionalmente': 'Conflictos ocasionales. Requiere seguimiento.',
+  'Frecuentemente': '⚠️ Conflictos frecuentes. Riesgo para los niños/as.',
+};
+
+function showInfoPanel(label, val, pct, chartId) {
+  let panel = document.getElementById('infoPanel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'infoPanel';
+    panel.style.cssText = `
+      position:fixed; bottom:24px; right:24px; z-index:9999;
+      background:#1C2128; border:1px solid #30363D; border-radius:12px;
+      padding:16px 20px; max-width:320px; box-shadow:0 8px 32px rgba(0,0,0,.5);
+      font-family:inherit; color:#E6EDF3; animation:slideIn .2s ease;
+    `;
+    document.body.appendChild(panel);
+    // Add animation style
+    if (!document.getElementById('infoPanelStyle')) {
+      const s = document.createElement('style');
+      s.id = 'infoPanelStyle';
+      s.textContent = `@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`;
+      document.head.appendChild(s);
+    }
+  }
+  const desc = CHART_DESCRIPTIONS[label] || 'Dato registrado en la encuesta de campo.';
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:13px;font-weight:600;color:#58A6FF">${label}</span>
+      <span onclick="this.parentElement.parentElement.remove()" style="cursor:pointer;color:#8B949E;font-size:18px;line-height:1">×</span>
+    </div>
+    <div style="display:flex;gap:20px;margin-bottom:10px">
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:700;color:#E6EDF3">${val}</div>
+        <div style="font-size:10px;color:#8B949E">casos</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:700;color:#58A6FF">${pct}%</div>
+        <div style="font-size:10px;color:#8B949E">del total</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#8B949E;line-height:1.5;border-top:1px solid #30363D;padding-top:10px">${desc}</div>
+  `;
+  // Auto-cerrar después de 6s
+  clearTimeout(panel._timer);
+  panel._timer = setTimeout(() => panel.remove(), 6000);
 }
 
 function countBy(arr, field) {
@@ -596,14 +711,15 @@ function renderDashboard(data) {
     'Menos de $50':'#EF4444','$50–$200':'#F59E0B','$200–$500':'#22C55E',
     'Más de $500':'#58A6FF','Sueldo Básico $482':'#0F9B8E'});
 
-  // ── ADULTOS
-  pieChart('cAdultoEstudia','Adulto estudia',adultos,{'Sí':'#22C55E','No':'#EF4444','—':'#8B949E'});
-  pieChart('cDientes','Adulto faltan dientes',adultos,{
-    'No, dentadura completa':'#22C55E','Sí, algunos dientes':'#F59E0B',
-    'Sí, la mayoría':'#EF4444','No tiene dientes':'#7C2D12'});
-  pieChart('cOdontologo','Adulto última visita odontólogo',adultos,{
-    'Menos de 1 año':'#22C55E','Entre 1 y 3 años':'#F59E0B',
-    'Más de 3 años':'#EF4444','Nunca ha ido':'#7C2D12'});
+  // ── ADULTOS (datos están en filas HOGAR y NIÑO)
+  pieChart('cAdultoEstudia','Peleas entre adultos',hogares,{
+    'No/raramente':'#22C55E','Ocasionalmente':'#F59E0B','Frecuentemente':'#EF4444'});
+  pieChart('cDientes','Condición bucal',ninos,{
+    'Aparentemente sana':'#22C55E','Caries visibles':'#F59E0B',
+    'Dientes faltantes/dañados':'#EF4444','No se puede valorar':'#8B949E'});
+  pieChart('cOdontologo','Odontólogo',ninos,{
+    'Sí, recientemente':'#22C55E','Sí, hace más de 1 año':'#F59E0B',
+    'Nunca ha ido':'#EF4444','No aplica (menor 1 año)':'#8B949E'});
 
   // ── PERCEPCIÓN
   const percFields = [
