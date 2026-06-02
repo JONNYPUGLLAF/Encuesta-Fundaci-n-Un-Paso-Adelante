@@ -526,13 +526,17 @@ function buildDashboard() {
 
 function removeFile(idx) {
   loadedFiles.splice(idx,1);
-  // Rebuild allData (keep rows from remaining files)
   const remaining = new Set(loadedFiles);
   allData = allData.filter(r => remaining.has(r._source));
   if (allData.length === 0) {
     document.getElementById('filters').style.display = 'none';
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('fileChips').innerHTML = '';
+    // Reset header stats
+    ['hFichas','hNinos','hAdultos','hComunidades','hEncuestadores'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
     return;
   }
   buildDashboard();
