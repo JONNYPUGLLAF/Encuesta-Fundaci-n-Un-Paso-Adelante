@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Dashboard · Fundación Dar un Paso Adelante</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -58,7 +60,7 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
   background:rgba(255,255,255,0.08);
   border:1px solid rgba(255,255,255,0.12);
   border-radius:10px;padding:10px 16px;backdrop-filter:blur(8px);
-  min-width:120px;
+  min-width:100px;flex:1;
 }
 .hstat-val { font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:#fff; }
 .hstat-lbl { font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px; }
@@ -145,16 +147,12 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
 @media(max-width:900px){
   .grid-3,.grid-2 { grid-template-columns:1fr; }
   header { padding:0 !important; }
-  header > div:first-child { padding:14px 16px !important; gap:12px !important; }
-  header > div:first-child img { height:50px !important; }
-  header > div:first-child h1 { font-size:17px !important; }
-  header > div:last-child { padding:12px 16px !important; }
   .header-stats { gap:8px !important; flex-wrap:wrap; }
-  .hstat { min-width:calc(50% - 8px) !important; padding:8px 10px !important; }
+  .hstat { min-width:calc(50% - 8px) !important; padding:8px 10px !important; flex:1; }
   .hstat-val { font-size:20px !important; }
   #uploadZone { margin:12px !important; padding:24px 16px !important; }
   #filters { margin:0 12px 12px !important; padding:12px !important; flex-direction:column !important; gap:10px !important; }
-  #filters select, #filters input { width:100% !important; }
+  #filters select, #filters input { width:100% !important; min-width:unset !important; }
   .btn-clear, .btn-export { margin-top:4px !important; width:100% !important; justify-content:center; }
   #dashboard { padding:0 12px 32px !important; }
   .kpi-grid { grid-template-columns:repeat(2,1fr) !important; }
@@ -164,12 +162,14 @@ h1 { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff; }
   .card { padding:14px !important; }
   .upload-icon { font-size:36px !important; }
   #uploadZone h2 { font-size:15px !important; }
-  .btn-upload { width:100%; }
+  .btn-upload { width:100% !important; display:block !important; text-align:center; }
   .section-title { font-size:10px !important; }
+  .tbl-wrap { -webkit-overflow-scrolling:touch; }
 }
 @media(max-width:480px){
   .grid-3,.grid-2,.kpi-grid { grid-template-columns:1fr !important; }
-  .hstat { min-width:100% !important; }
+  .hstat { min-width:calc(50% - 8px) !important; }
+  h1 { font-size:18px !important; }
 }
 
 /* ── CARDS ───────────────────────────────────────────────── */
@@ -320,7 +320,7 @@ tr:hover td { background:rgba(255,255,255,.02); }
 </header>
 
 <!-- UPLOAD -->
-<div id="uploadZone" onclick="document.getElementById('fileInput').click()"
+<div id="uploadZone"
      ondragover="event.preventDefault();event.stopPropagation();this.classList.add('drag')"
      ondragleave="event.stopPropagation();this.classList.remove('drag')"
      ondrop="handleDrop(event)">
@@ -328,8 +328,12 @@ tr:hover td { background:rgba(255,255,255,.02); }
   <h2>Sube uno o varios archivos CSV o Excel</h2>
   <p>Exporta el CSV o xlsx desde la app y arrástralo aquí, o usa el botón.<br>Puedes combinar archivos de varios encuestadores — los duplicados se detectan automáticamente.</p>
   <div class="file-chips" id="fileChips"></div>
-  <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('fileInput').click()">📁 Seleccionar archivos</button>
-  <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls" onchange="handleFiles(this.files)">
+  <label for="fileInput" class="btn-upload" style="display:inline-block;cursor:pointer;-webkit-tap-highlight-color:transparent">
+    📁 Seleccionar archivos
+  </label>
+  <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls"
+         style="position:fixed;top:-1000px;left:-1000px;opacity:0;width:1px;height:1px"
+         onchange="handleFiles(this.files)">
 </div>
 
 <!-- LOADER -->
