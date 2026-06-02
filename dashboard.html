@@ -392,7 +392,7 @@ tr:hover td { background:rgba(255,255,255,.02); }
   <div class="grid-3">
     <div class="card"><div class="card-title">Distribución general</div><canvas id="cVulPie"></canvas></div>
     <div class="card"><div class="card-title">Puntaje por hogar</div><canvas id="cPuntajes"></canvas></div>
-    <div class="card"><div class="card-title">Por comunidad</div><canvas id="cVulComunidad"></canvas></div>
+    <div class="card"><div class="card-title">Por comunidad</div><canvas id="cVulComunidad"></canvas><div id="comLegend" style="margin-top:8px;display:flex;flex-wrap:wrap"></div></div>
   </div>
 
   <!-- Row 2: Educación -->
@@ -509,6 +509,7 @@ function handleFiles(files) {
 }
 
 function buildDashboard() {
+  comunidadColorMap = {}; // reset colors on new load
   document.getElementById('loader').style.display = 'none';
   document.getElementById('uploadZone').style.display = 'block';
   document.getElementById('filters').style.display = 'flex';
@@ -611,6 +612,23 @@ const PALETTE = {
   baja:'#22C55E', media:'#F59E0B', alta:'#EF4444', urgente:'#FB923C',
   muted:'#8B949E'
 };
+
+// Colores por comunidad — se asignan automáticamente
+const COM_COLORS = [
+  '#58A6FF','#0F9B8E','#F59E0B','#22C55E','#A78BFA',
+  '#FB923C','#34D399','#F472B6','#60A5FA','#FBBF24',
+  '#4ADE80','#C084FC','#38BDF8','#FB7185','#A3E635'
+];
+let comunidadColorMap = {};
+
+function getComColor(comunidad) {
+  const key = (comunidad||'').trim();
+  if (!comunidadColorMap[key]) {
+    const idx = Object.keys(comunidadColorMap).length % COM_COLORS.length;
+    comunidadColorMap[key] = COM_COLORS[idx];
+  }
+  return comunidadColorMap[key];
+}
 
 const VUL_COLORS = { BAJA:'#22C55E', MEDIA:'#F59E0B', ALTA:'#EF4444', URGENTE:'#FB923C' };
 
@@ -743,9 +761,22 @@ function renderDashboard(data) {
       label:'Puntaje',
       data: pHogares.map(r=>n(r['Puntaje vulnerabilidad'])),
       backgroundColor: pHogares.map(r=>VUL_COLORS[r['Nivel vulnerabilidad']]||'#999'),
-      borderRadius:6, borderSkipped:false
+      borderRadius:6, borderSkipped:false,
+      borderWidth:2,
+      borderColor: pHogares.map(r=>getComColor((r.Comunidad||'').trim())),
     }]
-  },{plugins:{legend:{display:false}},scales:{y:{max:35,beginAtZero:true}}});
+  },{
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{
+        afterLabel: ctx => {
+          const r = pHogares[ctx.dataIndex];
+          return '📍 '+(r.Comunidad||'').trim();
+        }
+      }}
+    },
+    scales:{y:{max:35,beginAtZero:true}}
+  });
 
   // Por comunidad
   const comVul = {};
@@ -755,6 +786,8 @@ function renderDashboard(data) {
     comVul[c][r['Nivel vulnerabilidad']]=(comVul[c][r['Nivel vulnerabilidad']]||0)+1;
   });
   const comLabels=Object.keys(comVul);
+  // Assign color to each community
+  comLabels.forEach(cl => getComColor(cl));
   mkChart('cVulComunidad','bar',{
     labels:comLabels,
     datasets:[
@@ -764,6 +797,17 @@ function renderDashboard(data) {
       {label:'URGENTE',data:comLabels.map(c=>comVul[c].URGENTE||0),backgroundColor:'#FB923C',borderRadius:4},
     ]
   },{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}}});
+  
+  // Color legend for communities
+  const comLegend = document.getElementById('comLegend');
+  if (comLegend) {
+    comLegend.innerHTML = comLabels.map(cl =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;margin:3px 6px;font-size:11px;color:#8B949E">
+        <span style="width:10px;height:10px;border-radius:50%;background:${getComColor(cl)};flex-shrink:0"></span>
+        ${cl}
+      </span>`
+    ).join('');
+  }
 
   // ── EDUCACIÓN
   pieChart('cAsistencia','Asiste a escuela',ninos,{
