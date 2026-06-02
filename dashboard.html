@@ -169,12 +169,56 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align
     <div class="card"><div class="card-title">Nivel educativo</div><canvas id="cNivel"></canvas></div>
     <div class="card"><div class="card-title">Abandono escolar</div><canvas id="cAbandono"></canvas></div>
   </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Institución educativa</div><canvas id="cInstitucion"></canvas></div>
+    <div class="card"><div class="card-title">Modalidad educativa</div><canvas id="cModalidad"></canvas></div>
+    <div class="card"><div class="card-title">Desayuno escolar</div><canvas id="cDesayuno"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Estado de aulas</div><canvas id="cAulas"></canvas></div>
+    <div class="card"><div class="card-title">Baños escuela</div><canvas id="cBanos"></canvas></div>
+    <div class="card"><div class="card-title">Idioma instrucción</div><canvas id="cIdioma"></canvas></div>
+  </div>
 
   <div class="sec-title">🏥 Salud (Niños/as)</div>
   <div class="grid grid-3">
-    <div class="card"><div class="card-title">Estado nutricional OMS</div><canvas id="cNutri"></canvas></div>
+    <div class="card"><div class="card-title">Estado nutricional OMS</div><canvas id="cNutri"></canvas><div id="nutriNote" style="font-size:10px;color:#8B949E;margin-top:6px;text-align:center"></div></div>
     <div class="card"><div class="card-title">Vacunación</div><canvas id="cVacunas"></canvas></div>
     <div class="card"><div class="card-title">Atención médica</div><canvas id="cAtencion"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Controles médicos</div><canvas id="cControles"></canvas></div>
+    <div class="card"><div class="card-title">Brigada médica recibida</div><canvas id="cBrigada"></canvas></div>
+    <div class="card"><div class="card-title">Discapacidad</div><canvas id="cDiscapacidad"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Condición bucal (niños)</div><canvas id="cDientes"></canvas></div>
+    <div class="card"><div class="card-title">Visita odontólogo (niños)</div><canvas id="cOdontologo"></canvas></div>
+    <div class="card"><div class="card-title">Apoyo psicológico</div><canvas id="cPsicologia"></canvas></div>
+  </div>
+
+  <div class="sec-title">👨‍👩‍👧 Familia y Cuidado</div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Convive con</div><canvas id="cConvive"></canvas></div>
+    <div class="card"><div class="card-title">Tipo de orfandad</div><canvas id="cOrfandad"></canvas></div>
+    <div class="card"><div class="card-title">Parentesco del cuidador</div><canvas id="cParentesco"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Situación laboral cuidador</div><canvas id="cLaboral"></canvas></div>
+    <div class="card"><div class="card-title">Quién cuida durante trabajo</div><canvas id="cCuidaDurante"></canvas></div>
+    <div class="card"><div class="card-title">Horas solo el niño/a</div><canvas id="cHorasSolo"></canvas></div>
+  </div>
+
+  <div class="sec-title">🍽️ Alimentación y Nutrición</div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">N° comidas al día</div><canvas id="cComidas"></canvas></div>
+    <div class="card"><div class="card-title">Frutas y verduras</div><canvas id="cFrutas"></canvas></div>
+    <div class="card"><div class="card-title">Proteínas</div><canvas id="cProteinas"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Sin comer (frecuencia)</div><canvas id="cSinComer"></canvas></div>
+    <div class="card"><div class="card-title">Sin comida en hogar</div><canvas id="cSinComida"></canvas></div>
+    <div class="card"><div class="card-title">Chicha en hogar</div><canvas id="cChicha"></canvas></div>
   </div>
 
   <div class="sec-title">🏗️ Infraestructura y Economía</div>
@@ -183,12 +227,27 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align
     <div class="card"><div class="card-title">Electricidad</div><canvas id="cElectricidad"></canvas></div>
     <div class="card"><div class="card-title">Ingreso mensual</div><canvas id="cIngreso"></canvas></div>
   </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Tipo de vivienda</div><canvas id="cVivienda"></canvas></div>
+    <div class="card"><div class="card-title">Material vivienda</div><canvas id="cMaterial"></canvas></div>
+    <div class="card"><div class="card-title">Manejo de excretas</div><canvas id="cExcretas"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Fuentes de ingreso</div><canvas id="cFuentesIngreso"></canvas></div>
+    <div class="card"><div class="card-title">Apoyos estatales</div><canvas id="cApoyos"></canvas></div>
+    <div class="card"><div class="card-title">Internet</div><canvas id="cInternet"></canvas></div>
+  </div>
 
-  <div class="sec-title">👥 Dinámica Familiar y Salud Bucal</div>
+  <div class="sec-title">👥 Dinámica Familiar</div>
   <div class="grid grid-3">
     <div class="card"><div class="card-title">Peleas entre adultos</div><canvas id="cAdultoEstudia"></canvas></div>
-    <div class="card"><div class="card-title">Condición bucal (niños)</div><canvas id="cDientes"></canvas></div>
-    <div class="card"><div class="card-title">Visita odontólogo (niños)</div><canvas id="cOdontologo"></canvas></div>
+    <div class="card"><div class="card-title">Alcohol en hogar</div><canvas id="cAlcohol"></canvas></div>
+    <div class="card"><div class="card-title">Forma de disciplina</div><canvas id="cDisciplina"></canvas></div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card"><div class="card-title">Perfil familiar</div><canvas id="cPerfil"></canvas></div>
+    <div class="card"><div class="card-title">Grupos comunitarios</div><canvas id="cGrupos"></canvas></div>
+    <div class="card"><div class="card-title">Religión</div><canvas id="cReligion"></canvas></div>
   </div>
 
   <div class="sec-title">💬 Percepción del Cuidador</div>
@@ -691,10 +750,25 @@ function renderDashboard(data) {
     'No asiste':'#EF4444','Edad pre-escolar':'#58A6FF','No estudia':'#8B949E'});
   barChart('cNivel','Nivel educativo',ninos,true);
   pieChart('cAbandono','Abandono escolar',ninos,{'No':'#22C55E','Sí, 1 vez':'#F59E0B','Sí, varias veces':'#EF4444'});
+  barChart('cInstitucion','Institución educativa',ninos,true);
+  pieChart('cModalidad','Modalidad',ninos,{'Presencial':'#22C55E','Semipresencial':'#F59E0B','Virtual':'#58A6FF'});
+  pieChart('cDesayuno','Desayuno escolar',ninos,{'Sí, todos los días':'#22C55E','No recibe':'#EF4444'});
+  pieChart('cAulas','Estado aulas',ninos,{
+    'Cemento/buen estado':'#22C55E','Madera operables':'#F59E0B','Madera podrida/mal estado':'#EF4444'});
+  pieChart('cBanos','Baños escuela',ninos,{
+    'Funcionales y limpios':'#22C55E','Inservibles/mal olor':'#F59E0B','No tiene baños':'#EF4444'});
+  pieChart('cIdioma','Idioma instrucción',ninos,{'Bilingüe':'#58A6FF','Español':'#8B949E'});
 
   // ── SALUD NIÑOS
   const nutField = 'Estado nutricional (OMS)';
-  pieChart('cNutri', nutField, ninos,{
+  const ninosConPeso = ninos.filter(r => r['Peso (kg)'] && r['Talla (cm)'] && parseFloat(r['Peso (kg)'])>0);
+  const nutriNote = document.getElementById('nutriNote');
+  if (nutriNote) {
+    nutriNote.textContent = ninosConPeso.length > 0
+      ? `Basado en ${ninosConPeso.length} de ${ninosUnicos.length} niños/as con peso y talla registrados`
+      : `⚠️ Sin datos de peso/talla registrados`;
+  }
+  pieChart('cNutri', nutField, ninosConPeso.length > 0 ? ninosConPeso : ninos,{
     'Normal':'#22C55E','Sobrepeso':'#F59E0B','Obesidad':'#EF4444',
     'Desnutrición leve':'#FB923C','Desnutrición moderada':'#DC2626','Desnutrición severa':'#7C2D12'});
   pieChart('cVacunas','Vacunas',ninos,{
@@ -702,24 +776,78 @@ function renderDashboard(data) {
   pieChart('cAtencion','Atención médica',ninos,{
     'Ministerio Salud Pública':'#58A6FF','Hospital IESS':'#22C55E',
     'Medicina ancestral':'#0F9B8E','Clínica privada':'#8B949E'});
-
-  // ── INFRAESTRUCTURA
-  pieChart('cAgua','Fuente agua',hogares);
-  pieChart('cElectricidad','Electricidad',hogares,{
-    'Red eléctrica':'#22C55E','Panel solar':'#F59E0B','Sin energía':'#EF4444'});
-  pieChart('cIngreso','Ingreso mensual',hogares,{
-    'Menos de $50':'#EF4444','$50–$200':'#F59E0B','$200–$500':'#22C55E',
-    'Más de $500':'#58A6FF','Sueldo Básico $482':'#0F9B8E'});
-
-  // ── ADULTOS (datos están en filas HOGAR y NIÑO)
-  pieChart('cAdultoEstudia','Peleas entre adultos',hogares,{
-    'No/raramente':'#22C55E','Ocasionalmente':'#F59E0B','Frecuentemente':'#EF4444'});
+  pieChart('cControles','Controles médicos',ninos,{
+    'Sí, al día':'#22C55E','No recibe':'#EF4444'});
+  pieChart('cBrigada','Brigada médica',ninos,{'Sí':'#22C55E','No':'#EF4444'});
+  pieChart('cDiscapacidad','Discapacidad',ninos,{
+    'No':'#22C55E','Física/motriz':'#F59E0B','Sensorial (vista/oído)':'#58A6FF',
+    'Intelectual':'#EF4444','Múltiple':'#DC2626'});
   pieChart('cDientes','Condición bucal',ninos,{
     'Aparentemente sana':'#22C55E','Caries visibles':'#F59E0B',
     'Dientes faltantes/dañados':'#EF4444','No se puede valorar':'#8B949E'});
   pieChart('cOdontologo','Odontólogo',ninos,{
     'Sí, recientemente':'#22C55E','Sí, hace más de 1 año':'#F59E0B',
     'Nunca ha ido':'#EF4444','No aplica (menor 1 año)':'#8B949E'});
+  pieChart('cPsicologia','Apoyo psicológico',ninos,{'Sí':'#22C55E','No':'#EF4444'});
+
+  // ── FAMILIA Y CUIDADO
+  pieChart('cConvive','Convive con',ninos,{
+    'Ambos padres':'#22C55E','Solo la madre':'#F59E0B','Solo el padre':'#58A6FF',
+    'Abuelos/otros familiares':'#8B949E'});
+  pieChart('cOrfandad','Tipo orfandad',ninos,{
+    'Sin orfandad':'#22C55E','Orfandad paterna':'#F59E0B',
+    'Orfandad materna':'#EF4444','Doble orfandad':'#7C2D12'});
+  pieChart('cParentesco','Parentesco cuidador',ninos,{
+    'Madre':'#22C55E','Padre':'#58A6FF','Abuela/o':'#F59E0B','Tía/o':'#8B949E'});
+  pieChart('cLaboral','Situación laboral cuidador',ninos,{
+    'Agricultor/a':'#22C55E','Sueldo fijo':'#58A6FF','Sin trabajo':'#EF4444','Jornalero/a':'#F59E0B'});
+  pieChart('cCuidaDurante','Quién cuida durante trabajo',ninos,{
+    'Siempre acompañado/a':'#22C55E','Vecinos/familiares':'#F59E0B','Solo/a (riesgo)':'#EF4444'});
+  pieChart('cHorasSolo','Horas solo el niño',hogares,{
+    'Nunca solo/a':'#22C55E','1–2 horas':'#F59E0B','3–5 horas':'#EF4444','Más de 5 horas':'#7C2D12'});
+
+  // ── ALIMENTACIÓN
+  pieChart('cComidas','N° comidas/día',hogares,{
+    'Más de 3':'#22C55E','3 comidas':'#58A6FF','2 comidas':'#F59E0B','1 comida':'#EF4444'});
+  pieChart('cFrutas','Frutas/verduras',hogares,{
+    'Diario':'#22C55E','3–4 veces/semana':'#58A6FF','1–2 veces/semana':'#F59E0B','Casi nunca':'#EF4444'});
+  pieChart('cProteinas','Proteínas',hogares,{
+    'Diario':'#22C55E','3–4 veces/semana':'#58A6FF','1–2 veces/semana':'#F59E0B','Casi nunca':'#EF4444'});
+  pieChart('cSinComer','Sin comer (frecuencia)',hogares,{
+    'Nunca':'#22C55E','Rara vez (1 vez al mes)':'#F59E0B','1–2 veces/semana':'#EF4444'});
+  pieChart('cSinComida','Sin comida en hogar',hogares,{
+    'No':'#22C55E','Sí, 1 o 2 días':'#F59E0B','Sí, varios días':'#EF4444'});
+  pieChart('cChicha','Chicha en hogar',hogares,{'No toman':'#22C55E','Sí toman':'#F59E0B'});
+
+  // ── INFRAESTRUCTURA
+  pieChart('cAgua','Fuente agua',hogares,{
+    'Agua entubada (no tratada)':'#F59E0B','Agua lluvia':'#58A6FF','Río/quebrada':'#EF4444'});
+  pieChart('cElectricidad','Electricidad',hogares,{
+    'Red eléctrica':'#22C55E','Panel solar':'#F59E0B','Sin energía':'#EF4444'});
+  pieChart('cIngreso','Ingreso mensual',hogares,{
+    'Menos de $50':'#EF4444','$50–$200':'#F59E0B','$200–$500':'#22C55E','Más de $500':'#58A6FF'});
+  pieChart('cVivienda','Tipo vivienda',hogares,{
+    'Propia':'#22C55E','Arrendada/prestada':'#F59E0B','Sin vivienda fija':'#EF4444'});
+  pieChart('cMaterial','Material vivienda',hogares,{
+    'Bloque/ladrillo':'#22C55E','Madera/zinc':'#F59E0B','Plástico/zinc':'#EF4444'});
+  pieChart('cExcretas','Excretas',hogares,{
+    'Alcantarillado':'#22C55E','Letrina en buen estado':'#58A6FF',
+    'Letrina madera deteriorada':'#F59E0B','Campo abierto/monte':'#EF4444'});
+  barChart('cFuentesIngreso','Fuentes ingreso',hogares,true);
+  barChart('cApoyos','Apoyos estatales',hogares,true);
+  pieChart('cInternet','Internet',hogares,{'WiFi domicilio':'#22C55E','Sin señal':'#EF4444'});
+
+  // ── DINÁMICA FAMILIAR
+  pieChart('cAdultoEstudia','Peleas entre adultos',hogares,{
+    'No/raramente':'#22C55E','Ocasionalmente':'#F59E0B','Frecuentemente':'#EF4444'});
+  pieChart('cAlcohol','Alcohol en hogar',hogares,{
+    'No':'#22C55E','Ocasional (fiestas)':'#F59E0B','Frecuente':'#EF4444'});
+  barChart('cDisciplina','Forma de disciplina',hogares,true);
+  pieChart('cPerfil','Perfil familiar',hogares,{
+    'Proactiva/emprendedora':'#22C55E','Receptiva/colaborativa':'#58A6FF','Pasiva/dependiente':'#F59E0B'});
+  pieChart('cGrupos','Grupos comunitarios',hogares,{
+    'Sí, activamente':'#22C55E','Sí, ocasionalmente':'#58A6FF','No':'#EF4444'});
+  pieChart('cReligion','Religión',hogares);
 
   // ── PERCEPCIÓN
   const percFields = [
