@@ -2844,9 +2844,11 @@ document.addEventListener('DOMContentLoaded', () => {
   buildChildTabs();
   try { aplicarSinMenores(); } catch(e) { console.warn('aplicarSinMenores error:', e); }
   buildAdultosNav();
+
+
 });
 
-// ── OFFLINE ───────────────────────────────────────────────────────────}
+// ── OFFLINE ───────────────────────────────────────────────────────────
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
 function validarSeccionHijos(sec) {
@@ -3461,6 +3463,7 @@ function setAdultoSecEstudia(estudia) {
 </script>
 
 <script>
+document.addEventListener("touchstart", function(){}, {passive:true});
 // ── SERVICE WORKER REGISTRO ───────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -3478,9 +3481,7 @@ if ('serviceWorker' in navigator) {
     .catch(e => console.warn('SW error:', e));
 }
 
-// ── iOS SAFARI FIX — forzar reconocimiento de tap en botones ──
-document.addEventListener('touchstart', function(){}, {passive:true});
-
+// ── ENCUESTADOR + NUMERACIÓN AUTOMÁTICA ──────────────────────────────────
 
 function getEncuestadorNombre() {
   const sel = document.getElementById('encuestador').value;
