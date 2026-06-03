@@ -229,8 +229,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="tab" onclick="goTo(6)" id="tab6">6. Salud</button>
   <button class="tab" onclick="goTo(7)" id="tab7">7. Adultos</button>
   <button class="tab" onclick="goTo(8)" id="tab8">8. Dinámica</button>
-  <button class="tab" onclick="goTo(9)" id="tab9">🔒 Técnico</button>
-  <button class="tab" onclick="goTo(10)" id="tab10">10. Percepción</button>
+  <button class="tab" onclick="goTo(9)" id="tab9">9. Percepción</button>
+  <button class="tab" onclick="goTo(10)" id="tab10">🔒 Técnico</button>
   <button class="tab" onclick="goTo(11)" id="tab11">11. Cierre</button>
 </div>
 
@@ -1241,6 +1241,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="sec" id="sec9">
   <div class="sec-hdr">
     <div class="sec-num-bar">
+      <div class="sec-num" style="background:var(--teal)">9</div>
+      <div class="sec-info"><h2>PERCEPCIÓN DEL CUIDADOR / RESPONSABLE</h2><p>Preguntar directamente al cuidador/a — escala del 1 al 5</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sub teal">▸ Instrucción: Leer cada pregunta en voz alta y tocar el número que corresponda</div>
+    <div style="display:flex;justify-content:space-between;padding:5px 11px;font-size:10px;color:var(--light)">
+      <span>1 = Muy mal / nunca</span><span>3 = Regular / a veces</span><span>5 = Muy bien / siempre</span>
+    </div>
+    <div id="percepcionContainer"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
+    <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(10)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ═══════ SEC 11 — CIERRE ═══════ -->
+<div class="sec" id="sec10">
+  <div class="sec-hdr">
+    <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--purple)">8</div>
       <div class="sec-info"><h2>VALORACIÓN EXCLUSIVA DEL TÉCNICO <span class="badge badge-tech">🔒 PRIVADO</span></h2><p>Completar en privado · NO mostrar al entrevistado</p></div>
     </div>
@@ -1324,33 +1345,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(10)">Siguiente →</button>
+    <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
+    <button class="btn btn-primary" onclick="goTo(11)">Siguiente →</button>
   </div>
 </div>
 
 <!-- ═══════ SEC 10 — PERCEPCIÓN ═══════ -->
-<div class="sec" id="sec10">
-  <div class="sec-hdr">
-    <div class="sec-num-bar">
-      <div class="sec-num" style="background:var(--teal)">9</div>
-      <div class="sec-info"><h2>PERCEPCIÓN DEL CUIDADOR / RESPONSABLE</h2><p>Preguntar directamente al cuidador/a — escala del 1 al 5</p></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="sub teal">▸ Instrucción: Leer cada pregunta en voz alta y tocar el número que corresponda</div>
-    <div style="display:flex;justify-content:space-between;padding:5px 11px;font-size:10px;color:var(--light)">
-      <span>1 = Muy mal / nunca</span><span>3 = Regular / a veces</span><span>5 = Muy bien / siempre</span>
-    </div>
-    <div id="percepcionContainer"></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(9)">← Atrás</button>
-    <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(11)">Siguiente →</button>
-  </div>
-</div>
-
-<!-- ═══════ SEC 11 — CIERRE ═══════ -->
 <div class="sec" id="sec11">
   <div class="sec-hdr">
     <div class="sec-num-bar">
@@ -1380,6 +1380,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(10)">← Atrás</button>
     <button class="btn btn-success" onclick="guardarFicha()">💾 Guardar Ficha</button>
+  </div>
+  <div id="btnNuevaEncuestaWrap" style="display:none;margin-top:10px">
+    <button class="btn" onclick="nuevaEncuesta()" style="background:#1B3A6B;color:white;font-size:15px;padding:15px;width:100%;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+      ➕ Nueva Encuesta — ir al inicio
+    </button>
   </div>
   <div style="height:14px"></div>
   <div class="card">
@@ -2377,7 +2382,69 @@ function guardarFicha() {
   localStorage.setItem('fichas_shuar_v2', JSON.stringify(fichas));
   localStorage.removeItem('ficha_draft_v2');
   showFichasGuardadas();
-  alert(`✅ Ficha guardada\n\nFamilia: ${data.comunidad||'Sin comunidad'}\nNiños registrados: ${ninos.length}\nPuntaje: ${sc.score} — ${sc.lvl}\n\nUsa el botón 📲 WhatsApp para compartirla.`);
+  alert(`✅ Ficha guardada\n\nFamilia: ${data.comunidad||'Sin comunidad'}\nNiños registrados: ${ninos.length}\nPuntaje: ${sc.score} — ${sc.lvl}\n\nUsa el botón 📲 WhatsApp para compartirla.\nPresiona "Nueva Encuesta" para registrar otra familia.`);
+  // Mostrar botón nueva encuesta
+  const btnWrap = document.getElementById('btnNuevaEncuestaWrap');
+  if (btnWrap) btnWrap.style.display = 'block';
+}
+
+// ── NUEVA ENCUESTA ────────────────────────────────────────────────────
+function nuevaEncuesta() {
+  // Resetear todas las variables globales
+  ninos = [];
+  childData = {};
+  famRows = [];
+  percVals = {};
+  sinMenores = false;
+  adultosData = {};
+  adultosSecData = {};
+  currentNino = 0;
+  currentAdulto = 0;
+  currentAdultoSec = 0;
+  abData = {};
+
+  // Limpiar borrador
+  localStorage.removeItem('ficha_draft_v2');
+
+  // Limpiar todos los campos del formulario
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel]').forEach(el => {
+    if (el.id !== 'encuestador' && el.id !== 'encuestadorOtro') el.value = '';
+  });
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
+  document.querySelectorAll('select:not(#encuestador)').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+
+  // Restablecer fecha de hoy
+  const now = new Date();
+  const today = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  const fe = document.getElementById('fechaVisita');
+  if (fe) fe.value = today;
+
+  // Recalcular número de encuesta para el mismo encuestador
+  onEncuestadorChange();
+
+  // Reconstruir tabla familiar vacía
+  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
+  renderFamTable();
+
+  // Restaurar fecha (por si renderFamTable la limpió)
+  if (fe) fe.value = today;
+
+  // Reconstruir percepciones y navegación
+  buildPerception();
+  buildChildTabs();
+  try { aplicarSinMenores(); } catch(e) {}
+  buildAdultosNav();
+  showFichasGuardadas();
+
+  // Ocultar botón nueva encuesta
+  const btnWrap = document.getElementById('btnNuevaEncuestaWrap');
+  if (btnWrap) btnWrap.style.display = 'none';
+
+  // Ir a la sección 0 (inicio)
+  goTo(0);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── COMPARTIR POR WHATSAPP ────────────────────────────────────────────
