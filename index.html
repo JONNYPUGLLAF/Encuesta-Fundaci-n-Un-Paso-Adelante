@@ -976,11 +976,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <input type="hidden" id="nutricionResult" name="nutricion">
     </div>
   </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
+      <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){saveCurrentChildData();goTo(7)}">Siguiente →</button>
+    </div>
   </div><!-- fin bloqueNinoSalud -->
-  <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(5)">← Atrás</button>
-    <button class="btn btn-primary" onclick="if(validarSeccionHijos(6)){saveCurrentChildData();goTo(7)}">Siguiente →</button>
-  </div>
 </div>
 
 <!-- ═══════ SEC 7 — ADULTOS ═══════ -->
