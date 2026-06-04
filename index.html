@@ -1237,15 +1237,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div id="percepcionContainer"></div>
   </div>
-  <div class="card">
-    <div class="card-lbl teal">Ambiente entre adultos del hogar</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="ambienteAdultos" value="Tranquilo y estable"><span>Tranquilo y estable</span></label>
-      <label class="opt warn"><input type="radio" name="ambienteAdultos" value="Hay tensiones ocasionales"><span>Hay tensiones ocasionales</span></label>
-      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Conflictos frecuentes"><span>Conflictos frecuentes</span></label>
-      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Hay violencia"><span>Hay violencia</span></label>
-    </div>
-  </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
     <button class="btn btn-primary" onclick="sugerirPrioridad(calcScore().score);goTo(10)">Siguiente →</button>
@@ -1271,12 +1262,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="card">
-    <div class="card-lbl purple">Observación privada del técnico: Seguridad observada en el hogar</div>
+    <div class="card-lbl purple">Observación privada del técnico: Ambiente entre adultos del hogar</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="seguridadObsTecnico" value="Seguro"><span>Seguro</span></label>
-      <label class="opt warn"><input type="radio" name="seguridadObsTecnico" value="Riesgo leve"><span>Riesgo leve</span></label>
-      <label class="opt risk"><input type="radio" name="seguridadObsTecnico" value="Riesgo alto"><span>Riesgo alto</span></label>
-      <label class="opt risk"><input type="radio" name="seguridadObsTecnico" value="Inseguro"><span>Inseguro</span></label>
+      <label class="opt"><input type="radio" name="ambienteAdultos" value="Tranquilo y estable"><span>Tranquilo y estable</span></label>
+      <label class="opt warn"><input type="radio" name="ambienteAdultos" value="Hay tensiones ocasionales"><span>Hay tensiones ocasionales</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Conflictos frecuentes"><span>Conflictos frecuentes</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Hay violencia"><span>Hay violencia</span></label>
     </div>
   </div>
   <div class="card">
@@ -2341,7 +2332,7 @@ function collectAllData() {
   });
   ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua',
    'excretas','estadoBano','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt','ambienteAdultos','ambienteVisita','seguridadObsTecnico',
+   'perfil','confiable','prioridadAt','ambienteAdultos','ambienteVisita',
    'chicha','chichaDetalle','chichaDetalleNinos','comidas','frutas','proteinas','frutasProteinas','sinComer','sinComidaHogar'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
@@ -2683,7 +2674,6 @@ function buildCSVRows(fichas) {
       'Grupos comunitarios (ficha anterior)': f.grupos || '',
       // Técnico
       'Ambiente observado visita': f.ambienteVisita || '',
-      'Seguridad observada técnico': f.seguridadObsTecnico || '',
       'Perfil familiar (ficha anterior)': f.perfil || '',
       'Info confiable (ficha anterior)': f.confiable || '',
       'Prioridades intervención (ficha anterior)': f.prioridad || '',
