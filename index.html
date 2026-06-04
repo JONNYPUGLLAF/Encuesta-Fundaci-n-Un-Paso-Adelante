@@ -201,6 +201,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fam-tbl select{width:100%;border:1px solid var(--border);border-radius:4px;padding:4px 2px;font-size:10px}
 .fam-num{width:26px;text-align:center;font-weight:700;color:var(--mid);background:var(--gray)}
 
+/* CHAINED / LOCKED FIELDS */
+.chain-box{position:relative;border:1.5px dashed #94A3B8!important;background:#F8FAFC!important}
+.chain-badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:9px;background:#E2E8F0;color:#475569;font-size:10px;font-weight:700}
+.chain-change{margin-left:6px;padding:3px 8px;border-radius:7px;border:1px solid var(--border);background:white;color:var(--blue);font-size:10px;font-weight:700;cursor:pointer}
+.blocked-age{background:#F8FAFC;border:1.5px dashed var(--border);border-radius:10px;padding:14px;margin:8px;color:var(--mid);font-size:13px;line-height:1.5}
+.hidden-age{display:none!important}
+
 /* RESPONSIVE */
 @media(max-width:380px){
   .opts.c4{grid-template-columns:1fr 1fr}
@@ -315,7 +322,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <th style="width:100px">Miembro familiar</th>
           <th style="width:42px">Edad</th>
           <th style="width:44px">M / F</th>
-          <th style="width:90px">Cédula</th><th style="width:100px">Teléfono</th><th style="width:110px">Último nivel educativo culminado</th>
+          <th style="width:82px">Cabeza de hogar</th>
+          <th style="width:110px">Último nivel educativo culminado</th>
         </tr>
       </table>
       <button onclick="addFamRow()" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;border:1.5px dashed var(--green);background:white;color:var(--green);font-size:12px;font-weight:600;cursor:pointer;">+ Agregar persona</button>
@@ -324,41 +332,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="card">
     <div class="card-lbl">Identidad cultural</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Se identifica como Shuar?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Su familia se identifica como Shuar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="esShuar" value="Sí"><span>Sí</span></label>
       <label class="opt"><input type="radio" name="esShuar" value="No"><span>No</span></label>
-      <label class="opt"><input type="radio" name="esShuar" value="Mestizo/a"><span>Mestizo/a</span></label>
-      <label class="opt"><input type="radio" name="esShuar" value="No sabe"><span>No sabe</span></label>
+      <label class="opt"><input type="radio" name="esShuar" value="Shuar-mestizo"><span>Shuar-mestizo</span></label>
+      <label class="opt"><input type="radio" name="esShuar" value="Mestizo"><span>Mestizo</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Habla Shuar Chicham?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Su familia habla Shuar diariamente?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="shuar" value="Sí, fluido"><span>Sí, fluido</span></label>
-      <label class="opt"><input type="radio" name="shuar" value="Básico"><span>Básico</span></label>
-      <label class="opt"><input type="radio" name="shuar" value="Solo entiende"><span>Solo entiende</span></label>
-      <label class="opt"><input type="radio" name="shuar" value="No habla"><span>No habla</span></label>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-lbl">Datos del padre / cabeza de hogar (si aplica)</div>
-    <div class="card-body">
-      <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombrePadre" placeholder="Nombre y apellidos" list="listPadre" oninput="onNombrePadreInput()"><datalist id="listPadre"></datalist></div>
-        <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaPadre" placeholder="Opcional"></div>
-      </div>
-      <div class="fg"><label>Teléfono</label><input type="tel" id="telPadre" placeholder="0987654321"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-lbl">Datos de la madre / cabeza de hogar (si aplica)</div>
-    <div class="card-body">
-      <div class="frow">
-        <div class="fg"><label>Nombre completo</label><input type="text" id="nombreMadre" placeholder="Nombre y apellidos" list="listMadre" oninput="onNombreMadreInput()"><datalist id="listMadre"></datalist></div>
-        <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaMadre" placeholder="Opcional"></div>
-      </div>
-      <div class="fg"><label>Teléfono</label><input type="tel" id="telMadre" placeholder="0987654321"></div>
+      <label class="opt"><input type="radio" name="shuar" value="Sí"><span>Sí</span></label>
+      <label class="opt"><input type="radio" name="shuar" value="No"><span>No</span></label>
+      <label class="opt"><input type="radio" name="shuar" value="Español-Shuar"><span>Español-Shuar</span></label>
+      <label class="opt"><input type="radio" name="shuar" value="Español"><span>Español</span></label>
     </div>
   </div>
 
@@ -424,12 +410,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
     </div>
     <div class="card">
-      <div class="card-lbl">Tipo de orfandad <span style="font-weight:400;font-size:11px">(solo si aplica)</span></div>
+      <div class="card-lbl">Tipo de orfandad <span class="chain-badge">🔗 Automática según padre/madre</span><button type="button" class="chain-change" onclick="toggleOrfandadManual()">Cambiar</button></div>
       <div class="opts c2">
-        <label class="opt"><input type="radio" name="orfandad" value="Sin orfandad"><span>Sin orfandad</span></label>
-        <label class="opt"><input type="radio" name="orfandad" value="Orfandad paterna"><span>Orfandad paterna</span></label>
-        <label class="opt"><input type="radio" name="orfandad" value="Orfandad materna"><span>Orfandad materna</span></label>
-        <label class="opt"><input type="radio" name="orfandad" value="Doble orfandad"><span>Doble orfandad</span></label>
+        <label class="opt"><input type="radio" name="orfandad" value="Sin orfandad" disabled><span>Sin orfandad</span></label>
+        <label class="opt"><input type="radio" name="orfandad" value="Orfandad paterna" disabled><span>Orfandad paterna</span></label>
+        <label class="opt"><input type="radio" name="orfandad" value="Orfandad materna" disabled><span>Orfandad materna</span></label>
+        <label class="opt"><input type="radio" name="orfandad" value="Doble orfandad" disabled><span>Doble orfandad</span></label>
+        <label class="opt warn"><input type="radio" name="orfandad" value="Padre ausente" disabled><span>Padre ausente</span></label>
+        <label class="opt warn"><input type="radio" name="orfandad" value="Madre ausente" disabled><span>Madre ausente</span></label>
+        <label class="opt warn"><input type="radio" name="orfandad" value="Padre/madre ausente" disabled><span>Padre/madre ausente</span></label>
       </div>
     </div>
     <div class="card">
@@ -450,9 +439,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card">
       <div class="card-lbl">Cuidador / Responsable principal</div>
       <div class="card-body">
-        <div style="margin-bottom:8px">
-          <button onclick="mismoCuidadorTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;font-weight:600;cursor:pointer">👨‍👩‍👧 Mismo cuidador para todos los niños/as</button>
-        </div>
         <div class="frow">
           <div class="fg">
             <label>Nombre del cuidador/a</label>
@@ -460,12 +446,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
               <option value="">Seleccionar de la familia o escribir...</option>
             </select>
           </div>
-          <div class="fg sm"><label>Parentesco</label><input type="text" id="parentescoCuidador" placeholder="Ej: Madre"></div>
+          <div class="fg sm"><label>Edad</label><input type="number" id="edadCuidador" min="14" max="100" placeholder="0"></div>
         </div>
         <div class="frow">
-          <div class="fg sm"><label>Edad</label><input type="number" id="edadCuidador" min="14" max="100" placeholder="0"></div>
-          <div class="fg sm"><label>Cédula</label><input type="text" id="cedulaCuidador" placeholder="Opcional"></div>
-          <div class="fg"><label>Teléfono</label><input type="tel" id="telCuidador" placeholder="0987654321"></div>
+          <div class="fg"><label>Parentesco</label><input type="text" id="parentescoCuidador" placeholder="Ej: Madre"></div>
         </div>
       </div>
       <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Situación laboral</div>
@@ -481,6 +465,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt"><input type="radio" name="lugarTrabajo" value="Comunidad cercana"><span>Comunidad cercana</span></label>
         <label class="opt"><input type="radio" name="lugarTrabajo" value="Cabecera parroquial/cantonal"><span>Cabecera parroquial / cantonal</span></label>
         <label class="opt"><input type="radio" name="lugarTrabajo" value="Fuera de la provincia"><span>Fuera de la provincia</span></label>
+      </div>
+      <div class="card-body">
+        <button onclick="mismoCuidadorTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;font-weight:600;cursor:pointer">👨‍👩‍👧 Mismo cuidador para todos los niños/as</button>
       </div>
       <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Quién cuida al niño/a durante el trabajo?</div>
       <div class="opts c2">
@@ -515,10 +502,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl orange">Ingreso mensual aproximado (USD)</div>
     <div class="opts c2">
       <label class="opt warn"><input type="radio" name="ingreso" value="Menos de $50"><span>Menos de $50</span></label>
-      <label class="opt warn"><input type="radio" name="ingreso" value="$50–$200"><span>$50 – $200</span></label>
-      <label class="opt"><input type="radio" name="ingreso" value="$201–$400"><span>$201 – $400</span></label>
-      <label class="opt"><input type="radio" name="ingreso" value="Sueldo Básico $482"><span>Sueldo Básico $482</span></label>
-      <label class="opt"><input type="radio" name="ingreso" value="Más del Sueldo Básico"><span>Más del Sueldo Básico</span></label>
+      <label class="opt warn"><input type="radio" name="ingreso" value="$50-$100"><span>$50 - $100</span></label>
+      <label class="opt"><input type="radio" name="ingreso" value="$100-$200"><span>$100 - $200</span></label>
+      <label class="opt"><input type="radio" name="ingreso" value="Sueldo básico $482"><span>Sueldo básico $482</span></label>
+      <label class="opt"><input type="radio" name="ingreso" value="Más del sueldo básico"><span>Más del sueldo básico</span></label>
     </div>
   </div>
   <div class="card">
@@ -528,20 +515,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="fuente" value="Empleado privado"><span>Empleado privado</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Agricultura/pesca/finca"><span>Agricultura / pesca / finca</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Artesanía/comercio"><span>Artesanía / comercio</span></label>
-      <label class="opt warn"><input type="checkbox" name="fuente" value="Solo bonos estatales"><span>Solo bonos estatales</span></label>
+      <label class="opt warn"><input type="checkbox" name="fuente" value="Bonos estatales" onchange="toggleBonosEstatales()"><span>Bonos estatales</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Ganadería"><span>Ganadería</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Jornalero"><span>Jornalero</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Remesas/pensión"><span>Remesas / pensión</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Otro"><span>Otro</span></label>
     </div>
   </div>
-  <div class="card">
-    <div class="card-lbl orange">Apoyos estatales recibidos (se puede marcar varias)</div>
+  <div class="card" id="bonosDetalleCard" style="display:none">
+    <div class="card-lbl orange">Bonos estatales recibidos (se puede marcar varias)</div>
     <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="apoyos" value="Bono Desarrollo Humano"><span>Bono Desarrollo Humano</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo MIES"><span>Apoyo MIES</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo GAD"><span>Apoyo GAD (parroquial / cantonal)</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Ninguno"><span>Ninguno</span></label>
+      <label class="opt"><input type="checkbox" name="apoyos" value="Bono de Desarrollo Humano"><span>Bono de Desarrollo Humano</span></label>
+      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo GAD parroquial"><span>Apoyo GAD parroquial</span></label>
+      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo GAD cantonal"><span>Apoyo GAD cantonal</span></label>
+      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo GAD provincial"><span>Apoyo GAD provincial</span></label>
+      <label class="opt"><input type="checkbox" name="apoyos" value="Otros"><span>Otros</span></label>
     </div>
   </div>
   <div class="btn-row">
@@ -562,8 +550,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Tipo de vivienda</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="tipoVivienda" value="Propia"><span>Propia</span></label>
-      <label class="opt"><input type="radio" name="tipoVivienda" value="Arrendada/prestada"><span>Arrendada / prestada</span></label>
-      <label class="opt risk"><input type="radio" name="tipoVivienda" value="Sin vivienda fija"><span>Sin vivienda fija</span></label>
+      <label class="opt"><input type="radio" name="tipoVivienda" value="Arrendada"><span>Arrendada</span></label>
+      <label class="opt"><input type="radio" name="tipoVivienda" value="Prestada"><span>Prestada</span></label>
+      <label class="opt"><input type="radio" name="tipoVivienda" value="Pagando crédito"><span>Pagando crédito</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Material predominante</div>
     <div class="opts c2">
@@ -582,17 +571,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="agua" value="Río/quebrada"><span>Río / quebrada</span></label>
       <label class="opt risk"><input type="radio" name="agua" value="Agua lluvia"><span>Agua lluvia</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Agua gestionada por la Fundación?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="aguaFund" value="Sí"><span>Sí</span></label>
-      <label class="opt"><input type="radio" name="aguaFund" value="No"><span>No</span></label>
-    </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Disposición de excretas</div>
     <div class="opts c2">
-      <label class="opt risk"><input type="radio" name="excretas" value="Campo abierto/monte"><span>Campo abierto / monte</span></label>
-      <label class="opt warn"><input type="radio" name="excretas" value="Letrina madera deteriorada"><span>Letrina madera (deteriorada)</span></label>
-      <label class="opt"><input type="radio" name="excretas" value="Letrina buen estado"><span>Letrina en buen estado</span></label>
-      <label class="opt"><input type="radio" name="excretas" value="Baño cemento funcional"><span>Baño de cemento funcional</span></label>
+      <label class="opt risk"><input type="radio" name="excretas" value="Campo/monte"><span>Campo / monte</span></label>
+      <label class="opt"><input type="radio" name="excretas" value="Alcantarillado"><span>Alcantarillado</span></label>
+      <label class="opt"><input type="radio" name="excretas" value="Pozo séptico"><span>Pozo séptico</span></label>
+    </div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Estado del baño <span style="font-weight:400">(observación visual)</span></div>
+    <div class="opts c2">
+      <label class="opt warn"><input type="radio" name="estadoBano" value="Letrina madera deteriorada"><span>Letrina madera deteriorada</span></label>
+      <label class="opt"><input type="radio" name="estadoBano" value="Letrina madera buen estado"><span>Letrina madera buen estado</span></label>
+      <label class="opt"><input type="radio" name="estadoBano" value="Baño cemento funcional"><span>Baño cemento funcional</span></label>
     </div>
   </div>
   <div class="card">
@@ -669,6 +658,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt"><input type="radio" name="idiomaAdulto" value="Bilingüe"><span>Bilingüe</span></label>
       </div>
     </div><!-- fin bloqueEducAdulto -->
+    <div id="educEdadMsg" class="blocked-age" style="display:none"></div>
+    <div id="bloqueCIBV" style="display:none">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿El niño/a va a algún centro de cuidado o jardín?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="cibv" value="Sí"><span>Sí</span></label>
+        <label class="opt"><input type="radio" name="cibv" value="No"><span>No</span></label>
+        <label class="opt"><input type="radio" name="cibv" value="No sabe"><span>No sabe</span></label>
+      </div>
+    </div>
     <div id="bloqueEducNino">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Asiste a la escuela / colegio?</div>
     <div class="opts c2">
@@ -700,12 +698,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="nivelEduc" value="3ro Bach." onclick="setGrado('3ro Bach.');toggleInstitucion(true)"><span>3ro Bach.</span></label>
       <label class="opt risk" style="grid-column:1/-1;background:#FEF2F2;border:2px solid #DC2626;font-weight:700"><input type="radio" name="nivelEduc" value="No estudia" onclick="setGrado('');toggleInstitucion(false)"><span>🚫 No estudia</span></label>
     </div>
+    <div id="bloqueAbandonoEduc">
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="abandono" value="No" onclick="toggleMotivoAbandono()"><span>No</span></label>
+      <label class="opt warn"><input type="radio" name="abandono" value="Sí, 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, 1 vez</span></label>
+      <label class="opt warn"><input type="radio" name="abandono" value="Sí, más de 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, más de 1 vez</span></label>
+      <label class="opt risk"><input type="radio" name="abandono" value="Actualmente abandonó" onclick="toggleMotivoAbandono()"><span>Actualmente abandonó</span></label>
+    </div>
+    <div id="motivoAbandonoCard" style="display:none">
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Motivo del abandono / no asistencia (se puede marcar varias)</div>
+    <div class="opts c2">
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Trabajo infantil"><span>Trabajo infantil</span></label>
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Falta de recursos"><span>Falta de recursos</span></label>
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Distancia/transporte"><span>Distancia / transporte</span></label>
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Problemas familiares"><span>Problemas familiares</span></label>
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Problemas con institución"><span>Problemas con institución</span></label>
+      <label class="opt risk"><input type="checkbox" name="motivoAb" value="Embarazo adolescente"><span>Embarazo adolescente</span></label>
+      <label class="opt"><input type="checkbox" name="motivoAb" value="Desmotivado"><span>Desmotivado</span></label>
+    </div>
+    </div>
+    </div>
     <div id="bloqueInstitucion">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
     <div class="card-body">
-      <div style="margin-bottom:8px">
-        <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
-      </div>
       <div class="frow">
         <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
         <div class="fg sm"><label>Grado / Año</label><input type="text" id="gradoAnio" placeholder="Ej: 3ro"></div>
@@ -733,27 +749,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="radio" name="desayunoEscolar" value="No aplica"><span>No aplica (no escolarizado)</span></label>
     </div>
     </div><!-- fin bloqueInstitucion -->
-    <div id="bloqueEscolar">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="abandono" value="No" onclick="toggleMotivoAbandono()"><span>No</span></label>
-      <label class="opt warn"><input type="radio" name="abandono" value="Sí, 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, 1 vez</span></label>
-      <label class="opt warn"><input type="radio" name="abandono" value="Sí, más de 1 vez" onclick="toggleMotivoAbandono()"><span>Sí, más de 1 vez</span></label>
-      <label class="opt risk"><input type="radio" name="abandono" value="Actualmente abandonó" onclick="toggleMotivoAbandono()"><span>Actualmente abandonó</span></label>
-    </div>
-    <div id="motivoAbandonoCard" style="display:none">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Motivo del abandono / no asistencia (se puede marcar varias)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Trabajo infantil"><span>Trabajo infantil</span></label>
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Falta de recursos"><span>Falta de recursos</span></label>
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Distancia/transporte"><span>Distancia / transporte</span></label>
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Problemas familiares"><span>Problemas familiares</span></label>
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Problemas con institución"><span>Problemas con institución</span></label>
-      <label class="opt risk"><input type="checkbox" name="motivoAb" value="Embarazo adolescente"><span>Embarazo adolescente</span></label>
-      <label class="opt"><input type="checkbox" name="motivoAb" value="Desmotivado"><span>Desmotivado</span></label>
-    </div>
-    </div>
-    </div><!-- fin bloqueEscolar -->
+    
     </div><!-- fin bloqueEducNino -->
   </div>
   <div class="card" id="bloqueInfraestructura">
@@ -769,6 +765,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="banosEsc" value="Inservibles/mal olor"><span>Inservibles / mal olor</span></label>
       <label class="opt"><input type="radio" name="banosEsc" value="Funcionales y limpios"><span>Funcionales y limpios</span></label>
       <label class="opt risk"><input type="radio" name="banosEsc" value="No tiene baños"><span>No tiene baños</span></label>
+    </div>
+    <div style="padding:8px">
+      <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
     </div>
   </div>
   <div class="btn-row">
@@ -843,12 +842,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card">
     <div class="card-lbl" id="ninoSaludLabel">Niño/a: —</div>
     <div class="sub">▸ Cobertura médica y estado de salud</div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Atención en salud</div>
+    <div class="card-lbl" id="saludAtLabel" style="font-size:11px;background:#F8FAFC">Lugar de atención</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="saludAt" value="Hospital IESS"><span>Hospital IESS</span></label>
       <label class="opt"><input type="radio" name="saludAt" value="Ministerio Salud Pública"><span>Ministerio Salud Pública</span></label>
       <label class="opt"><input type="radio" name="saludAt" value="Clínica privada"><span>Clínica privada</span></label>
       <label class="opt"><input type="radio" name="saludAt" value="Medicina ancestral"><span>Medicina ancestral</span></label>
+    </div>
+    <div style="padding:8px">
+      <button onclick="mismaAtencionSaludTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--green);background:#F0FDF4;color:var(--green);font-size:12px;font-weight:600;cursor:pointer">🏥 Todos los niños se atienden en el mismo lugar</button>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Presenta alguna discapacidad?</div>
     <div class="opts c2">
@@ -878,6 +880,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="comportamiento" value="No le gusta jugar con otros"><span>No le gusta jugar con otros</span></label>
       <label class="opt"><input type="checkbox" name="comportamiento" value="No se ríe mucho / aislado"><span>No se ríe mucho / aislado</span></label>
       <label class="opt"><input type="checkbox" name="comportamiento" value="Otro"><span>Otro</span></label>
+    </div>
     </div>
     <div class="card-body">
       <div class="fg"><label>Observaciones de salud adicionales</label><input type="text" id="condSalud" placeholder="Ej: asma, anemia, parásitos..."></div>
@@ -954,10 +957,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sub">▸ Estado nutricional (medición objetiva)</div>
     <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:10px;padding:12px 14px;margin:6px 12px 4px;font-size:11px;color:#14532D;line-height:1.6">
       📊 <strong>Cómo se calcula el estado nutricional (Estándar OMS)</strong><br><br>
-      <strong>👶 Menores de 5 años</strong> o talla ≤ 120cm:<br>
-      Se usa la tabla <em>Peso/Talla OMS</em>. Compara el peso del niño/a con el rango normal para su talla exacta, sin importar la edad. Ejemplo: si mide 95cm, el peso normal está entre 12–14kg.<br><br>
-      <strong>🧒 De 5 a 19 años:</strong><br>
-      Se calcula el <em>IMC = Peso ÷ Talla²</em> y se compara con la tabla OMS según edad y sexo del niño/a. Un mismo IMC puede ser normal en un niño de 7 años y bajo peso en uno de 14.<br><br>
+      <strong>👶 Menor de 2 años:</strong><br>
+      Se muestra el mensaje: <em>Evaluación nutricional mediante control pediátrico</em>.<br><br>
+      <strong>🧒 De 2 a 4 años:</strong><br>
+      Se clasifica con referencia OMS de peso para la edad: <em>Normal / Bajo peso / Bajo peso severo</em>.<br><br>
+      <strong>👧 5 años en adelante:</strong><br>
+      Se calcula el <em>IMC = Peso ÷ Talla²</em> y se compara por edad y sexo: <em>Desnutrición severa / Desnutrición moderada / Delgadez / Normal / Sobrepeso / Obesidad</em>.<br><br>
       ✅ La <strong>edad y sexo se detectan automáticamente</strong> del registro de la sección 1.<br>
       📌 Fuente: <strong>OMS — Child Growth Standards & Growth Reference 5-19 years</strong>
     </div>
@@ -969,14 +974,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="resultNutri" style="margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px;display:none"></div>
       <div id="notaOMS" style="display:none;margin-top:6px;padding:6px 10px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:7px;font-size:11px;color:#0369A1;line-height:1.5"></div>
       <input type="hidden" id="nutricionResult" name="nutricion">
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuándo comió por última vez el niño/a?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="ultimaComida" value="Hoy"><span>Hoy</span></label>
-      <label class="opt warn"><input type="radio" name="ultimaComida" value="Ayer"><span>Ayer</span></label>
-      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace 2 días"><span>Hace 2 días</span></label>
-      <label class="opt risk"><input type="radio" name="ultimaComida" value="Hace más de 2 días"><span>Hace más de 2 días</span></label>
-      <label class="opt"><input type="radio" name="ultimaComida" value="No recuerda"><span>No recuerda</span></label>
     </div>
   </div>
   </div><!-- fin bloqueNinoSalud -->
@@ -1087,69 +1084,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="sec" id="sec8">
   <div class="sec-hdr">
     <div class="sec-num-bar">
-      <div class="sec-num" style="background:var(--red)">7</div>
+      <div class="sec-num" style="background:var(--red)">8</div>
       <div class="sec-info">
         <h2>DINÁMICA FAMILIAR, RIESGOS Y PREVENCIÓN <span class="badge badge-family">JEFE DE HOGAR</span></h2>
-        <p>Entorno seguro, disciplina, supervisión y vida comunitaria</p>
+        <p>Alimentación, entorno del hogar, chicha, religión y convivencia</p>
       </div>
     </div>
   </div>
+
   <div class="card">
-    <div class="sub red">▸ Entorno y supervisión del hogar</div>
-    <div id="bloqueHorasSolo">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuántas horas permanecen solos sus hijos/as al día?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="horasSolo" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
-      <label class="opt"><input type="radio" name="horasSolo" value="1–2 horas"><span>1 – 2 horas</span></label>
-      <label class="opt warn"><input type="radio" name="horasSolo" value="3–5 horas"><span>3 – 5 horas</span></label>
-      <label class="opt risk"><input type="radio" name="horasSolo" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
-    </div>
-    </div><!-- fin bloqueHorasSolo -->
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día (familia)</div>
+    <div class="sub red">▸ Alimentación del hogar</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">N° de comidas al día</div>
     <div class="opts c2">
       <label class="opt risk"><input type="radio" name="comidas" value="1 comida"><span>1 comida</span></label>
       <label class="opt warn"><input type="radio" name="comidas" value="2 comidas"><span>2 comidas</span></label>
       <label class="opt"><input type="radio" name="comidas" value="3 comidas"><span>3 comidas</span></label>
       <label class="opt"><input type="radio" name="comidas" value="Más de 3"><span>Más de 3</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuál es la forma de alimentación regular de la familia? (puede marcar varias)</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cómo se alimentan principalmente? (puede marcar varias)</div>
     <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca (yuca / plátano / papa china)</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Productos de finca"><span>Productos de finca</span></label>
       <label class="opt"><input type="checkbox" name="comioAyer" value="Caza/pesca"><span>Caza / pesca</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado (arroz/atún)"><span>Comprado (arroz / atún / conservas)</span></label>
-      <label class="opt"><input type="checkbox" name="comioAyer" value="Restaurante/comida preparada"><span>Restaurante / compran comida preparada</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Comprado"><span>Comprado</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Comida preparada"><span>Comida preparada</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Donaciones/apoyo"><span>Donaciones / apoyo</span></label>
+      <label class="opt"><input type="checkbox" name="comioAyer" value="Otro"><span>Otro</span></label>
     </div>
-    <div id="bloqueSinComer">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia algún niño/a se va a dormir sin haber comido?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Consumen frutas/verduras y proteínas?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="sinComer" value="Nunca"><span>Nunca</span></label>
-      <label class="opt warn"><input type="radio" name="sinComer" value="Rara vez (1 vez al mes)"><span>Rara vez (1 vez al mes)</span></label>
-      <label class="opt warn"><input type="radio" name="sinComer" value="A veces (1 vez por semana)"><span>A veces (1 vez por semana)</span></label>
-      <label class="opt risk"><input type="radio" name="sinComer" value="Frecuentemente (más de 2 veces/semana)"><span>Frecuentemente (más de 2 veces/semana)</span></label>
-      <label class="opt risk"><input type="radio" name="sinComer" value="Casi siempre"><span>Casi siempre</span></label>
+      <label class="opt"><input type="radio" name="frutasProteinas" value="Diario"><span>Diario</span></label>
+      <label class="opt"><input type="radio" name="frutasProteinas" value="Varios días"><span>Varios días</span></label>
+      <label class="opt warn"><input type="radio" name="frutasProteinas" value="Rara vez"><span>Rara vez</span></label>
+      <label class="opt risk"><input type="radio" name="frutasProteinas" value="Casi nunca"><span>Casi nunca</span></label>
     </div>
-    </div><!-- fin bloqueSinComer -->
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes hubo días en que no había comida en el hogar?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿En el último mes les faltó comida algún día?</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="sinComidaHogar" value="No"><span>No</span></label>
-      <label class="opt warn"><input type="radio" name="sinComidaHogar" value="Sí, 1 o 2 días"><span>Sí, 1 o 2 días</span></label>
-      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, una semana"><span>Sí, una semana</span></label>
-      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Sí, más de una semana"><span>Sí, más de una semana</span></label>
+      <label class="opt"><input type="radio" name="sinComidaHogar" value="Nunca"><span>Nunca</span></label>
+      <label class="opt warn"><input type="radio" name="sinComidaHogar" value="1-2 días"><span>1-2 días</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Varias veces"><span>Varias veces</span></label>
+      <label class="opt risk"><input type="radio" name="sinComidaHogar" value="Frecuentemente"><span>Frecuentemente</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de frutas / verduras (familia)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="frutas" value="Diario"><span>Diario</span></label>
-      <label class="opt"><input type="radio" name="frutas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="frutas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="frutas" value="Casi nunca"><span>Casi nunca</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo regular de proteínas (carne / huevo / pescado)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="proteinas" value="Diario"><span>Diario</span></label>
-      <label class="opt"><input type="radio" name="proteinas" value="3–4 veces/semana"><span>3–4 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="proteinas" value="1–2 veces/semana"><span>1–2 veces / semana</span></label>
-      <label class="opt warn"><input type="radio" name="proteinas" value="Casi nunca"><span>Casi nunca</span></label>
-    </div>
+  </div>
+
+  <div class="card">
+    <div class="sub red">▸ Chicha</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Consumo de chicha en el hogar</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="chicha" value="No toman" onclick="toggleChichaDetalle(false)"><span>No toman</span></label>
@@ -1162,7 +1140,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt risk"><input type="radio" name="chichaDetalle" value="Chicha fermentada"><span>Chicha fermentada</span></label>
       </div>
     </div>
-    <!-- Bloque niños chicha — solo cuando hay menores -->
     <div id="chichaDetalleNinosCard" style="display:none">
       <div class="card-lbl" style="font-size:11px;background:#FFF7ED;color:#C2410C">USO DE CHICHA EN NIÑOS</div>
       <div class="opts c2">
@@ -1170,15 +1147,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <label class="opt risk"><input type="radio" name="chichaDetalleNinos" value="Chicha fermentada"><span>Chicha fermentada</span></label>
       </div>
     </div>
-    <div id="bloquePeleas">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="peleas" value="No/raramente"><span>No / raramente</span></label>
-      <label class="opt"><input type="radio" name="peleas" value="Ocasionalmente"><span>Ocasionalmente</span></label>
-      <label class="opt warn"><input type="radio" name="peleas" value="Frecuentemente"><span>Frecuentemente</span></label>
-      <label class="opt risk"><input type="radio" name="peleas" value="Muy seguido/violencia"><span>Muy seguido / violencia</span></label>
+  </div>
+
+  <div class="card" id="bloqueEntornoHogar">
+    <div class="sub red">▸ Entorno del hogar</div>
+    <div id="bloqueHorasSolo">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Cuántas horas permanecen solos sus hijos/as al día?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="horasSolo" value="Nunca solo/a"><span>Nunca — siempre acompañado/a</span></label>
+        <label class="opt"><input type="radio" name="horasSolo" value="1–2 horas"><span>1 – 2 horas</span></label>
+        <label class="opt warn"><input type="radio" name="horasSolo" value="3–5 horas"><span>3 – 5 horas</span></label>
+        <label class="opt risk"><input type="radio" name="horasSolo" value="Más de 5 horas"><span>Más de 5 horas (riesgo alto)</span></label>
+      </div>
     </div>
-    </div><!-- fin bloquePeleas -->
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Consumo frecuente de alcohol en el hogar?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="alcohol" value="No"><span>No</span></label>
@@ -1186,23 +1167,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt warn"><input type="radio" name="alcohol" value="Frecuente"><span>Frecuente</span></label>
       <label class="opt risk"><input type="radio" name="alcohol" value="Problema reconocido"><span>Problema reconocido</span></label>
     </div>
-  </div>
-  <div class="card" id="bloqueDisciplina">
-    <div class="sub red">▸ Forma de disciplinar al niño/a</div>
-    <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar más de 2</p>
-    <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="disciplina" value="Diálogo/restricción salidas"><span>Diálogo / restricción de salidas</span></label>
-      <label class="opt"><input type="checkbox" name="disciplina" value="Restricción de permisos/salidas"><span>Restricción de permisos / salidas</span></label>
-      <label class="opt warn"><input type="checkbox" name="disciplina" value="Correazo/chancletazo"><span>Correazo / chancletazo</span></label>
-      <label class="opt"><input type="checkbox" name="disciplina" value="Ortiga (justicia indígena)"><span>Ortiga (justicia indígena)</span></label>
-      <label class="opt warn"><input type="checkbox" name="disciplina" value="Palo/rama de árbol"><span>Palo / rama de árbol</span></label>
-      <label class="opt warn"><input type="checkbox" name="disciplina" value="Jala fuertemente la oreja"><span>Jala fuertemente la oreja</span></label>
-      <label class="opt warn"><input type="checkbox" name="disciplina" value="Ducha de agua fría"><span>Ducha de agua fría</span></label>
-      <label class="opt"><input type="checkbox" name="disciplina" value="A trabajar en la finca"><span>A trabajar en la finca</span></label>
+    <div id="bloquePeleas">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Hay peleas frecuentes entre adultos en el hogar?</div>
+      <div class="opts c2">
+        <label class="opt"><input type="radio" name="peleas" value="No/raramente"><span>No / raramente</span></label>
+        <label class="opt"><input type="radio" name="peleas" value="Ocasionalmente"><span>Ocasionalmente</span></label>
+        <label class="opt warn"><input type="radio" name="peleas" value="Frecuentemente"><span>Frecuentemente</span></label>
+        <label class="opt risk"><input type="radio" name="peleas" value="Muy seguido/violencia"><span>Muy seguido / violencia</span></label>
+      </div>
+    </div>
+    <div id="bloqueDisciplina">
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Forma de disciplinar al niño/a</div>
+      <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar varias</p>
+      <div class="opts c2">
+        <label class="opt"><input type="checkbox" name="disciplina" value="Diálogo/restricción salidas"><span>Diálogo / restricción de salidas</span></label>
+        <label class="opt"><input type="checkbox" name="disciplina" value="Restricción de permisos/salidas"><span>Restricción de permisos / salidas</span></label>
+        <label class="opt warn"><input type="checkbox" name="disciplina" value="Correazo/chancletazo"><span>Correazo / chancletazo</span></label>
+        <label class="opt"><input type="checkbox" name="disciplina" value="Ortiga (justicia indígena)"><span>Ortiga (justicia indígena)</span></label>
+        <label class="opt warn"><input type="checkbox" name="disciplina" value="Palo/rama de árbol"><span>Palo / rama de árbol</span></label>
+        <label class="opt warn"><input type="checkbox" name="disciplina" value="Jala fuertemente la oreja"><span>Jala fuertemente la oreja</span></label>
+        <label class="opt warn"><input type="checkbox" name="disciplina" value="Ducha de agua fría"><span>Ducha de agua fría</span></label>
+        <label class="opt"><input type="checkbox" name="disciplina" value="A trabajar en la finca"><span>A trabajar en la finca</span></label>
+      </div>
     </div>
   </div>
+
   <div class="card">
-    <div class="sub red">▸ Religión y vida comunitaria</div>
+    <div class="sub red">▸ Religión</div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Religión</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="religion" value="Católica" onclick="toggleReligionOtro(false)"><span>Católica</span></label>
@@ -1217,40 +1208,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="religionOtroCard" style="display:none;padding:6px 11px">
       <input type="text" id="religionOtroTexto" placeholder="Especifique la religión..." style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px">
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia se congrega?</div>
+    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Con qué frecuencia van a misa / se congregan?</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="congrega" value="Semanal"><span>Semanal</span></label>
       <label class="opt"><input type="radio" name="congrega" value="Mensual"><span>Mensual</span></label>
       <label class="opt"><input type="radio" name="congrega" value="Ocasional"><span>Ocasional</span></label>
       <label class="opt"><input type="radio" name="congrega" value="No se congrega"><span>No se congrega</span></label>
     </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Pertenece a grupos bíblicos o comunitarios?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="grupos" value="Sí, activamente"><span>Sí, activamente</span></label>
-      <label class="opt"><input type="radio" name="grupos" value="Sí, ocasionalmente"><span>Sí, ocasionalmente</span></label>
-      <label class="opt"><input type="radio" name="grupos" value="No"><span>No</span></label>
-    </div>
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(7)">← Atrás</button>
-    <button class="btn btn-primary" onclick="updateMiembroSignosOptions();goTo(9)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="goTo(9)">Siguiente →</button>
   </div>
 </div>
 
-<!-- ═══════ SEC 9 — TÉCNICO ═══════ -->
+<!-- ═══════ SEC 9 — PERCEPCIÓN ═══════ -->
 <div class="sec" id="sec9">
   <div class="sec-hdr">
     <div class="sec-num-bar">
       <div class="sec-num" style="background:var(--teal)">9</div>
-      <div class="sec-info"><h2>PERCEPCIÓN DEL CUIDADOR / RESPONSABLE</h2><p>Preguntar directamente al cuidador/a — escala del 1 al 5</p></div>
+      <div class="sec-info"><h2>PERCEPCIÓN DEL CUIDADOR / RESPONSABLE</h2><p>Preguntar directamente al cuidador/a</p></div>
     </div>
   </div>
   <div class="card">
-    <div class="sub teal">▸ Instrucción: Leer cada pregunta en voz alta y tocar el número que corresponda</div>
+    <div class="sub teal">▸ Instrucción: Leer cada pregunta en voz alta y tocar la respuesta que corresponda</div>
     <div style="display:flex;justify-content:space-between;padding:5px 11px;font-size:10px;color:var(--light)">
       <span>1 = Muy mal / nunca</span><span>3 = Regular / a veces</span><span>5 = Muy bien / siempre</span>
     </div>
     <div id="percepcionContainer"></div>
+  </div>
+  <div class="card">
+    <div class="card-lbl teal">Ambiente entre adultos del hogar</div>
+    <div class="opts c2">
+      <label class="opt"><input type="radio" name="ambienteAdultos" value="Tranquilo y estable"><span>Tranquilo y estable</span></label>
+      <label class="opt warn"><input type="radio" name="ambienteAdultos" value="Hay tensiones ocasionales"><span>Hay tensiones ocasionales</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Conflictos frecuentes"><span>Conflictos frecuentes</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteAdultos" value="Hay violencia"><span>Hay violencia</span></label>
+    </div>
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(8)">← Atrás</button>
@@ -1258,90 +1252,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- ═══════ SEC 11 — CIERRE ═══════ -->
+<!-- ═══════ SEC 10 — TÉCNICO ═══════ -->
 <div class="sec" id="sec10">
   <div class="sec-hdr">
     <div class="sec-num-bar">
-      <div class="sec-num" style="background:var(--purple)">8</div>
+      <div class="sec-num" style="background:var(--purple)">10</div>
       <div class="sec-info"><h2>VALORACIÓN EXCLUSIVA DEL TÉCNICO <span class="badge badge-tech">🔒 PRIVADO</span></h2><p>Completar en privado · NO mostrar al entrevistado</p></div>
     </div>
   </div>
   <div class="tech-banner"><p>⚠ Esta sección es de uso exclusivo del equipo técnico. No leer ni mostrar al entrevistado.</p></div>
   <div class="card">
-    <div class="card-lbl purple">Perfil actitudinal de la familia</div>
+    <div class="card-lbl purple">Observación privada del técnico: Ambiente observado durante la visita</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="perfil" value="Proactiva/emprendedora"><span>Proactiva / emprendedora</span></label>
-      <label class="opt"><input type="radio" name="perfil" value="Receptiva/colaborativa"><span>Receptiva / colaborativa</span></label>
-      <label class="opt warn"><input type="radio" name="perfil" value="Pasiva/dependiente"><span>Pasiva / dependiente de ayuda</span></label>
-      <label class="opt warn"><input type="radio" name="perfil" value="Resistente/desconfiada"><span>Resistente / desconfiada</span></label>
+      <label class="opt"><input type="radio" name="ambienteVisita" value="Tranquilo"><span>Tranquilo</span></label>
+      <label class="opt warn"><input type="radio" name="ambienteVisita" value="Tensión visible"><span>Tensión visible</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteVisita" value="Señales de miedo"><span>Señales de miedo</span></label>
+      <label class="opt risk"><input type="radio" name="ambienteVisita" value="Conflicto evidente"><span>Conflicto evidente</span></label>
     </div>
   </div>
   <div class="card">
-    <div class="card-lbl purple">¿La información parece confiable?</div>
+    <div class="card-lbl purple">Observación privada del técnico: Seguridad observada en el hogar</div>
     <div class="opts c2">
-      <label class="opt"><input type="radio" name="confiable" value="Sí, coherente"><span>Sí, coherente</span></label>
-      <label class="opt"><input type="radio" name="confiable" value="Mayormente confiable"><span>Mayormente confiable</span></label>
-      <label class="opt warn"><input type="radio" name="confiable" value="Se percibe ocultamiento"><span>Se percibe ocultamiento</span></label>
-      <label class="opt risk"><input type="radio" name="confiable" value="Datos contradictorios"><span>Datos muy contradictorios</span></label>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-lbl purple">Prioridad de intervención (marcar hasta 2)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="prioridad" value="Agua potable"><span>💧 Agua potable</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Brigada médica"><span>🏥 Brigada médica</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Reconstrucción/aula"><span>🏫 Reconstrucción / aula</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Apoyo nutricional"><span>🥗 Apoyo nutricional</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Educación alimentaria madres"><span>👩 Educ. alimentaria madres</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Escuela de fútbol/deporte"><span>⚽ Escuela fútbol / deporte</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Apoyo psicológico"><span>🧠 Apoyo psicológico</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Huerto familiar"><span>🌱 Huerto familiar</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Energía eléctrica"><span>⚡ Energía eléctrica</span></label>
-      <label class="opt"><input type="checkbox" name="prioridad" value="Acceso a internet"><span>📶 Acceso a internet</span></label>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-lbl purple">Signos de riesgo observados (confidencial)</div>
-    <div class="card-lbl purple">Signos físicos — selecciona el miembro</div>
-    <div style="margin-bottom:8px">
-      <select id="miembroSignos" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:white">
-        <option value="">— Seleccionar miembro de la familia —</option>
-      </select>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Se observan signos de riesgo?</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="haySignos" value="Sin signos visibles de riesgo" onclick="toggleSignosRiesgo(false)"><span>✅ Sin signos visibles de riesgo</span></label>
-      <label class="opt risk"><input type="radio" name="haySignos" value="Existen signos de riesgo" onclick="toggleSignosRiesgo(true)"><span>⚠️ Existen signos de riesgo</span></label>
-    </div>
-    <div id="signosRiesgoDetalles" style="display:none">
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Signos físicos observados</div>
-    <div class="opts c2">
-      <label class="opt warn"><input type="radio" name="signosFis" value="Signos desnutrición/anemia"><span>Signos desnutrición / anemia</span></label>
-      <label class="opt warn"><input type="radio" name="signosFis" value="Signos parásitos (abdomen)"><span>Signos parásitos (abdomen)</span></label>
-      <label class="opt risk"><input type="radio" name="signosFis" value="Signos violencia física"><span>Signos de violencia física</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Riesgos graves identificados</div>
-    <div class="opts c2">
-      <label class="opt"><input type="radio" name="riesgos" value="Ninguno aparente"><span>Ninguno aparente</span></label>
-      <label class="opt warn"><input type="radio" name="riesgos" value="Riesgo deserción escolar"><span>Riesgo deserción escolar</span></label>
-      <label class="opt risk"><input type="radio" name="riesgos" value="Violencia intrafamiliar observada"><span>Violencia intrafamiliar — observada</span></label>
-      <label class="opt risk"><input type="radio" name="riesgos" value="Sospecha abuso/negligencia"><span>Sospecha abuso / negligencia grave</span></label>
-    </div>
-    <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Factores de riesgo adicionales</div>
-    <div class="opts c2">
-      <label class="opt warn"><input type="checkbox" name="factoresR" value="Consumo alcohol/sustancias en adultos"><span>Consumo de alcohol / sustancias en adultos del hogar</span></label>
-      <label class="opt risk"><input type="checkbox" name="factoresR" value="Embarazo adolescente activo"><span>Embarazo adolescente activo</span></label>
-      <label class="opt warn"><input type="checkbox" name="factoresR" value="Niño/a trabajando en lugar de estudiar"><span>Niño/a trabajando en lugar de estudiar</span></label>
-      <label class="opt warn"><input type="checkbox" name="factoresR" value="Niño/a a cargo de hermanos sin adulto"><span>Niño/a a cargo de hermanos menores sin adulto presente</span></label>
-      <label class="opt risk"><input type="checkbox" name="factoresR" value="Desnutrición visible sin atención médica"><span>Desnutrición visible sin atención médica</span></label>
-      <label class="opt risk"><input type="checkbox" name="factoresR" value="Deserción escolar reciente"><span>Deserción escolar reciente</span></label>
-    </div>
+      <label class="opt"><input type="radio" name="seguridadObsTecnico" value="Seguro"><span>Seguro</span></label>
+      <label class="opt warn"><input type="radio" name="seguridadObsTecnico" value="Riesgo leve"><span>Riesgo leve</span></label>
+      <label class="opt risk"><input type="radio" name="seguridadObsTecnico" value="Riesgo alto"><span>Riesgo alto</span></label>
+      <label class="opt risk"><input type="radio" name="seguridadObsTecnico" value="Inseguro"><span>Inseguro</span></label>
     </div>
   </div>
   <div class="card">
     <div class="card-lbl purple">Observaciones privadas del técnico</div>
     <div class="card-body">
-      <textarea id="obsPrivadas" placeholder="Discrepancias entre lo declarado y lo observado, señales de alerta, contexto cultural adicional, situaciones sensibles..."></textarea>
+      <textarea id="obsPrivadas" placeholder="Describe aquí: signos físicos de riesgo observados, discrepancias entre lo declarado y lo observado, señales de alerta, ambiente del hogar, situaciones sensibles..."></textarea>
     </div>
   </div>
   <div class="btn-row">
@@ -1350,18 +1291,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- ═══════ SEC 10 — PERCEPCIÓN ═══════ -->
+<!-- ═══════ SEC 11 — CIERRE ═══════ -->
 <div class="sec" id="sec11">
   <div class="sec-hdr">
     <div class="sec-num-bar">
-      <div class="sec-num" style="background:var(--blue)">10</div>
-      <div class="sec-info"><h2>OBSERVACIONES GENERALES Y CIERRE</h2><p>Necesidades urgentes, prioridad y puntaje de vulnerabilidad</p></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-lbl">Necesidades urgentes / Observaciones generales</div>
-    <div class="card-body">
-      <textarea id="obsGenerales" placeholder="Necesidades urgentes identificadas, observaciones relevantes de la visita..."></textarea>
+      <div class="sec-num" style="background:var(--blue)">11</div>
+      <div class="sec-info"><h2>CIERRE</h2><p>Prioridad y puntaje de vulnerabilidad</p></div>
     </div>
   </div>
   <div class="card">
@@ -1397,7 +1332,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-</div><!-- .main -->
 
 <div class="off-banner" id="offBanner">📡 Sin conexión — los datos se guardan localmente</div>
 <div class="saved" id="savedBadge">✓ Guardado</div>
@@ -1409,15 +1343,10 @@ document.getElementById('logoImg').src = 'data:image/png;base64,' + LOGO_B64;
 
 // ── PERCEPTION QUESTIONS ─────────────────────────────────────────────
 const PERC_Q = [
-  { id:'p1', q:'¿Qué tan seguro/a se siente usted y sus hijos en este hogar?', hint:'1=Muy inseguro/a · 5=Muy seguro/a', soloConNinos:true },
   { id:'p2', q:'¿Qué tan bien come su familia en el día a día?', hint:'1=Casi no comemos bien · 5=Comemos bien siempre', soloConNinos:false },
-  { id:'p3', q:'¿Qué tan capaz se siente de cuidar y proteger bien a sus hijos?', hint:'1=No me siento capaz · 5=Me siento muy capaz', soloConNinos:true },
   { id:'p4', q:'¿Cree que sus hijos tendrán un futuro mejor que el suyo?', hint:'1=No lo creo · 5=Estoy completamente seguro/a', soloConNinos:true },
   { id:'p5', q:'¿Qué tan importante es para usted que sus hijos terminen la escuela?', hint:'1=No es importante · 5=Es muy importante', soloConNinos:true },
-  { id:'p6', q:'¿Con qué frecuencia alguien en casa pierde el control o se enoja mucho?', hint:'1=Muy seguido · 5=Nunca o casi nunca', soloConNinos:true },
-  { id:'p7', q:'¿Qué tan bien se llevan los adultos que viven en su hogar?', hint:'1=Muy mal · 5=Muy bien', soloConNinos:true },
   { id:'p8', q:'¿Confía en los servicios de salud que tiene disponibles cerca?', hint:'1=No confío/no tengo · 5=Confío plenamente', soloConNinos:false },
-  { id:'p9', q:'¿Siente que la Fundación puede ayudar a mejorar la vida de su familia?', hint:'1=No lo creo · 5=Sí, completamente', soloConNinos:false },
 ];
 const percVals = {};
 
@@ -1585,7 +1514,7 @@ let famRows = [];
 const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Nieto/a','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
 
 function addFamRow() {
-  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', tel:'', nivel:'' });
+  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', tel:'', nivel:'', cabeza:false });
   renderFamTable();
   autoSave();
 }
@@ -1616,14 +1545,14 @@ function renderFamTable() {
         <option value="">--</option>
         ${MIEMBRO_OPTS.map(o=>`<option${r.miembro===o?' selected':''}>${o}</option>`).join('')}
       </select></td>
-      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;updateTotales();autoSave()" style="width:42px"></td>
+      <td><input type="number" value="${r.edad}" min="0" max="120" placeholder="0" oninput="famRows[${i}].edad=this.value;if(Number(this.value)<=15)famRows[${i}].cabeza=false;updateTotales();autoSave()" onchange="renderFamTable()" style="width:42px"></td>
       <td style="padding:3px">
         <div style="display:flex;gap:3px">
           <button onclick="famRows[${i}].sexo='M';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='M'?'#3B82F6':'var(--border)'};background:${r.sexo==='M'?'#DBEAFE':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='M'?'#1D4ED8':'var(--mid)'}">M</button>
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
-      <td><input type="text" value="${r.cedula||''}" placeholder="Cédula" oninput="famRows[${i}].cedula=this.value;syncPadreMadreFields();autoSave()" onblur="renderNinos()" style="width:85px"></td><td><input type="tel" value="${r.tel||''}" placeholder="09..." oninput="famRows[${i}].tel=this.value;syncPadreMadreFields();autoSave()" style="width:95px"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
+      <td style="text-align:center"><input type="checkbox" ${r.cabeza?'checked':''} ${Number(r.edad)>15?'':'disabled'} title="Solo mayores de 15 años" onchange="famRows[${i}].cabeza=this.checked;autoSave()" style="width:16px;height:16px;accent-color:var(--green)"></td><td><select onchange="famRows[${i}].nivel=this.value;autoSave()" style="width:100%;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">--</option>
         ${['Inicial','Kinder','Primaria','Secundaria','Tercer nivel (Universitario)','Maestría/Postgrado','No estudia'].map(o=>`<option value="${o}"${r.nivel===o?' selected':''}>${o}</option>`).join('')}
       </select></td>`;
@@ -1950,7 +1879,7 @@ function loadAdultoData(idx) {
     if (btnSi) { btnSi.style.background='white'; btnSi.style.color='var(--mid)'; btnSi.style.borderColor='var(--border)'; }
     if (btnNo) { btnNo.style.background='white'; btnNo.style.color='var(--mid)'; btnNo.style.borderColor='var(--border)'; }
     // Hide all educ blocks until selection
-    ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura','bloqueEducAdulto'].forEach(id => {
+    ['bloqueEducNino','bloqueInstitucion','bloqueInfraestructura','bloqueEducAdulto'].forEach(id => {
       const el = document.getElementById(id); if(el) el.style.display='none';
     });
   }
@@ -2000,6 +1929,8 @@ function buildChildTabs() {
     updateChildNavs();
   }
   updateChildTabs();
+  updateEducByAge();
+  updateSaludByAge();
 }
 
 function updateChildNavs() {
@@ -2023,6 +1954,8 @@ function updateChildNavs() {
   const cur = ninos[currentNino];
   const name = cur ? (cur.nombre || `Niño/a ${currentNino+1}`) : '—';
   updateControlesVacunas();
+  updateEducByAge();
+  updateSaludByAge();
   ['ninoFamiliarLabel','ninoEducLabel','ninoSaludLabel'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = '👶 ' + name + (cur && cur.edad ? ' · ' + cur.edad : '') + (cur && cur.sexo ? ' · ' + cur.sexo : '');
@@ -2048,7 +1981,7 @@ function saveCurrentChildData() {
   const fields = {
     estadoPadre: 'radio', estadoMadre: 'radio', orfandad: 'radio',
     convive: 'checkbox', laboral: 'radio', lugarTrabajo: 'radio', quienCuida: 'radio',
-    asiste: 'radio', nivelEduc: 'radio', modalidad: 'radio', idiomaEduc: 'radio', abandono: 'radio',
+    cibv: 'radio', asiste: 'radio', nivelEduc: 'radio', modalidad: 'radio', idiomaEduc: 'radio', abandono: 'radio',
     motivoAb: 'checkbox', aulas: 'radio', banosEsc: 'radio',
     desayunoEscolar: 'radio',
     saludAt: 'radio', discap: 'radio', nutricion: 'radio', psico: 'radio',
@@ -2072,7 +2005,7 @@ function saveCurrentChildData() {
     if (el) childData[currentNino][id] = el.value;
   });
   // Peso y talla
-  ['pesoNino','tallaNino'].forEach(id => {
+  ['pesoNino','tallaNino','nutricionResult'].forEach(id => {
     const el = document.getElementById(id);
     if (el) childData[currentNino][id] = el.value;
   });
@@ -2087,7 +2020,7 @@ function saveCurrentChildData() {
   const rotEl = document.getElementById('religionOtroTexto');
   if (rotEl) childData[currentNino]['religionOtroTexto'] = rotEl.value;
   // Cuidador
-  ['cuidadorSelect','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
+  ['cuidadorSelect','parentescoCuidador','edadCuidador'].forEach(id => {
     const el = document.getElementById(id);
     if (el) childData[currentNino][id] = el.tagName==='SELECT'?el.value:el.value;
   });
@@ -2132,12 +2065,14 @@ function loadChildData(idx) {
   if (tallaEl) tallaEl.value = '';
   if (resultNutri) { resultNutri.style.display = 'none'; resultNutri.textContent = ''; }
   if (notaOMS) notaOMS.style.display = 'none';
+  const hiddenNutri = document.getElementById('nutricionResult');
+  if (hiddenNutri) hiddenNutri.value = '';
 
   // ── 4. Ocultar todos los paneles condicionales ──
   ['signosRiesgoDetalles','religionOtroCard','chichaDetalleCard','motivoAbandonoCard','brigadaDetalles','vphCard']
     .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
   // Mostrar bloques de institución por defecto, se ajustan según datos guardados
-  ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+  ['bloqueInstitucion','bloqueInfraestructura'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'block';
   });
   // Restaurar opciones nivel educativo para niños (pueden estar ocultas por modo adulto)
@@ -2150,13 +2085,17 @@ function loadChildData(idx) {
   // Si no hay datos guardados para este niño, quedamos con todo limpio
   if (!childData[idx] || Object.keys(d).length === 0) {
     updateControlesVacunas();
+    updateEducByAge();
+    updateSaludByAge();
+    applyInstitucionChainVisual(false);
+    applySaludChainVisual(false);
     return;
   }
 
   // ── 5. Restaurar radios y checkboxes ──
   const radioCheckFields = [
     'estadoPadre','estadoMadre','orfandad','convive','laboral','lugarTrabajo','quienCuida',
-    'asiste','nivelEduc','modalidad','idiomaEduc','abandono','motivoAb','aulas','banosEsc','desayunoEscolar',
+    'cibv','asiste','nivelEduc','modalidad','idiomaEduc','abandono','motivoAb','aulas','banosEsc','desayunoEscolar',
     'saludAt','discap','psico','comportamiento',
     'brigada','odontologo','condBucal','controles','vacunas','vacunaVPH',
     'ultimaComida','comidas','frutas','proteinas','chicha','chichaDetalle','comioAyer'
@@ -2171,13 +2110,16 @@ function loadChildData(idx) {
   });
 
   // ── 6. Restaurar inputs de texto ──
-  ['institucion','gradoAnio','condSalud','parentescoCuidador','edadCuidador','cedulaCuidador','telCuidador'].forEach(id => {
+  ['institucion','gradoAnio','condSalud','parentescoCuidador','edadCuidador'].forEach(id => {
     const el = document.getElementById(id);
     if (el && d[id] !== undefined) el.value = d[id];
   });
   // cuidadorSelect aparte
   const cuidSel = document.getElementById('cuidadorSelect');
   if (cuidSel && d['cuidadorSelect'] !== undefined) cuidSel.value = d['cuidadorSelect'];
+  applyCuidadorChainVisual(!!d['_cuidadorEncadenado']);
+  applyInstitucionChainVisual(!!d['_institucionEncadenada']);
+  applySaludChainVisual(!!d['_saludAtEncadenada']);
 
   // ── 7. Restaurar peso y talla (explícito, solo si tienen valor) ──
   if (pesoEl && d['pesoNino']) pesoEl.value = d['pesoNino'];
@@ -2264,6 +2206,47 @@ function goTo(idx) {
   autoSave();
 }
 
+
+function setRadioValue(name, value, silent=false) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+    r.checked = (r.value === value);
+    r.closest('.opt')?.classList.toggle('sel', r.checked);
+  });
+  if (!silent) autoSave();
+}
+let orfandadManual = false;
+function calcularOrfandad() {
+  const padre = document.querySelector('input[name="estadoPadre"]:checked')?.value || '';
+  const madre = document.querySelector('input[name="estadoMadre"]:checked')?.value || '';
+  if (!padre || !madre || orfandadManual) return;
+  let val = 'Sin orfandad';
+  const pf = padre === 'Fallecido';
+  const mf = madre === 'Fallecida';
+  const pa = padre === 'Vive pero ausente';
+  const ma = madre === 'Vive pero ausente';
+  if (pf && mf) val = 'Doble orfandad';
+  else if (pf) val = 'Orfandad paterna';
+  else if (mf) val = 'Orfandad materna';
+  else if (pa && ma) val = 'Padre/madre ausente';
+  else if (pa) val = 'Padre ausente';
+  else if (ma) val = 'Madre ausente';
+  setRadioValue('orfandad', val, true);
+}
+function toggleOrfandadManual() {
+  orfandadManual = !orfandadManual;
+  document.querySelectorAll('input[name="orfandad"]').forEach(el => el.disabled = !orfandadManual);
+  if (!orfandadManual) calcularOrfandad();
+  alert(orfandadManual ? 'Puedes cambiar la orfandad manualmente.' : 'Orfandad automática activada otra vez.');
+}
+function toggleBonosEstatales() {
+  const checked = !!document.querySelector('input[name="fuente"][value="Bonos estatales"]:checked');
+  const card = document.getElementById('bonosDetalleCard');
+  if (card) card.style.display = checked ? 'block' : 'none';
+  if (!checked) {
+    document.querySelectorAll('input[name="apoyos"]').forEach(el => { el.checked = false; el.closest('.opt')?.classList.remove('sel'); });
+  }
+}
+
 // ── OPT SELECTION ─────────────────────────────────────────────────────
 document.addEventListener('change', e => {
   const opt = e.target.closest('.opt');
@@ -2272,8 +2255,10 @@ document.addEventListener('change', e => {
   if (e.target.type === 'radio') {
     document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.opt')?.classList.remove('sel'));
     opt.classList.add('sel');
+    if (name === 'estadoPadre' || name === 'estadoMadre') calcularOrfandad();
   } else if (e.target.type === 'checkbox') {
     opt.classList.toggle('sel', e.target.checked);
+    if (name === 'fuente') toggleBonosEstatales();
   }
   autoSave();
 });
@@ -2291,7 +2276,7 @@ const SCORES = {
 
 function calcScore() {
   let score = 0;
-  ['ingreso','agua','excretas','electr','horasSolo','peleas','alcohol'].forEach(name => {
+  ['ingreso','agua','excretas','estadoBano','electr','horasSolo','peleas','alcohol'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     if (el && SCORES[el.value]) score += SCORES[el.value];
   });
@@ -2345,7 +2330,7 @@ function collectAllData() {
   const data = { timestamp: new Date().toISOString(), ninos, famRows, childData, percVals, sinMenores, adultosSecData, encuestadorNombre: encNombre };
   // Global fields
   ['numEncuesta','comunidad','fechaVisita','fechaVisita','totalPersonas','habitaciones',
-   'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre',
+   'menores18',
    'condSalud','cuandoBrigada','obsPrivadas','obsGenerales'].forEach(id => {
     const el = document.getElementById(id);
     if (el) data[id] = el.value;
@@ -2354,10 +2339,10 @@ function collectAllData() {
     const el = document.getElementById(id);
     if (el) data[id] = el.value;
   });
-  ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
-   'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
-   'perfil','confiable','prioridadAt',
-   'chicha','chichaDetalle','comidas','frutas','proteinas','sinComer','sinComidaHogar'].forEach(name => {
+  ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua',
+   'excretas','estadoBano','electr','internet','peleas','alcohol','horasSolo','religion','congrega','grupos',
+   'perfil','confiable','prioridadAt','ambienteAdultos','ambienteVisita','seguridadObsTecnico',
+   'chicha','chichaDetalle','chichaDetalleNinos','comidas','frutas','proteinas','frutasProteinas','sinComer','sinComidaHogar'].forEach(name => {
     const el = document.querySelector(`input[name="${name}"]:checked`);
     data[name] = el?el.value:'';
   });
@@ -2425,7 +2410,7 @@ function nuevaEncuesta() {
   onEncuestadorChange();
 
   // Reconstruir tabla familiar vacía
-  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
+  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:'',cabeza:false});
   renderFamTable();
 
   // Restaurar fecha (por si renderFamTable la limpió)
@@ -2456,7 +2441,7 @@ function compartirWhatsApp(idx) {
 
   const v = s => s || '—';
   const fecha = f.fechaVisita || f.timestamp?.slice(0,10) || '—';
-  const fam = (f.famRows||[]).filter(r=>r.nombre).map(r=>`  • ${r.nombre} (${r.miembro||'—'}, ${r.edad||'?'}a, ${r.sexo||'—'})`).join('\n') || '  —';
+  const fam = (f.famRows||[]).filter(r=>r.nombre).map(r=>`  • ${r.nombre} (${r.miembro||'—'}, ${r.edad||'?'}a, ${r.sexo||'—'}${r.cabeza?' · cabeza de hogar':''})`).join('\n') || '  —';
 
   // ── Detalle por cada niño ──
   let ninosDetalle = '';
@@ -2524,7 +2509,6 @@ function compartirWhatsApp(idx) {
       }
     }
     if (d.nutricion) ninosDetalle += `  Estado nutricional (OMS): ${d.nutricion}\n`;
-    ninosDetalle += `  Última comida: ${v(d.ultimaComida)}\n`;
   });
 
   // ── Percepción ──
@@ -2537,7 +2521,7 @@ function compartirWhatsApp(idx) {
     p6: '¿Alguien en casa pierde el control seguido?',
     p7: '¿Qué tan bien se llevan los adultos del hogar?',
     p8: '¿Confía en los servicios de salud cercanos?',
-    p9: '¿Siente que la Fundación puede ayudar?'
+    p9: '¿Siente que la Fundación puede ayudar? (ficha anterior)'
   };
   let percTexto = '';
   const pv = f.percVals || {};
@@ -2560,8 +2544,6 @@ function compartirWhatsApp(idx) {
 ${fam}
 Total personas: ${v(f.totalPersonas)}  |  Menores de 18: ${v(f.menores18)}
 Identidad Shuar: ${v(f.esShuar)} | Shuar Chicham: ${v(f.shuar)}
-Padre: ${v(f.nombrePadre)} | Cédula: ${v(f.cedulaPadre)} | Tel: ${v(f.telPadre)}
-Madre: ${v(f.nombreMadre)} | Cédula: ${v(f.cedulaMadre)} | Tel: ${v(f.telMadre)}
 ━━━━━━━━━━━━━━━━━━━━━━
 *2-6. DATOS POR NIÑO/A*
 ${ninosDetalle}
@@ -2573,8 +2555,8 @@ Apoyos estatales: ${v(f.apoyos)}
 
 *4. INFRAESTRUCTURA*
 Vivienda: ${v(f.tipoVivienda)} – ${v(f.material)}
-Agua: ${v(f.agua)} | ¿Gestionada por Fundación?: ${v(f.aguaFund)}
-Excretas: ${v(f.excretas)}
+Agua: ${v(f.agua)}
+Excretas: ${v(f.excretas)} | Estado baño: ${v(f.estadoBano)}
 Electricidad: ${v(f.electr)}
 Internet: ${v(f.internet)}
 
@@ -2671,12 +2653,6 @@ function buildCSVRows(fichas) {
       'Menores de 18': f.menores18 || '',
       '¿Es Shuar?': f.esShuar || '',
       'Habla Shuar Chicham': f.shuar || '',
-      'Nombre padre': f.nombrePadre || '',
-      'Cédula padre': f.cedulaPadre || '',
-      'Tel padre': f.telPadre || '',
-      'Nombre madre': f.nombreMadre || '',
-      'Cédula madre': f.cedulaMadre || '',
-      'Tel madre': f.telMadre || '',
       // Economía
       'Ingreso mensual': f.ingreso || '',
       'Fuentes ingreso': f.fuente || '',
@@ -2685,42 +2661,44 @@ function buildCSVRows(fichas) {
       'Tipo vivienda': f.tipoVivienda || '',
       'Material vivienda': f.material || '',
       'Fuente agua': f.agua || '',
-      'Agua gestionada Fundación': f.aguaFund || '',
       'Excretas': f.excretas || '',
+      'Estado baño': f.estadoBano || '',
       'Electricidad': f.electr || '',
       'Internet': f.internet || '',
       // Dinámica
       'Horas solo el niño': f.horasSolo || '',
       'N° comidas/día': f.comidas || '',
       'Alimentación regular': f.comioAyer || '',
-      'Frutas/verduras': f.frutas || '',
-      'Proteínas': f.proteinas || '',
-      'Sin comer (frecuencia)': f.sinComer || '',
+      'Frutas/verduras y proteínas': f.frutasProteinas || f.frutas || f.proteinas || '',
+      'Sin comer (frecuencia - ficha anterior)': f.sinComer || '',
       'Sin comida en hogar': f.sinComidaHogar || '',
       'Chicha en hogar': f.chicha || '',
       'Chicha detalle (niños/adultos)': f.chichaDetalle || '',
+      'Ambiente adultos (percepción)': f.ambienteAdultos || '',
       'Peleas entre adultos': f.peleas || '',
       'Alcohol en hogar': f.alcohol || '',
       'Forma de disciplina': f.disciplina || '',
       'Religión': f.religion || '',
       'Frecuencia congregación': f.congrega || '',
-      'Grupos comunitarios': f.grupos || '',
+      'Grupos comunitarios (ficha anterior)': f.grupos || '',
       // Técnico
-      'Perfil familiar': f.perfil || '',
-      'Info confiable': f.confiable || '',
-      'Prioridades intervención': f.prioridad || '',
-      'Factores de riesgo': f.factoresR || '',
+      'Ambiente observado visita': f.ambienteVisita || '',
+      'Seguridad observada técnico': f.seguridadObsTecnico || '',
+      'Perfil familiar (ficha anterior)': f.perfil || '',
+      'Info confiable (ficha anterior)': f.confiable || '',
+      'Prioridades intervención (ficha anterior)': f.prioridad || '',
+      'Factores de riesgo (ficha anterior)': f.factoresR || '',
       'Obs. privadas técnico': f.obsPrivadas || '',
       // Percepción
-      'Perc: Seguridad hogar': (f.percVals||{}).p1 || '',
+      'Perc: Seguridad hogar (ficha anterior)': (f.percVals||{}).p1 || '',
       'Perc: Alimentación familia': (f.percVals||{}).p2 || '',
-      'Perc: Capacidad cuidar hijos': (f.percVals||{}).p3 || '',
+      'Perc: Capacidad cuidar hijos (ficha anterior)': (f.percVals||{}).p3 || '',
       'Perc: Futuro de hijos': (f.percVals||{}).p4 || '',
       'Perc: Importancia escuela': (f.percVals||{}).p5 || '',
-      'Perc: Control emocional adultos': (f.percVals||{}).p6 || '',
-      'Perc: Relación adultos hogar': (f.percVals||{}).p7 || '',
+      'Perc: Control emocional adultos (ficha anterior)': (f.percVals||{}).p6 || '',
+      'Perc: Relación adultos hogar (ficha anterior)': (f.percVals||{}).p7 || '',
       'Perc: Confianza servicios salud': (f.percVals||{}).p8 || '',
-      'Perc: Confianza en Fundación': (f.percVals||{}).p9 || '',
+      'Perc: Confianza en Fundación (ficha anterior)': (f.percVals||{}).p9 || '',
       // Cierre
       'Observaciones generales': f.obsGenerales || '',
       'Nivel vulnerabilidad': f.nivelVulnerabilidad || '',
@@ -2754,8 +2732,6 @@ function buildCSVRows(fichas) {
           'Cuidador principal': d.cuidadorSelect || '',
           'Parentesco cuidador': d.parentescoCuidador || '',
           'Edad cuidador': d.edadCuidador || '',
-          'Cédula cuidador': d.cedulaCuidador || '',
-          'Tel cuidador': d.telCuidador || '',
           'Situación laboral cuidador': d.laboral || '',
           'Lugar de trabajo cuidador': d.lugarTrabajo || '',
           'Quién cuida durante trabajo': d.quienCuida || '',
@@ -2786,9 +2762,9 @@ function buildCSVRows(fichas) {
           // Nutrición
           'Peso (kg)': d.pesoNino || '',
           'Talla (cm)': d.tallaNino || '',
-          'IMC calculado': (d.pesoNino && d.tallaNino) ? (parseFloat(d.pesoNino)/Math.pow(parseFloat(d.tallaNino)/100,2)).toFixed(1) : '',
+          'Estado nutricional recalculado': recalcularNutricionParaExport(d, n).estado,
+          'Cálculo nutricional usado': recalcularNutricionParaExport(d, n).calculo,
           'Estado nutricional (OMS)': d.nutricion || '',
-          'Última comida': d.ultimaComida || '',
           // Abuelos
           'Abuelo paterno estado': ((f.childData||{})[i]?._abData?.pp?.estado)||'',
           'Abuelo paterno nombre': ((f.childData||{})[i]?._abData?.pp?.nombre)||'',
@@ -2903,7 +2879,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('select:not(#encuestador)').forEach(el => el.selectedIndex = 0);
 
   buildPerception();
-  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
+  for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:'',cabeza:false});
   renderFamTable();
   // Restaurar fecha (por si renderFamTable la borró)
   if (fe) fe.value = today;
@@ -2918,10 +2894,94 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── OFFLINE ───────────────────────────────────────────────────────────
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
+
+function edadActualNinoAnios() {
+  const cur = ninos[currentNino] || {};
+  const raw = String(cur.edad || '').toLowerCase().trim();
+  const n = parseFloat(raw.replace(',', '.'));
+  if (isNaN(n)) return null;
+  if (raw.includes('m')) return n / 12;
+  return n;
+}
+function updateEducByAge() {
+  const edad = edadActualNinoAnios();
+  const msg = document.getElementById('educEdadMsg');
+  const cibv = document.getElementById('bloqueCIBV');
+  const completo = document.getElementById('bloqueEducNino');
+  const infra = document.getElementById('bloqueInfraestructura');
+  if (!msg || !cibv || !completo) return;
+  msg.style.display = 'none'; cibv.style.display = 'none'; completo.style.display = 'block'; if (infra) infra.style.display = 'block';
+  if (edad !== null && edad < 3) {
+    msg.style.display = 'block';
+    msg.innerHTML = '🔒 Menor de 3 años: la sección Educación queda bloqueada. Continúa con el siguiente niño/a.';
+    completo.style.display = 'none'; if (infra) infra.style.display = 'none';
+  } else if (edad !== null && edad >= 3 && edad < 5) {
+    msg.style.display = 'block';
+    msg.innerHTML = '🔒 Edad 3 a 4 años: solo aplica la pregunta: ¿El niño/a va a algún centro de cuidado o jardín?';
+    cibv.style.display = 'block'; completo.style.display = 'none'; if (infra) infra.style.display = 'none';
+  }
+}
+function updateSaludByAge() {
+  const edad = edadActualNinoAnios();
+  const comp = document.getElementById('comportamientoCard');
+  if (comp) comp.style.display = (edad !== null && edad < 5) ? 'none' : 'block';
+}
+function applyInstitucionChainVisual(locked) {
+  ['institucion','gradoAnio'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.classList.toggle('chain-box', locked); el.disabled = !!locked;
+    const label = el.closest('.fg')?.querySelector('label');
+    if (label && locked && !label.querySelector('.chain-badge')) label.insertAdjacentHTML('beforeend',' <span class="chain-badge">🔗</span><button type="button" class="chain-change" onclick="desbloquearInstitucion(event)">Cambiar</button>');
+    if (label && !locked) label.querySelectorAll('.chain-badge,.chain-change').forEach(x=>x.remove());
+  });
+  ['modalidad','idiomaEduc','desayunoEscolar','aulas','banosEsc'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+      el.disabled = !!locked; el.closest('.opt')?.classList.toggle('chain-box', locked);
+    });
+  });
+}
+function desbloquearInstitucion(ev) {
+  ev?.preventDefault?.(); ev?.stopPropagation?.();
+  if (!childData[currentNino]) childData[currentNino] = {};
+  childData[currentNino]._institucionEncadenada = false;
+  applyInstitucionChainVisual(false);
+  autoSave();
+}
+function applySaludChainVisual(locked) {
+  document.querySelectorAll('input[name="saludAt"]').forEach(el => {
+    el.disabled = !!locked; el.closest('.opt')?.classList.toggle('chain-box', locked);
+  });
+  const lbl = document.getElementById('saludAtLabel');
+  if (lbl && locked && !lbl.querySelector('.chain-badge')) lbl.insertAdjacentHTML('beforeend',' <span class="chain-badge">🔗</span><button type="button" class="chain-change" onclick="desbloquearSaludAt(event)">Cambiar</button>');
+  if (lbl && !locked) lbl.querySelectorAll('.chain-badge,.chain-change').forEach(x=>x.remove());
+}
+function desbloquearSaludAt(ev) {
+  ev?.preventDefault?.(); ev?.stopPropagation?.();
+  if (!childData[currentNino]) childData[currentNino] = {};
+  childData[currentNino]._saludAtEncadenada = false;
+  applySaludChainVisual(false);
+  autoSave();
+}
+function mismaAtencionSaludTodos() {
+  if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
+  saveCurrentChildData();
+  const val = document.querySelector('input[name="saludAt"]:checked')?.value || '';
+  if (!val) { alert('Primero selecciona el lugar de atención.'); return; }
+  ninos.forEach((n, idx) => {
+    if (!childData[idx]) childData[idx] = {};
+    childData[idx].saludAt = val;
+    childData[idx]._saludAtEncadenada = idx !== currentNino;
+  });
+  applySaludChainVisual(false);
+  alert('✅ Lugar de atención copiado a todos los niños/as.');
+  autoSave();
+}
+
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
-  const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
+  const edad = edadActualNinoAnios();
+  const camposReq = sec === 5 ? (edad !== null && edad < 3 ? [] : (edad !== null && edad < 5 ? ['cibv'] : ['asiste','nivelEduc'])) : ['saludAt'];
   for (let i = 0; i < ninos.length; i++) {
     const d = childData[i] || {};
     for (const campo of camposReq) {
@@ -2952,7 +3012,7 @@ function setAdultoEstudia(estudia) {
   adultosData[currentAdulto].adultoEstudia = estudia;
 
   // Siempre ocultar bloque de niños completo
-  ['bloqueEducNino','bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+  ['bloqueEducNino','bloqueInstitucion','bloqueInfraestructura'].forEach(id => {
     const el = document.getElementById(id); if(el) el.style.display='none';
   });
 
@@ -2975,7 +3035,7 @@ function setAdultoEstudia(estudia) {
 
 // ── TOGGLE BLOQUE INSTITUCIÓN ─────────────────────────────────────────
 function toggleInstitucion(show) {
-  ['bloqueInstitucion','bloqueEscolar','bloqueInfraestructura'].forEach(id => {
+  ['bloqueInstitucion','bloqueInfraestructura'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = show ? 'block' : 'none';
   });
@@ -3015,9 +3075,11 @@ function mismaInstitucionTodos() {
   // NO encadenar: asistencia, nivel, grado, desayuno, abandono (son individuales por niño)
   const inst = {
     institucion: document.getElementById('institucion')?.value || '',
+    gradoAnio: document.getElementById('gradoAnio')?.value || '',
     modalidad: document.querySelector('input[name="modalidad"]:checked')?.value || '',
     idiomaEduc: document.querySelector('input[name="idiomaEduc"]:checked')?.value || '',
     aulas: document.querySelector('input[name="aulas"]:checked')?.value || '',
+    desayunoEscolar: document.querySelector('input[name="desayunoEscolar"]:checked')?.value || '',
     banosEsc: document.querySelector('input[name="banosEsc"]:checked')?.value || ''
   };
   if (!inst.institucion) { alert('Primero escribe el nombre de la institución educativa.'); return; }
@@ -3035,10 +3097,13 @@ function mismaInstitucionTodos() {
     } else {
       // Solo copiar campos encadenados, preservar campos individuales
       childData[idx].institucion = inst.institucion;
+      childData[idx].gradoAnio = inst.gradoAnio;
       childData[idx].modalidad = inst.modalidad;
       childData[idx].idiomaEduc = inst.idiomaEduc;
+      childData[idx].desayunoEscolar = inst.desayunoEscolar;
       childData[idx].aulas = inst.aulas;
       childData[idx].banosEsc = inst.banosEsc;
+      childData[idx]._institucionEncadenada = idx !== currentNino;
       copiados++;
     }
   });
@@ -3111,65 +3176,61 @@ function calcNutri() {
   const hidden = document.getElementById('nutricionResult');
   const notaOMS = document.getElementById('notaOMS');
   if (!result) return;
-  if (!peso || !talla || talla < 30 || peso < 1) {
-    result.style.display='none';
-    if (notaOMS) notaOMS.style.display='none';
-    return;
-  }
-
-  // Obtener edad y sexo del niño actual
   const nino = ninos[currentNino] || {};
-  const edadAnios = parseInt(nino.edad) || 0;
-  const sexo = (nino.sexo || '').toUpperCase(); // M o F
+  const edad = edadActualNinoAnios();
+  const edadAnios = edad === null ? 0 : Math.floor(edad);
+  const sexo = (nino.sexo || '').toUpperCase();
+  let estado='', metodo='', color='#475569', bgColor='#F8FAFC', detalle='';
 
-  let estado, color, bgColor, metodo;
-
-  if (edadAnios < 5 || (edadAnios === 0 && talla <= 120)) {
-    // ── MÉTODO 1: Peso/Talla OMS para <5 años (o sin edad registrada y talla pequeña) ──
-    metodo = 'Peso/Talla OMS (<5 años)';
-    // Encontrar fila más cercana en tabla
-    let fila = OMS_PESO_TALLA[0];
-    for (let i = 0; i < OMS_PESO_TALLA.length; i++) {
-      if (OMS_PESO_TALLA[i][0] <= talla) fila = OMS_PESO_TALLA[i];
-      else break;
-    }
-    const [,p3,p15,p85,p97] = fila;
-    if (peso < p3)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
-    else if (peso < p15) { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
-    else if (peso < p85) { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
-    else if (peso < p97) { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
-    else                 { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
-    result.textContent = `Peso/Talla: ${peso}kg / ${talla}cm — ${estado}`;
-
-  } else if (edadAnios >= 5 && edadAnios <= 19 && (sexo === 'M' || sexo === 'F')) {
-    // ── MÉTODO 2: IMC por edad y sexo OMS para 5-19 años ──
-    metodo = 'IMC/Edad OMS (5-19 años)';
-    const tablaIMC = sexo === 'M' ? OMS_IMC_M : OMS_IMC_F;
-    const tallaMt = talla / 100;
-    const imc = peso / (tallaMt * tallaMt);
-    const ref = tablaIMC[edadAnios] || tablaIMC[Math.min(19, Math.max(5, edadAnios))];
-    const [p3,p15,p85,p97] = ref;
-    if (imc < p3)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
-    else if (imc < p15) { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
-    else if (imc < p85) { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
-    else if (imc < p97) { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
-    else                { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
-    result.textContent = `IMC: ${imc.toFixed(1)} — ${estado} (${edadAnios}a, ${sexo==='M'?'M':'F'})`;
-
+  if (edad !== null && edad < 2) {
+    estado = 'Evaluación nutricional mediante control pediátrico';
+    metodo = 'Control pediátrico (<2 años)';
+    result.textContent = estado;
+    bgColor = '#F0F9FF'; color = '#0369A1';
   } else {
-    // ── FALLBACK: IMC simple si no hay edad/sexo ──
-    metodo = 'IMC referencial';
-    const tallaMt = talla / 100;
-    const imc = peso / (tallaMt * tallaMt);
-    if (imc < 14)       { estado='Desnutrición severa';   color='#991B1B'; bgColor='#FEE2E2'; }
-    else if (imc < 16)  { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
-    else if (imc < 18.5){ estado='Desnutrición leve';     color='#B45309'; bgColor='#FFFBEB'; }
-    else if (imc < 25)  { estado='Normal';                color='#166534'; bgColor='#DCFCE7'; }
-    else if (imc < 30)  { estado='Sobrepeso';             color='#B45309'; bgColor='#FFFBEB'; }
-    else                { estado='Obesidad';              color='#991B1B'; bgColor='#FEE2E2'; }
-    result.textContent = `IMC: ${(peso/((talla/100)**2)).toFixed(1)} — ${estado}`;
+    if (!peso || peso < 1) {
+      result.style.display='none';
+      if (notaOMS) notaOMS.style.display='none';
+      if (hidden) hidden.value = '';
+      return;
+    }
+    if (edad !== null && edad >= 2 && edad < 5) {
+      metodo = 'Peso para la edad OMS (2-4 años)';
+      // Referencia práctica OMS aproximada por edad cumplida: [p3, p15]
+      const refs = {2:[9.7,10.8],3:[11.3,12.2],4:[12.7,13.7]};
+      const ref = refs[Math.max(2, Math.min(4, Math.floor(edad)))] || refs[4];
+      const [p3,p15] = ref;
+      if (peso < p3) { estado='Bajo peso severo'; color='#991B1B'; bgColor='#FEE2E2'; }
+      else if (peso < p15) { estado='Bajo peso'; color='#C2410C'; bgColor='#FEF3C7'; }
+      else { estado='Normal'; color='#166534'; bgColor='#DCFCE7'; }
+      detalle = `Peso: ${peso}kg`;
+      result.textContent = `${detalle} — ${estado}`;
+    } else if (edad !== null && edad >= 5) {
+      if (!talla || talla < 30) {
+        result.style.display='none';
+        if (notaOMS) notaOMS.style.display='none';
+        if (hidden) hidden.value = '';
+        return;
+      }
+      metodo = 'IMC/Edad OMS (5 años en adelante)';
+      const tablaIMC = sexo === 'M' ? OMS_IMC_M : OMS_IMC_F;
+      const tallaMt = talla / 100;
+      const imc = peso / (tallaMt * tallaMt);
+      const refEdad = Math.min(19, Math.max(5, Math.round(edad)));
+      const ref = tablaIMC[refEdad] || (sexo === 'M' ? OMS_IMC_M[refEdad] : OMS_IMC_F[refEdad]);
+      const [p3,p15,p85,p97] = ref;
+      if (imc < p3 - 1.0) { estado='Desnutrición severa'; color='#991B1B'; bgColor='#FEE2E2'; }
+      else if (imc < p3) { estado='Desnutrición moderada'; color='#C2410C'; bgColor='#FEF3C7'; }
+      else if (imc < p15) { estado='Delgadez'; color='#B45309'; bgColor='#FFFBEB'; }
+      else if (imc < p85) { estado='Normal'; color='#166534'; bgColor='#DCFCE7'; }
+      else if (imc < p97) { estado='Sobrepeso'; color='#B45309'; bgColor='#FFFBEB'; }
+      else { estado='Obesidad'; color='#991B1B'; bgColor='#FEE2E2'; }
+      result.textContent = `IMC: ${imc.toFixed(1)} — ${estado} (${refEdad}a, ${sexo==='M'?'M':'F'})`;
+    } else {
+      result.textContent = 'Registra edad del niño/a en la sección 1 para calcular correctamente.';
+      estado = 'Edad no registrada'; metodo = 'Pendiente de edad';
+    }
   }
-
   result.style.display = 'block';
   result.style.background = bgColor;
   result.style.color = color;
@@ -3178,16 +3239,42 @@ function calcNutri() {
   result.style.padding = '8px 12px';
   result.style.fontWeight = '700';
   result.style.fontSize = '13px';
-
   if (notaOMS) {
     notaOMS.style.display = 'block';
     const nombreNino = nino.nombre || `Niño/a ${currentNino+1}`;
-    const edadMostrar = edadAnios > 0 ? `${edadAnios} años` : 'edad no registrada';
+    const edadMostrar = edad !== null ? `${edad.toFixed(edad % 1 ? 1 : 0)} años` : 'edad no registrada';
     const sexoMostrar = sexo === 'M' ? 'Masculino' : sexo === 'F' ? 'Femenino' : 'sexo no registrado';
-    notaOMS.innerHTML = `📊 <strong>Método:</strong> ${metodo} · Fuente: OMS<br>👤 <strong>Calculado para:</strong> ${nombreNino} · ${edadMostrar} · ${sexoMostrar}`;
+    notaOMS.innerHTML = `📊 <strong>Cálculo usado:</strong> ${metodo}<br>👤 <strong>Calculado para:</strong> ${nombreNino} · ${edadMostrar} · ${sexoMostrar}`;
   }
   if (hidden) hidden.value = estado;
 }
+function recalcularNutricionParaExport(d, nino) {
+  const peso = parseFloat(d?.pesoNino || '');
+  const talla = parseFloat(d?.tallaNino || '');
+  const rawEdad = String(nino?.edad || '').toLowerCase();
+  let edad = parseFloat(rawEdad.replace(',', '.'));
+  if (isNaN(edad)) return {estado:d?.nutricionResult || d?.nutricion || '', calculo:'Sin edad para recalcular'};
+  if (rawEdad.includes('m')) edad = edad / 12;
+  const sexo = (nino?.sexo || '').toUpperCase();
+  if (edad < 2) return {estado:'Evaluación nutricional mediante control pediátrico', calculo:'Control pediátrico (<2 años)'};
+  if (!peso) return {estado:'', calculo:'Sin peso'};
+  if (edad >= 2 && edad < 5) {
+    const refs = {2:[9.7,10.8],3:[11.3,12.2],4:[12.7,13.7]};
+    const [p3,p15] = refs[Math.max(2, Math.min(4, Math.floor(edad)))] || refs[4];
+    const estado = peso < p3 ? 'Bajo peso severo' : peso < p15 ? 'Bajo peso' : 'Normal';
+    return {estado, calculo:`Peso para la edad OMS 2-4 años (peso ${peso}kg)`};
+  }
+  if (edad >= 5 && peso && talla && (sexo === 'M' || sexo === 'F')) {
+    const imc = peso / Math.pow(talla/100, 2);
+    const refEdad = Math.min(19, Math.max(5, Math.round(edad)));
+    const ref = (sexo === 'M' ? OMS_IMC_M : OMS_IMC_F)[refEdad];
+    const [p3,p15,p85,p97] = ref;
+    let estado = imc < p3 - 1 ? 'Desnutrición severa' : imc < p3 ? 'Desnutrición moderada' : imc < p15 ? 'Delgadez' : imc < p85 ? 'Normal' : imc < p97 ? 'Sobrepeso' : 'Obesidad';
+    return {estado, calculo:`IMC/Edad OMS ${refEdad} años ${sexo} (IMC ${imc.toFixed(1)})`};
+  }
+  return {estado:'', calculo:'Datos incompletos para recalcular'};
+}
+
 
 // ── SUGERENCIA PRIORIDAD POR PUNTAJE ─────────────────────────────────
 function sugerirPrioridad(score) {
@@ -3207,6 +3294,25 @@ function sugerirPrioridad(score) {
     const radio = document.querySelector('input[name="prioridadAt"][value="' + val + '"]');
     if (radio) { radio.checked = true; radio.closest('.opt')?.classList.add('sel'); }
   }
+}
+
+function applyCuidadorChainVisual(locked) {
+  ['cuidadorSelect','edadCuidador','parentescoCuidador'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('chain-box', locked);
+    el.disabled = !!locked;
+    const label = el.closest('.fg')?.querySelector('label');
+    if (label && locked && !label.querySelector('.chain-badge')) label.insertAdjacentHTML('beforeend',' <span class="chain-badge">🔗</span><button type="button" class="chain-change" onclick="desbloquearCuidador(event)">Cambiar</button>');
+    if (label && !locked) label.querySelectorAll('.chain-badge,.chain-change').forEach(x=>x.remove());
+  });
+}
+function desbloquearCuidador(ev) {
+  ev?.preventDefault?.(); ev?.stopPropagation?.();
+  if (!childData[currentNino]) childData[currentNino] = {};
+  childData[currentNino]._cuidadorEncadenado = false;
+  applyCuidadorChainVisual(false);
+  autoSave();
 }
 
 // ── ABUELOS ───────────────────────────────────────────────────────────
@@ -3230,63 +3336,49 @@ function renderAbuelos(ninoIdx) {
   const c = document.getElementById('abuelosContainer');
   if (!c) return;
   c.innerHTML = '';
-  // Obtener lista de abuelos de la tabla familiar
-  const abuelosEnFamilia = famRows.filter(r => r.nombre && r.nombre.trim() && r.miembro && r.miembro.toLowerCase().includes('abuelo'));
-
-  AB_KEYS.forEach(({key, label}) => {
-    const d = getAbData(ninoIdx, key);
+  if (!abData[ninoIdx]) abData[ninoIdx] = {};
+  const groups = [
+    {key:'paternos', label:'Abuelos paternos'},
+    {key:'maternos', label:'Abuelos maternos'}
+  ];
+  groups.forEach(g => {
+    if (!abData[ninoIdx][g.key]) abData[ninoIdx][g.key] = {estado:'', donde:''};
+    const d = abData[ninoIdx][g.key];
+    const hayVivo = ['Ambos viven','Abuelo fallecido','Abuela fallecida'].includes(d.estado);
     const div = document.createElement('div');
     div.style.cssText = 'border:1.5px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:#FAFAFA';
-
-    const esFallecidoDesc = d.estado === 'Fallecido' || d.estado === 'Desconocido' || d.estado === 'Vive en otra casa';
-
-    // Dropdown de abuelos de la familia para nombre
-    const abOptions = abuelosEnFamilia.map(r =>
-      `<option value="${r.nombre}" ${d.nombre===r.nombre?'selected':''}>${r.nombre}${r.edad?' ('+r.edad+'a)':''}</option>`
-    ).join('');
-    const hasAbOptions = abuelosEnFamilia.length > 0;
-
     div.innerHTML = `
-      <div style="font-weight:700;font-size:12px;color:var(--blue);margin-bottom:8px">${label}</div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:${esFallecidoDesc?'0':'8px'}">
-        <button onclick="setAbEstado(${ninoIdx},'${key}','Vive')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Vive'?'#166534':'var(--border)'};background:${d.estado==='Vive'?'#DCFCE7':'white'};color:${d.estado==='Vive'?'#166534':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">✅ Vive</button>
-        <button onclick="setAbEstado(${ninoIdx},'${key}','Vive en otra casa')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Vive en otra casa'?'#0369A1':'var(--border)'};background:${d.estado==='Vive en otra casa'?'#E0F2FE':'white'};color:${d.estado==='Vive en otra casa'?'#0369A1':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">🏠 Vive en otra casa</button>
-        <button onclick="setAbEstado(${ninoIdx},'${key}','Fallecido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Fallecido'?'#991B1B':'var(--border)'};background:${d.estado==='Fallecido'?'#FEE2E2':'white'};color:${d.estado==='Fallecido'?'#991B1B':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">⚫ Fallecido/a</button>
-        <button onclick="setAbEstado(${ninoIdx},'${key}','Desconocido')" style="padding:6px 12px;border-radius:7px;border:1.5px solid ${d.estado==='Desconocido'?'#6B7280':'var(--border)'};background:${d.estado==='Desconocido'?'#F3F4F6':'white'};color:${d.estado==='Desconocido'?'#374151':'var(--mid)'};font-size:12px;font-weight:600;cursor:pointer">❓ Desconocido/a</button>
+      <div style="font-weight:700;font-size:13px;color:var(--blue);margin-bottom:8px">${g.label}</div>
+      <div class="card-lbl" style="font-size:11px;background:#F8FAFC;border-radius:7px;margin-bottom:6px">Paso 1: Estado</div>
+      <div class="opts c2" style="padding:0;margin-bottom:8px">
+        ${['Ambos viven','Abuelo fallecido','Abuela fallecida','Ambos fallecidos','Desconocido'].map(o=>`
+          <label class="opt ${d.estado===o?'sel':''}"><input type="radio" name="ab_${g.key}_estado" value="${o}" ${d.estado===o?'checked':''} onchange="setAbGrupoEstado(${ninoIdx},'${g.key}',this.value)"><span>${o}</span></label>`).join('')}
       </div>
-      ${!esFallecidoDesc ? `
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;min-width:140px">
-          <label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Nombre</label>
-          ${hasAbOptions
-            ? `<select onchange="setAbNombre(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;background:white">
-                <option value="">— Seleccionar —</option>
-                ${abOptions}
-                <option value="__manual__" ${!abuelosEnFamilia.find(r=>r.nombre===d.nombre)&&d.nombre?'selected':''}>Otro (escribir)</option>
-               </select>`
-            : `<input type="text" value="${d.nombre}" placeholder="Nombre del abuelo/a" oninput="setAbNombreManual(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px">`
-          }
-        </div>
-        <div style="flex:0 0 70px">
-          <label style="font-size:11px;font-weight:600;color:var(--mid);display:block;margin-bottom:3px">Edad</label>
-          <input type="number" min="40" max="120" value="${d.edad}" placeholder="Edad" oninput="setAbEdad(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;padding-top:16px">
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
-            <input type="checkbox" ${d.convive?'checked':''} onchange="setAbConvive(${ninoIdx},'${key}',this.checked)" style="width:14px;height:14px"> Convive
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
-            <input type="checkbox" ${d.aCargo?'checked':''} onchange="setAbACargo(${ninoIdx},'${key}',this.checked)" style="width:14px;height:14px"> A cargo
-          </label>
-        </div>
-      </div>
-      ${hasAbOptions && (!abuelosEnFamilia.find(r=>r.nombre===d.nombre)) && d.nombre ? `
-      <input type="text" value="${d.nombre}" placeholder="Escribir nombre manualmente" oninput="setAbNombreManual(${ninoIdx},'${key}',this.value)" style="width:100%;padding:7px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;margin-top:6px">
-      ` : ''}
-      ` : `<div style="font-size:11px;color:#6B7280;padding:4px 0;font-style:italic">${d.estado==='Fallecido'?'Fallecido/a — no se registran más datos':d.estado==='Vive en otra casa'?'Vive en otra casa — no convive en este hogar':'Desconocido/a — no se registran más datos'}</div>`}
+      ${hayVivo ? `
+        <div class="card-lbl" style="font-size:11px;background:#F8FAFC;border-radius:7px;margin-bottom:6px">Paso 2: ¿Dónde viven?</div>
+        <div class="opts c2" style="padding:0">
+          ${['En esta casa','En otra casa','Desconocido'].map(o=>`
+            <label class="opt ${d.donde===o?'sel':''}"><input type="radio" name="ab_${g.key}_donde" value="${o}" ${d.donde===o?'checked':''} onchange="setAbGrupoDonde(${ninoIdx},'${g.key}',this.value)"><span>${o}</span></label>`).join('')}
+        </div>` : `<div style="font-size:11px;color:#6B7280;font-style:italic;padding:4px 0">No se pregunta lugar de vivienda si no hay abuelos vivos o el dato es desconocido.</div>`}
     `;
     c.appendChild(div);
   });
+}
+
+function setAbGrupoEstado(ninoIdx, grupo, estado) {
+  if (!abData[ninoIdx]) abData[ninoIdx] = {};
+  if (!abData[ninoIdx][grupo]) abData[ninoIdx][grupo] = {estado:'', donde:''};
+  abData[ninoIdx][grupo].estado = estado;
+  if (!['Ambos viven','Abuelo fallecido','Abuela fallecida'].includes(estado)) abData[ninoIdx][grupo].donde = '';
+  renderAbuelos(ninoIdx);
+  autoSave();
+}
+function setAbGrupoDonde(ninoIdx, grupo, donde) {
+  if (!abData[ninoIdx]) abData[ninoIdx] = {};
+  if (!abData[ninoIdx][grupo]) abData[ninoIdx][grupo] = {estado:'', donde:''};
+  abData[ninoIdx][grupo].donde = donde;
+  renderAbuelos(ninoIdx);
+  autoSave();
 }
 
 function setAbEstado(ninoIdx, key, estado) {
@@ -3335,14 +3427,12 @@ function setAbACargo(ninoIdx, key, val) {
 function mismoCuidadorTodos() {
   if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
   saveCurrentChildData();
-  // Solo se encadenan: cuidador, parentesco, edad, cédula, tel, situación laboral, lugar de trabajo
+  // Solo se encadenan: cuidador, edad, parentesco, situación laboral y lugar de trabajo
   // quienCuida NO se encadena — cada niño tiene su propia respuesta
   const cuid = {
     cuidadorSelect: document.getElementById('cuidadorSelect')?.value || '',
     parentescoCuidador: document.getElementById('parentescoCuidador')?.value || '',
     edadCuidador: document.getElementById('edadCuidador')?.value || '',
-    cedulaCuidador: document.getElementById('cedulaCuidador')?.value || '',
-    telCuidador: document.getElementById('telCuidador')?.value || '',
     laboral: document.querySelector('input[name="laboral"]:checked')?.value || '',
     lugarTrabajo: document.querySelector('input[name="lugarTrabajo"]:checked')?.value || ''
   };
@@ -3352,6 +3442,7 @@ function mismoCuidadorTodos() {
     // Preservar quienCuida de cada niño
     const quienCuidaActual = childData[idx].quienCuida || '';
     Object.assign(childData[idx], cuid);
+    childData[idx]._cuidadorEncadenado = true;
     childData[idx].quienCuida = quienCuidaActual;
   });
   alert('✅ Cuidador copiado a todos los ' + ninos.length + ' niños/as.\n(¡Recuerda que "¿Quién cuida al niño/a durante el trabajo?" se completa individualmente para cada niño/a)');
