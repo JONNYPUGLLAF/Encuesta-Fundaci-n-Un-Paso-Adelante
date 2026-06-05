@@ -1336,6 +1336,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-body" style="padding-top:0;display:flex;flex-direction:column;gap:7px">
       <button class="btn" onclick="compartirWhatsApp()" style="background:#25D366;color:white;font-size:13px;padding:11px">📲 Compartir última ficha por WhatsApp</button>
       <button class="btn btn-green-outline" onclick="exportCSV()" style="font-size:12px;padding:9px">📤 Exportar todas las fichas (CSV para Excel)</button>
+      <button class="btn" onclick="exportarBackupJSON()" style="background:#1B3A6B;color:white;font-size:12px;padding:9px">💾 Copia de seguridad completa (JSON)</button>
     </div>
   </div>
 </div>
@@ -2630,6 +2631,8 @@ function buildCSVRows(fichas) {
       'N° comidas/día': f.comidas || '',
       'Alimentación regular': f.comioAyer || '',
       'Frutas/verduras': f.frutas || '',
+      'Proteínas': f.proteinas || '',
+      'Sin comer (frecuencia)': f.sinComer || '',
       'Sin comida en hogar': f.sinComidaHogar || '',
       'Chicha en hogar': f.chicha || '',
       'Chicha detalle (niños/adultos)': f.chichaDetalle || '',
@@ -2638,12 +2641,14 @@ function buildCSVRows(fichas) {
       'Forma de disciplina': f.disciplina || '',
       'Religión': f.religion || '',
       'Frecuencia congregación': f.congrega || '',
+      'Grupos comunitarios': f.grupos || '',
       // Técnico
       'Perfil familiar': f.perfil || '',
       'Info confiable': f.confiable || '',
       'Prioridades intervención': f.prioridad || '',
       'Factores de riesgo': f.factoresR || '',
       'Obs. privadas técnico': f.obsPrivadas || '',
+      'Observaciones generales': f.obsGenerales || '',
       // Percepción
       'Perc: Seguridad hogar': (f.percVals||{}).p1 || '',
       'Perc: Alimentación familia': (f.percVals||{}).p2 || '',
@@ -2657,6 +2662,7 @@ function buildCSVRows(fichas) {
       // Cierre
       'Nivel vulnerabilidad': f.nivelVulnerabilidad || '',
       'Puntaje vulnerabilidad': f.puntajeVulnerabilidad || '',
+      'Prioridad atención': f.prioridadAt || '',
     };
 
     // Siempre una fila HOGAR primero
@@ -2764,6 +2770,17 @@ function csvFromRows(rows) {
   if (!rows.length) return '';
   const keys = Object.keys(rows[0]);
   return [keys.join(','), ...rows.map(r=>keys.map(k=>`"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+}
+
+function exportarBackupJSON() {
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
+  if (!fichas.length) { alert('No hay fichas guardadas para exportar.'); return; }
+  const blob = new Blob([JSON.stringify({ version: 'fichas_shuar_v2', exportado: new Date().toISOString(), total: fichas.length, fichas }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup_fichas_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
 
 function exportCSV() {
