@@ -252,21 +252,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="fg"><label>Comunidad *</label><input type="text" id="comunidad" placeholder="Ej: Kusuim, Shaim..."></div>
       </div>
       <div class="frow">
-        <div class="fg sm"><label>N° Vivienda</label><input type="text" id="numVivienda" placeholder="Ej: 001" oninput="autoSave()"></div>
-        <div class="fg sm"><label>Núcleo familiar</label>
-          <select id="nucleoFamiliar" onchange="autoSave()">
-            <option value="">—</option>
-            <option value="A">A — Principal</option>
-            <option value="B">B — Segundo núcleo</option>
-            <option value="C">C — Tercer núcleo</option>
-            <option value="D">D — Cuarto núcleo</option>
-          </select>
-        </div>
-        <div class="fg" style="align-self:flex-end">
-          <button onclick="cargarDatosVivienda()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏠 Misma vivienda — cargar datos compartidos</button>
-        </div>
-      </div>
-      <div class="frow">
         <div class="fg"><label>Encuestador/a *</label>
           <select id="encuestador">
             <option value="">Seleccionar...</option>
