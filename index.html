@@ -3607,39 +3607,95 @@ function confirmarNumEncuesta() {
 
 </script>
 <!-- PANEL DIAGNÓSTICO TEMPORAL -->
-<div id="diagPanel" style="position:fixed;bottom:0;left:0;right:0;background:#1B3A6B;color:white;padding:12px;font-size:12px;z-index:9999;max-height:50vh;overflow-y:auto">
-  <strong>🔍 DIAGNÓSTICO localStorage</strong>
+<div id="diagPanel" style="position:fixed;bottom:0;left:0;right:0;background:#1B3A6B;color:white;padding:12px;font-size:12px;z-index:9999;max-height:60vh;overflow-y:auto">
+  <strong>🔍 DIAGNÓSTICO COMPLETO</strong>
   <div id="diagContent" style="margin-top:6px;font-family:monospace;font-size:11px;white-space:pre-wrap;word-break:break-all"></div>
-  <button onclick="document.getElementById('diagPanel').style.display='none'" style="margin-top:8px;padding:6px 14px;background:white;color:#1B3A6B;border:none;border-radius:6px;font-weight:700">Cerrar</button>
-  <button onclick="copiarDiag()" style="margin-top:8px;margin-left:8px;padding:6px 14px;background:#25D366;color:white;border:none;border-radius:6px;font-weight:700">📋 Copiar</button>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+    <button onclick="document.getElementById('diagPanel').style.display='none'" style="padding:6px 14px;background:white;color:#1B3A6B;border:none;border-radius:6px;font-weight:700">Cerrar</button>
+    <button onclick="copiarDiag()" style="padding:6px 14px;background:#25D366;color:white;border:none;border-radius:6px;font-weight:700">📋 Copiar todo</button>
+    <button onclick="intentarRecuperar()" style="padding:6px 14px;background:#F59E0B;color:white;border:none;border-radius:6px;font-weight:700">🔄 Intentar recuperar</button>
+  </div>
 </div>
 <script>
 (function(){
-  const keys = Object.keys(localStorage);
-  let txt = 'Claves encontradas: ' + keys.length + '\n';
-  keys.forEach(k => {
-    const val = localStorage.getItem(k);
-    txt += '\n[' + k + '] → ' + (val ? val.length + ' chars' : 'vacío') + '\n';
-    if (k.includes('fichas') || k.includes('ficha')) {
-      try {
-        const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) txt += '  → ' + parsed.length + ' fichas\n';
-        else txt += '  → objeto\n';
-      } catch(e) { txt += '  → no es JSON\n'; }
-    }
+  let txt = '';
+
+  // localStorage
+  const lsKeys = Object.keys(localStorage);
+  txt += '=== localStorage ===\n';
+  txt += 'Claves: ' + lsKeys.length + '\n';
+  if (lsKeys.length === 0) {
+    txt += '⚠️ VACÍO\n';
+  } else {
+    lsKeys.forEach(k => {
+      const val = localStorage.getItem(k);
+      txt += '[' + k + '] ' + (val ? val.length + ' chars' : 'vacío') + '\n';
+      if (k.includes('ficha') || k.includes('shuar') || k.includes('encuesta')) {
+        try {
+          const p = JSON.parse(val);
+          if (Array.isArray(p)) txt += '  → ARRAY con ' + p.length + ' items\n';
+          else txt += '  → objeto JSON\n';
+        } catch(e) {}
+      }
+    });
+  }
+
+  // sessionStorage
+  txt += '\n=== sessionStorage ===\n';
+  const ssKeys = Object.keys(sessionStorage);
+  txt += 'Claves: ' + ssKeys.length + '\n';
+  ssKeys.forEach(k => {
+    txt += '[' + k + '] ' + (sessionStorage.getItem(k)||'').length + ' chars\n';
   });
-  if (keys.length === 0) txt += '⚠️ localStorage VACÍO — no hay datos guardados.';
+
+  // Cookie
+  txt += '\n=== Cookies ===\n';
+  txt += (document.cookie || '(ninguna)') + '\n';
+
+  // Intentar leer versiones anteriores de la clave
+  txt += '\n=== Claves alternativas ===\n';
+  ['fichas_shuar_v1','fichas_shuar_v2','fichas_shuar_v3','fichas','encuestas','ficha_draft_v2','ficha_draft_v1','datos'].forEach(k => {
+    const v = localStorage.getItem(k);
+    txt += '[' + k + ']: ' + (v ? v.length + ' chars' : 'null') + '\n';
+  });
+
   document.getElementById('diagContent').textContent = txt;
 })();
+
 function copiarDiag() {
   const txt = document.getElementById('diagContent').textContent;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(txt).then(() => alert('Copiado'));
+    navigator.clipboard.writeText(txt).then(() => alert('Copiado ✅'));
   } else {
     const ta = document.createElement('textarea');
     ta.value = txt; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta); alert('Copiado');
+    document.body.removeChild(ta); alert('Copiado ✅');
+  }
+}
+
+function intentarRecuperar() {
+  // Buscar en TODAS las claves algo que parezca una ficha
+  const keys = Object.keys(localStorage);
+  let encontrado = null;
+  let keyEncontrada = '';
+  for (const k of keys) {
+    try {
+      const v = JSON.parse(localStorage.getItem(k));
+      if (Array.isArray(v) && v.length > 0 && v[0].comunidad !== undefined) {
+        encontrado = v; keyEncontrada = k; break;
+      }
+      if (Array.isArray(v) && v.length > 0 && (v[0].ninos !== undefined || v[0].fechaVisita !== undefined)) {
+        encontrado = v; keyEncontrada = k; break;
+      }
+    } catch(e) {}
+  }
+  if (encontrado) {
+    // Copiar a la clave correcta
+    localStorage.setItem('fichas_shuar_v2', JSON.stringify(encontrado));
+    alert('✅ Recuperadas ' + encontrado.length + ' fichas desde [' + keyEncontrada + ']\nRecarga la página para verlas.');
+  } else {
+    alert('No se encontraron fichas en ninguna clave del localStorage.\n\nEl localStorage está genuinamente vacío en este navegador para este sitio.');
   }
 }
 </script>
