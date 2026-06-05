@@ -2281,7 +2281,17 @@ function guardarFicha() {
   localStorage.setItem('fichas_shuar_v2', JSON.stringify(fichas));
   localStorage.removeItem('ficha_draft_v2');
   showFichasGuardadas();
-  alert(`✅ Ficha guardada\n\nFamilia: ${data.comunidad||'Sin comunidad'}\nNiños registrados: ${ninos.length}\nPuntaje: ${sc.score} — ${sc.lvl}\n\nUsa el botón 📲 WhatsApp para compartirla.\nPresiona "Nueva Encuesta" para registrar otra familia.`);
+  // ── AUTO-DESCARGA de respaldo al guardar ──
+  try {
+    const nombreArchivo = 'ficha_' + (data.comunidad||'sin-comunidad').replace(/\s+/g,'-') + '_' + new Date().toISOString().slice(0,10) + '_' + fichas.length + '.json';
+    const blob = new Blob([JSON.stringify({ version:'fichas_shuar_v2', exportado: new Date().toISOString(), total: fichas.length, fichas }, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nombreArchivo;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  } catch(e) { console.warn('Auto-descarga falló:', e); }
+  alert(`✅ Ficha guardada\n\nFamilia: ${data.comunidad||'Sin comunidad'}\nNiños registrados: ${ninos.length}\nPuntaje: ${sc.score} — ${sc.lvl}\n\n📥 Respaldo descargado en Archivos.\\nUsa el botón 📲 WhatsApp para compartirla.\nPresiona "Nueva Encuesta" para registrar otra familia.`);
   // Mostrar botón nueva encuesta
   const btnWrap = document.getElementById('btnNuevaEncuestaWrap');
   if (btnWrap) btnWrap.style.display = 'block';
