@@ -690,9 +690,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="bloqueInstitucion">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Institución educativa</div>
     <div class="card-body">
-      <div style="margin-bottom:8px">
-        <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
-      </div>
       <div class="frow">
         <div class="fg"><label>Nombre de la institución</label><input type="text" id="institucion" placeholder="Nombre de la escuela/colegio"></div>
         <div class="fg sm"><label>Grado / Año</label><input type="text" id="gradoAnio" placeholder="Ej: 3ro"></div>
@@ -708,9 +705,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">Idioma de instrucción</div>
     <div class="opts c2">
       <label class="opt"><input type="radio" name="idiomaEduc" value="Español"><span>Español</span></label>
-      <label class="opt"><input type="radio" name="idiomaEduc" value="Shuar Chicham"><span>Shuar Chicham</span></label>
       <label class="opt"><input type="radio" name="idiomaEduc" value="Bilingüe"><span>Bilingüe</span></label>
-      <label class="opt"><input type="radio" name="idiomaEduc" value="Otro"><span>Otro</span></label>
     </div>
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Recibe desayuno escolar en su institución educativa?</div>
     <div class="opts c2">
@@ -733,6 +728,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt risk"><input type="radio" name="banosEsc" value="No tiene baños"><span>No tiene baños</span></label>
     </div>
     </div><!-- fin bloqueInstitucion -->
+    <div style="margin:8px 0">
+      <button onclick="mismaInstitucionTodos()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--teal);background:#F0FDFA;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer">🏫 Misma institución educativa para todos los niños/as</button>
+    </div>
     <div id="bloqueEscolar">
     <div class="card-lbl" style="font-size:11px;background:#F8FAFC">¿Ha abandonado la escuela alguna vez?</div>
     <div class="opts c2">
@@ -870,6 +868,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="comportamiento" value="No le gusta jugar con otros"><span>No le gusta jugar con otros</span></label>
       <label class="opt"><input type="checkbox" name="comportamiento" value="No se ríe mucho / aislado"><span>No se ríe mucho / aislado</span></label>
       <label class="opt"><input type="checkbox" name="comportamiento" value="Otro"><span>Otro</span></label>
+      <label class="opt"><input type="checkbox" name="comportamiento" value="Ninguno" onchange="if(this.checked){document.querySelectorAll('input[name=comportamiento]').forEach(el=>{if(el.value!=='Ninguno'){el.checked=false;el.closest('.opt')?.classList.remove('sel')}});this.closest('.opt')?.classList.add('sel')}"><span>Ninguno</span></label>
     </div>
     </div><!-- fin bloqueComportamiento -->
     <div class="card-body">
@@ -1064,7 +1063,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(6)">← Atrás</button>
-    <button class="btn btn-primary" onclick="saveCurrentAdultoSecData();goTo(8)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="saveCurrentAdultoSecData();if(validarSeccionAdultos()){goTo(8)}">Siguiente →</button>
   </div>
 </div>
 
@@ -1161,7 +1160,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <p style="font-size:11px;color:var(--light);padding:5px 11px;font-style:italic">No usar la palabra "castigo" — puede marcar más de 2</p>
     <div class="opts c2">
       <label class="opt"><input type="checkbox" name="disciplina" value="Diálogo/restricción salidas"><span>Diálogo / restricción de salidas</span></label>
-      <label class="opt"><input type="checkbox" name="disciplina" value="Restricción de permisos/salidas"><span>Restricción de permisos / salidas</span></label>
       <label class="opt warn"><input type="checkbox" name="disciplina" value="Correazo/chancletazo"><span>Correazo / chancletazo</span></label>
       <label class="opt"><input type="checkbox" name="disciplina" value="Ortiga (justicia indígena)"><span>Ortiga (justicia indígena)</span></label>
       <label class="opt warn"><input type="checkbox" name="disciplina" value="Palo/rama de árbol"><span>Palo / rama de árbol</span></label>
@@ -2108,6 +2106,8 @@ function loadChildData(idx) {
     bloqueComp.style.display = (edadNino >= 5) ? 'block' : 'none';
   }
 
+  aplicarCongelamientoEncadenado();
+
   updateControlesVacunas();
 }
 
@@ -2836,6 +2836,21 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── OFFLINE ───────────────────────────────────────────────────────────
 
 // ── VALIDACIÓN HIJOS POR SECCIÓN ─────────────────────────────────────
+function validarSeccionAdultos() {
+  const adultos = famRows.filter(r => r.nombre && r.nombre.trim() && parseInt(r.edad||0) >= 18);
+  if (adultos.length === 0) return true;
+  for (let i = 0; i < adultos.length; i++) {
+    const d = adultosData[i] || {};
+    if (!d.saludAt) {
+      alert('⚠️ Falta completar la sección de salud para: ' + (adultos[i].nombre || 'Adulto/a ' + (i+1)) + '\nPor favor completa todos los adultos antes de continuar.');
+      currentAdulto = i;
+      updateAdultoTabs();
+      return false;
+    }
+  }
+  return true;
+}
+
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
@@ -2972,6 +2987,19 @@ function mismaInstitucionTodos() {
 }
 
 let saludLugarCadenado = '';
+
+function aplicarCongelamientoEncadenado() {
+  // Congelar lugar de atención en salud si está encadenado
+  const banner = document.getElementById('saludChainBanner');
+  const opts = document.getElementById('saludAtOpts');
+  if (saludLugarCadenado) {
+    if (banner) { banner.style.display = 'block'; document.getElementById('saludChainVal').textContent = saludLugarCadenado; }
+    if (opts) opts.style.display = 'none';
+  } else {
+    if (banner) banner.style.display = 'none';
+    if (opts) opts.style.display = '';
+  }
+}
 function mismoLugarSaludTodos() {
   if (ninos.length <= 1) { alert('Solo hay un niño/a registrado.'); return; }
   saveCurrentChildData();
@@ -3191,7 +3219,7 @@ function renderAbuelos(ninoIdx) {
     const donde = d.donde || '';
 
     // Hay alguien vivo si el estado NO es "Ambos fallecidos" ni "Desconocido" ni vacío
-    const hayVivo = estado === 'Ambos viven' || estado === 'Abuelo fallecido' || estado === 'Abuela fallecida';
+    const hayVivo = estado === 'Ambos viven';
 
     const opts = ['Ambos viven', 'Abuelo fallecido', 'Abuela fallecida', 'Ambos fallecidos', 'Desconocido'];
     const dondeOpts = ['En esta casa', 'En otra casa', 'Desconocido'];
