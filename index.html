@@ -3606,5 +3606,42 @@ function confirmarNumEncuesta() {
 }
 
 </script>
+<!-- PANEL DIAGNÓSTICO TEMPORAL -->
+<div id="diagPanel" style="position:fixed;bottom:0;left:0;right:0;background:#1B3A6B;color:white;padding:12px;font-size:12px;z-index:9999;max-height:50vh;overflow-y:auto">
+  <strong>🔍 DIAGNÓSTICO localStorage</strong>
+  <div id="diagContent" style="margin-top:6px;font-family:monospace;font-size:11px;white-space:pre-wrap;word-break:break-all"></div>
+  <button onclick="document.getElementById('diagPanel').style.display='none'" style="margin-top:8px;padding:6px 14px;background:white;color:#1B3A6B;border:none;border-radius:6px;font-weight:700">Cerrar</button>
+  <button onclick="copiarDiag()" style="margin-top:8px;margin-left:8px;padding:6px 14px;background:#25D366;color:white;border:none;border-radius:6px;font-weight:700">📋 Copiar</button>
+</div>
+<script>
+(function(){
+  const keys = Object.keys(localStorage);
+  let txt = 'Claves encontradas: ' + keys.length + '\n';
+  keys.forEach(k => {
+    const val = localStorage.getItem(k);
+    txt += '\n[' + k + '] → ' + (val ? val.length + ' chars' : 'vacío') + '\n';
+    if (k.includes('fichas') || k.includes('ficha')) {
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) txt += '  → ' + parsed.length + ' fichas\n';
+        else txt += '  → objeto\n';
+      } catch(e) { txt += '  → no es JSON\n'; }
+    }
+  });
+  if (keys.length === 0) txt += '⚠️ localStorage VACÍO — no hay datos guardados.';
+  document.getElementById('diagContent').textContent = txt;
+})();
+function copiarDiag() {
+  const txt = document.getElementById('diagContent').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(() => alert('Copiado'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); alert('Copiado');
+  }
+}
+</script>
 </body>
 </html>
