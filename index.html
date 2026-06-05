@@ -330,6 +330,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <th style="width:100px">Miembro familiar</th>
           <th style="width:42px">Edad</th>
           <th style="width:44px">M / F</th>
+          <th style="width:55px">Familia</th>
           <th style="width:80px">Cabeza de hogar</th><th style="width:110px">Último nivel educativo culminado</th>
         </tr>
       </table>
@@ -526,15 +527,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <label class="opt"><input type="checkbox" name="fuente" value="Jornalero"><span>Jornalero</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Remesas/pensión"><span>Remesas / pensión</span></label>
       <label class="opt"><input type="checkbox" name="fuente" value="Otro"><span>Otro</span></label>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-lbl orange">Apoyos estatales recibidos (se puede marcar varias)</div>
-    <div class="opts c2">
-      <label class="opt"><input type="checkbox" name="apoyos" value="Bono Desarrollo Humano"><span>Bono Desarrollo Humano</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo MIES"><span>Apoyo MIES</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Apoyo GAD"><span>Apoyo GAD (parroquial / cantonal)</span></label>
-      <label class="opt"><input type="checkbox" name="apoyos" value="Ninguno"><span>Ninguno</span></label>
     </div>
   </div>
   <div class="btn-row">
@@ -1500,7 +1492,7 @@ let famRows = [];
 const MIEMBRO_OPTS = ['Padre','Madre','Hijo/a','Nieto/a','Abuelo/a','Tío/a','Primo/a','Hermano/a','Cónyuge','Otro'];
 
 function addFamRow() {
-  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', tel:'', nivel:'' });
+  famRows.push({ nombre:'', miembro:'', edad:'', sexo:'', cedula:'', tel:'', nivel:'', nucleo:'1' });
   renderFamTable();
   autoSave();
 }
@@ -1527,6 +1519,12 @@ function renderFamTable() {
           <button onclick="famRows[${i}].sexo='F';renderFamTable();autoSave()" style="flex:1;padding:4px;border-radius:5px;border:1.5px solid ${r.sexo==='F'?'#EC4899':'var(--border)'};background:${r.sexo==='F'?'#FCE7F3':'white'};font-weight:700;font-size:11px;cursor:pointer;color:${r.sexo==='F'?'#BE185D':'var(--mid)'}">F</button>
         </div>
       </td>
+      <td><select onchange="famRows[${i}].nucleo=this.value;autoSave()" style="width:50px;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white;text-align:center">
+        <option value="A" ${r.nucleo==='A'||!r.nucleo?'selected':''}>A</option>
+        <option value="B" ${r.nucleo==='B'?'selected':''}>B</option>
+        <option value="C" ${r.nucleo==='C'?'selected':''}>C</option>
+        <option value="D" ${r.nucleo==='D'?'selected':''}>D</option>
+      </select></td>
       <td><select onchange="famRows[${i}].cabeza=this.value;autoSave()" style="width:75px;padding:4px;border:1.5px solid var(--border);border-radius:5px;font-size:11px;background:white">
         <option value="">—</option>
         ${Number(r.edad)>=15?`<option value="Sí"${r.cabeza==='Sí'?' selected':''}>Sí</option><option value="No"${r.cabeza==='No'?' selected':''}>No</option>`:'<option disabled>—</option>'}
