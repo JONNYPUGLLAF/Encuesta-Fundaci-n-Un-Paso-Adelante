@@ -2129,6 +2129,8 @@ function goTo(idx) {
     if (idx === 6 && ninos.length > 0) {
       saveCurrentChildData();
       for (let i = 0; i < ninos.length; i++) {
+        const edad = parseInt(ninos[i]?.edad || '0');
+        if (edad > 0 && edad < 3) continue;
         const d = childData[i] || {};
         if (!d.asiste || !d.nivelEduc) {
           alert('⚠️ Completa la sección Educación para todos los niños/as antes de continuar a Salud.\nFalta: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)));
