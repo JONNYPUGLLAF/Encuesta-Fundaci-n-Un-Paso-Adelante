@@ -2854,22 +2854,31 @@ function validarSeccionAdultos() {
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
+  // Guardar el niño actual antes de validar
+  saveCurrentChildData();
   const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
+  const faltantes = [];
   for (let i = 0; i < ninos.length; i++) {
     const d = childData[i] || {};
+    const edad = parseInt(ninos[i]?.edad || '0');
+    // Menores de 3 años no requieren completar estas secciones
+    if (edad > 0 && edad < 3) continue;
     for (const campo of camposReq) {
       if (!d[campo]) {
-        alert('⚠️ Falta completar la sección para: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)) + '\nPor favor completa todos los hijos antes de continuar.');
-        // Switch to that child
-        currentNino = i;
-        updateChildTabs();
-        return false;
+        faltantes.push({ idx: i, nombre: ninos[i].nombre || 'Niño/a ' + (i+1) });
+        break;
       }
     }
   }
+  if (faltantes.length > 0) {
+    const nombres = faltantes.map(f => '• ' + f.nombre).join('\n');
+    alert('⚠️ Falta completar la sección para:\n' + nombres + '\n\nUsa los botones de arriba para navegar entre niños/as.');
+    currentNino = faltantes[0].idx;
+    updateChildTabs();
+    return false;
+  }
   return true;
 }
-
 // ── SETGRADO (encadena nivel educativo → grado/año) ──────────────────
 function setGrado(val) {
   const g = document.getElementById('gradoAnio');
