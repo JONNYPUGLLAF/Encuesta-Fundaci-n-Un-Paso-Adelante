@@ -2862,21 +2862,30 @@ function validarSeccionAdultos() {
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
-  // Guardar el niño actual para que childData esté actualizado
-  saveCurrentChildData();
   const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
   const faltantes = [];
   for (let i = 0; i < ninos.length; i++) {
     const edad = parseInt(ninos[i]?.edad || '0');
-    if (edad > 0 && edad < 3) continue; // menores de 3 no requieren estas secciones
-    const d = childData[i] || {};
-    const falta = camposReq.some(campo => !d[campo]);
-    if (falta) faltantes.push(ninos[i].nombre || 'Niño/a ' + (i+1));
+    if (edad > 0 && edad < 3) continue;
+    let tieneValor;
+    if (i === currentNino) {
+      // Leer del DOM directamente para el niño en pantalla
+      tieneValor = camposReq.every(campo => {
+        const el = document.querySelector(`input[name="${campo}"]:checked`);
+        return el && el.value;
+      });
+    } else {
+      // Para otros niños usar childData guardado
+      const d = childData[i] || {};
+      tieneValor = camposReq.every(campo => !!d[campo]);
+    }
+    if (!tieneValor) faltantes.push(ninos[i].nombre || 'Niño/a ' + (i+1));
   }
   if (faltantes.length > 0) {
     alert('⚠️ Falta completar la sección para:\n' + faltantes.map(n=>'• '+n).join('\n'));
     return false;
   }
+  saveCurrentChildData();
   return true;
 }
 // ── SETGRADO (encadena nivel educativo → grado/año) ──────────────────
