@@ -1287,6 +1287,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="btn" onclick="compartirWhatsApp()" style="background:#25D366;color:white;font-size:13px;padding:11px">📲 Compartir última ficha por WhatsApp</button>
       <button class="btn btn-green-outline" onclick="exportCSV()" style="font-size:12px;padding:9px">📤 Exportar todas las fichas (CSV para Excel)</button>
       <button class="btn" onclick="exportarBackupJSON()" style="background:#1B3A6B;color:white;font-size:12px;padding:9px">💾 Copia de seguridad completa (JSON)</button>
+      <button class="btn" onclick="compartirCSVWhatsApp()" style="background:#128C7E;color:white;font-size:12px;padding:9px">📊 Enviar resumen CSV por WhatsApp</button>
     </div>
   </div>
 </div>
@@ -2118,26 +2119,10 @@ let curSec = 0;
 const TOTAL_SECS = 12;
 
 function goTo(idx) {
-  // Bloquear entrada a Educación (5) y Salud (6) desde los tabs si no se ha completado lo anterior
-  // Solo bloquear si viene desde un tab (no desde botón Siguiente que ya valida)
-  const vieneDeSiguiente = (idx === curSec + 1);
-  if (!vieneDeSiguiente) {
-    if ((idx === 5 || idx === 6) && ninos.length === 0 && !sinMenores) {
-      alert('⚠️ No hay niños/as registrados. Si el hogar es solo adultos, activa el botón "No viven menores" en la sección 1.');
-      return;
-    }
-    if (idx === 6 && ninos.length > 0) {
-      saveCurrentChildData();
-      for (let i = 0; i < ninos.length; i++) {
-        const edad = parseInt(ninos[i]?.edad || '0');
-        if (edad > 0 && edad < 3) continue;
-        const d = childData[i] || {};
-        if (!d.asiste || !d.nivelEduc) {
-          alert('⚠️ Completa la sección Educación para todos los niños/as antes de continuar a Salud.\nFalta: ' + (ninos[i].nombre || 'Niño/a ' + (i+1)));
-          return;
-        }
-      }
-    }
+  // Solo bloquear si no hay niños registrados al ir a SEC5 o SEC6
+  if ((idx === 5 || idx === 6) && ninos.length === 0 && !sinMenores) {
+    alert('⚠️ No hay niños/as registrados. Si el hogar es solo adultos, activa el botón "No viven menores" en la sección 1.');
+    return;
   }
 
   if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
@@ -2363,6 +2348,32 @@ function nuevaEncuesta() {
 }
 
 // ── COMPARTIR POR WHATSAPP ────────────────────────────────────────────
+function compartirCSVWhatsApp() {
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2') || '[]');
+  if (!fichas.length) { alert('No hay fichas guardadas.'); return; }
+
+  // Construir resumen de todas las fichas
+  let msg = `📊 *RESUMEN ENCUESTAS — Fundación Un Paso Adelante*\n`;
+  msg += `Fecha: ${new Date().toLocaleDateString('es-EC')}\n`;
+  msg += `Total fichas: ${fichas.length}\n`;
+  msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+  fichas.forEach((f, i) => {
+    msg += `*Ficha ${i+1}* — ${f.comunidad || 'Sin comunidad'}\n`;
+    msg += `📅 ${f.fechaVisita || '—'}  |  👤 ${f.encuestador || '—'}\n`;
+    msg += `👨‍👩‍👧 ${f.totalPersonas || '—'} personas  |  👶 ${f.menores18 || '—'} menores\n`;
+    msg += `📈 Vulnerabilidad: *${f.nivelVulnerabilidad || '—'}* (${f.puntajeVulnerabilidad ?? '—'} pts)\n`;
+    if (f.ingreso) msg += `💰 Ingreso: ${f.ingreso}\n`;
+    msg += `\n`;
+  });
+
+  msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+  msg += `_Para el CSV completo usa "Exportar CSV" en la app._`;
+
+  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
 function compartirWhatsApp(idx) {
   const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
   if (!fichas.length) { alert('No hay fichas guardadas.'); return; }
@@ -2862,22 +2873,36 @@ function validarSeccionAdultos() {
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
-  const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
   const faltantes = [];
   for (let i = 0; i < ninos.length; i++) {
     const edad = parseInt(ninos[i]?.edad || '0');
-    if (edad > 0 && edad < 3) continue;
+    if (edad > 0 && edad < 3) continue; // menores de 3 no aplica
     let tieneValor;
-    if (i === currentNino) {
-      // Leer del DOM directamente para el niño en pantalla
-      tieneValor = camposReq.every(campo => {
-        const el = document.querySelector(`input[name="${campo}"]:checked`);
-        return el && el.value;
-      });
+    if (sec === 5) {
+      // 3-4 años: validar asisteCIBV; 5+ años: validar asiste y nivelEduc
+      if (i === currentNino) {
+        if (edad >= 3 && edad <= 4) {
+          tieneValor = !!document.querySelector('input[name="asisteCIBV"]:checked');
+        } else {
+          tieneValor = !!document.querySelector('input[name="asiste"]:checked') &&
+                       !!document.querySelector('input[name="nivelEduc"]:checked');
+        }
+      } else {
+        const d = childData[i] || {};
+        if (edad >= 3 && edad <= 4) {
+          tieneValor = !!d.asisteCIBV;
+        } else {
+          tieneValor = !!d.asiste && !!d.nivelEduc;
+        }
+      }
     } else {
-      // Para otros niños usar childData guardado
-      const d = childData[i] || {};
-      tieneValor = camposReq.every(campo => !!d[campo]);
+      // SEC6: validar saludAt
+      if (i === currentNino) {
+        tieneValor = !!document.querySelector('input[name="saludAt"]:checked');
+      } else {
+        const d = childData[i] || {};
+        tieneValor = !!d.saludAt;
+      }
     }
     if (!tieneValor) faltantes.push(ninos[i].nombre || 'Niño/a ' + (i+1));
   }
