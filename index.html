@@ -2841,17 +2841,21 @@ document.addEventListener('DOMContentLoaded', () => {
 function validarSeccionAdultos() {
   const adultos = famRows.filter(r => r.nombre && r.nombre.trim() && parseInt(r.edad||0) >= 18);
   if (adultos.length === 0) return true;
+  // Guardar adulto actual antes de validar
+  saveCurrentAdultoSecData();
   for (let i = 0; i < adultos.length; i++) {
-    const d = adultosData[i] || {};
-    if (!d.saludAt) {
-      alert('⚠️ Falta completar la sección de salud para: ' + (adultos[i].nombre || 'Adulto/a ' + (i+1)) + '\nPor favor completa todos los adultos antes de continuar.');
-      currentAdulto = i;
-      updateAdultoTabs();
+    const d = adultosSecData[i] || {};
+    if (!d.saludAtAdultoSec) {
+      alert('⚠️ Falta completar salud para: ' + (adultos[i].nombre || 'Adulto/a ' + (i+1)) + '\nPor favor completa todos los adultos antes de continuar.');
+      if (typeof currentAdultoSec !== 'undefined') currentAdultoSec = i;
+      if (typeof updateAdultoNavs === 'function') updateAdultoNavs();
+      if (typeof loadAdultoSecData === 'function') loadAdultoSecData(i);
       return false;
     }
   }
   return true;
 }
+
 
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
