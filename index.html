@@ -1287,7 +1287,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="btn" onclick="compartirWhatsApp()" style="background:#25D366;color:white;font-size:13px;padding:11px">📲 Compartir última ficha por WhatsApp</button>
       <button class="btn btn-green-outline" onclick="exportCSV()" style="font-size:12px;padding:9px">📤 Exportar todas las fichas (CSV para Excel)</button>
       <button class="btn" onclick="exportarBackupJSON()" style="background:#1B3A6B;color:white;font-size:12px;padding:9px">💾 Copia de seguridad completa (JSON)</button>
-      <button class="btn" onclick="compartirCSVWhatsApp()" style="background:#128C7E;color:white;font-size:12px;padding:9px">📊 Enviar resumen CSV por WhatsApp</button>
+      <button class="btn" onclick="compartirCSVWhatsApp()" style="background:#128C7E;color:white;font-size:12px;padding:9px">📊 Enviar CSV completo por WhatsApp</button>
     </div>
   </div>
 </div>
@@ -2352,26 +2352,28 @@ function compartirCSVWhatsApp() {
   const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2') || '[]');
   if (!fichas.length) { alert('No hay fichas guardadas.'); return; }
 
-  // Construir resumen de todas las fichas
-  let msg = `📊 *RESUMEN ENCUESTAS — Fundación Un Paso Adelante*\n`;
-  msg += `Fecha: ${new Date().toLocaleDateString('es-EC')}\n`;
-  msg += `Total fichas: ${fichas.length}\n`;
-  msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+  // Generar CSV completo igual que exportCSV
+  const rows = buildCSVRows(fichas);
+  if (!rows.length) { alert('No hay datos para exportar.'); return; }
 
-  fichas.forEach((f, i) => {
-    msg += `*Ficha ${i+1}* — ${f.comunidad || 'Sin comunidad'}\n`;
-    msg += `📅 ${f.fechaVisita || '—'}  |  👤 ${f.encuestador || '—'}\n`;
-    msg += `👨‍👩‍👧 ${f.totalPersonas || '—'} personas  |  👶 ${f.menores18 || '—'} menores\n`;
-    msg += `📈 Vulnerabilidad: *${f.nivelVulnerabilidad || '—'}* (${f.puntajeVulnerabilidad ?? '—'} pts)\n`;
-    if (f.ingreso) msg += `💰 Ingreso: ${f.ingreso}\n`;
-    msg += `\n`;
-  });
+  const headers = Object.keys(rows[0]);
+  const escape = v => {
+    if (v === null || v === undefined) return '';
+    const s = String(v);
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const csvText = [headers.join(','), ...rows.map(r => headers.map(h => escape(r[h])).join(','))].join('\n');
 
-  msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-  msg += `_Para el CSV completo usa "Exportar CSV" en la app._`;
-
-  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank');
+  // WhatsApp tiene límite de ~65000 chars en URL
+  const MAX = 60000;
+  if (csvText.length > MAX) {
+    // Si es muy largo, enviar en partes o advertir
+    alert(`⚠️ El CSV tiene ${fichas.length} fichas y es demasiado largo para WhatsApp en un solo mensaje (${csvText.length} caracteres).\n\nSe enviará la primera parte. Usa "Exportar CSV" para el archivo completo.`);
+    const parte = csvText.substring(0, MAX);
+    window.open('https://wa.me/?text=' + encodeURIComponent(parte), '_blank');
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(csvText), '_blank');
+  }
 }
 
 function compartirWhatsApp(idx) {
