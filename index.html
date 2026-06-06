@@ -1925,10 +1925,12 @@ function saveCurrentChildData() {
   Object.keys(fields).forEach(name => {
     if (fields[name] === 'radio') {
       const el = document.querySelector(`input[name="${name}"]:checked`);
-      childData[currentNino][name] = el ? el.value : '';
+      const val = el ? el.value : '';
+      if (val || !childData[currentNino][name]) childData[currentNino][name] = val;
     } else {
       const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
-      childData[currentNino][name] = Array.from(checked).map(c=>c.value).join('; ');
+      const val2 = Array.from(checked).map(c=>c.value).join('; ');
+      if (val2 || !childData[currentNino][name]) childData[currentNino][name] = val2;
     }
   });
   // Text inputs
@@ -2854,27 +2856,19 @@ function validarSeccionAdultos() {
 function validarSeccionHijos(sec) {
   if (sinMenores) return true;
   if (ninos.length === 0) return true;
-  // Guardar el niño actual antes de validar
+  // Guardar el niño actual para que childData esté actualizado
   saveCurrentChildData();
   const camposReq = sec === 5 ? ['asiste','nivelEduc'] : ['saludAt'];
   const faltantes = [];
   for (let i = 0; i < ninos.length; i++) {
-    const d = childData[i] || {};
     const edad = parseInt(ninos[i]?.edad || '0');
-    // Menores de 3 años no requieren completar estas secciones
-    if (edad > 0 && edad < 3) continue;
-    for (const campo of camposReq) {
-      if (!d[campo]) {
-        faltantes.push({ idx: i, nombre: ninos[i].nombre || 'Niño/a ' + (i+1) });
-        break;
-      }
-    }
+    if (edad > 0 && edad < 3) continue; // menores de 3 no requieren estas secciones
+    const d = childData[i] || {};
+    const falta = camposReq.some(campo => !d[campo]);
+    if (falta) faltantes.push(ninos[i].nombre || 'Niño/a ' + (i+1));
   }
   if (faltantes.length > 0) {
-    const nombres = faltantes.map(f => '• ' + f.nombre).join('\n');
-    alert('⚠️ Falta completar la sección para:\n' + nombres + '\n\nUsa los botones de arriba para navegar entre niños/as.');
-    currentNino = faltantes[0].idx;
-    updateChildTabs();
+    alert('⚠️ Falta completar la sección para:\n' + faltantes.map(n=>'• '+n).join('\n'));
     return false;
   }
   return true;
