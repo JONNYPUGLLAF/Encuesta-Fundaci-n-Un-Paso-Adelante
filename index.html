@@ -358,7 +358,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(0)">← Atrás</button>
-    <button class="btn btn-primary" onclick="syncNinosFromFamilia();buildChildTabs();goTo(2)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="syncNinosFromFamilia();buildChildTabs();goTo(sinMenores ? 3 : 2)">Siguiente →</button>
   </div>
 </div>
 
@@ -514,7 +514,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(2)">← Atrás</button>
+    <button class="btn btn-secondary" onclick="goTo(sinMenores ? 1 : 2)">← Atrás</button>
     <button class="btn btn-primary" onclick="goTo(4)">Siguiente →</button>
   </div>
 </div>
@@ -584,7 +584,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(3)">← Atrás</button>
-    <button class="btn btn-primary" onclick="goTo(5)">Siguiente →</button>
+    <button class="btn btn-primary" onclick="goTo(sinMenores ? 7 : 5)">Siguiente →</button>
   </div>
 </div>
 
@@ -1062,7 +1062,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="btn-row">
-    <button class="btn btn-secondary" onclick="goTo(6)">← Atrás</button>
+    <button class="btn btn-secondary" onclick="goTo(sinMenores ? 4 : 6)">← Atrás</button>
     <button class="btn btn-primary" onclick="saveCurrentAdultoSecData();if(validarSeccionAdultos()){goTo(8)}">Siguiente →</button>
   </div>
 </div>
@@ -1360,8 +1360,6 @@ function toggleSinMenores() {
   sinMenores = !sinMenores;
   aplicarSinMenores();
   autoSave();
-  // Saltar automáticamente a adultos si se activa sinMenores
-  if (sinMenores) goTo(7);
 }
 
 function aplicarSinMenores() {
@@ -1408,8 +1406,8 @@ function aplicarSinMenores() {
   // SEC9 — rebuild percepcion respetando sinMenores
   buildPerception();
 
-  // Tabs — bloquear 5 y 6 cuando sinMenores
-  ['tab5','tab6'].forEach(id => {
+  // Tabs — bloquear 2, 5 y 6 cuando sinMenores
+  ['tab2','tab5','tab6'].forEach(id => {
     const tab = document.getElementById(id);
     if (!tab) return;
     if (sinMenores) {
@@ -1422,9 +1420,6 @@ function aplicarSinMenores() {
       tab.style.textDecoration = '';
     }
   });
-  // Tab2 (familiar) solo reducir opacidad si sinMenores
-  const tab2 = document.getElementById('tab2');
-  if (tab2) tab2.style.opacity = sinMenores ? '0.6' : '';
 
   buildChildTabs();
 }
@@ -2138,6 +2133,10 @@ function goTo(idx) {
     return;
   if ((idx === 5 || idx === 6) && sinMenores) {
     alert('🚫 Esta sección es para niños/as. Este hogar está registrado como solo adultos.');
+    return;
+  }
+  if (idx === 2 && sinMenores) {
+    alert('🚫 Esta sección es para registro de niños/as. Este hogar está registrado como solo adultos.');
     return;
   }
   }
