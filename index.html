@@ -1358,8 +1358,13 @@ let sinMenores = false;
 
 function toggleSinMenores() {
   sinMenores = !sinMenores;
+  const secActual = curSec; // guardar sección actual
   aplicarSinMenores();
   autoSave();
+  // Asegurar que seguimos en la misma sección
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec' + secActual)?.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function aplicarSinMenores() {
