@@ -2127,10 +2127,11 @@ let curSec = 0;
 const TOTAL_SECS = 12;
 
 function goTo(idx) {
-  // Solo bloquear si no hay niños registrados al ir a SEC5 o SEC6
+  // Bloqueos de navegación
   if ((idx === 5 || idx === 6) && ninos.length === 0 && !sinMenores) {
     alert('⚠️ No hay niños/as registrados. Si el hogar es solo adultos, activa el botón "No viven menores" en la sección 1.');
     return;
+  }
   if ((idx === 5 || idx === 6) && sinMenores) {
     alert('🚫 Esta sección es para niños/as. Este hogar está registrado como solo adultos.');
     return;
@@ -2139,8 +2140,6 @@ function goTo(idx) {
     alert('🚫 Esta sección es para registro de niños/as. Este hogar está registrado como solo adultos.');
     return;
   }
-  }
-
   if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
   if (curSec === 7) { try { saveCurrentAdultoSecData(); } catch(e) { console.warn(e); } }
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
