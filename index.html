@@ -1360,6 +1360,8 @@ function toggleSinMenores() {
   sinMenores = !sinMenores;
   aplicarSinMenores();
   autoSave();
+  // Saltar automáticamente a adultos si se activa sinMenores
+  if (sinMenores) goTo(7);
 }
 
 function aplicarSinMenores() {
@@ -1406,12 +1408,23 @@ function aplicarSinMenores() {
   // SEC9 — rebuild percepcion respetando sinMenores
   buildPerception();
 
-  // Tabs opacity
-  ['tab2','tab5','tab6'].forEach(id => {
+  // Tabs — bloquear 5 y 6 cuando sinMenores
+  ['tab5','tab6'].forEach(id => {
     const tab = document.getElementById(id);
     if (!tab) return;
-    tab.style.opacity = sinMenores ? '0.6' : '';
+    if (sinMenores) {
+      tab.style.opacity = '0.4';
+      tab.style.pointerEvents = 'none';
+      tab.style.textDecoration = 'line-through';
+    } else {
+      tab.style.opacity = '';
+      tab.style.pointerEvents = '';
+      tab.style.textDecoration = '';
+    }
   });
+  // Tab2 (familiar) solo reducir opacidad si sinMenores
+  const tab2 = document.getElementById('tab2');
+  if (tab2) tab2.style.opacity = sinMenores ? '0.6' : '';
 
   buildChildTabs();
 }
@@ -2123,6 +2136,10 @@ function goTo(idx) {
   if ((idx === 5 || idx === 6) && ninos.length === 0 && !sinMenores) {
     alert('⚠️ No hay niños/as registrados. Si el hogar es solo adultos, activa el botón "No viven menores" en la sección 1.');
     return;
+  if ((idx === 5 || idx === 6) && sinMenores) {
+    alert('🚫 Esta sección es para niños/as. Este hogar está registrado como solo adultos.');
+    return;
+  }
   }
 
   if (curSec === 2 || curSec === 5 || curSec === 6) saveCurrentChildData();
