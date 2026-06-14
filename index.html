@@ -2280,6 +2280,8 @@ function collectAllData() {
 
 // ── SAVE FICHA ────────────────────────────────────────────────────────
 function guardarFicha() {
+  // Si estamos en modo edición, redirigir
+  if (editandoFichaIdx !== null) { actualizarFicha(); return; }
   confirmarNumEncuesta();
   const data = collectAllData();
   const sc = calcScore();
@@ -2588,14 +2590,226 @@ function showFichasGuardadas() {
   const c = document.getElementById('fichasGuardadas');
   if (!fichas.length) { c.innerHTML='<p style="color:var(--light);font-size:12px">No hay fichas guardadas aún.</p>'; return; }
   c.innerHTML = fichas.map((f,i)=>`
-    <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <div style="flex:1;min-width:180px">
-        <strong style="font-size:12px;color:var(--text)">${i+1}. ${f.comunidad||'Sin comunidad'}</strong>
-        <span style="font-size:11px;color:var(--light);display:block">${f.fechaVisita||f.timestamp?.slice(0,10)||''} · ${f.ninos?.length||0} niños · Puntaje: ${f.puntajeVulnerabilidad||'?'} (${f.nivelVulnerabilidad||'?'})</span>
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">
+          <strong style="font-size:12px;color:var(--text)">${i+1}. ${f.comunidad||'Sin comunidad'}</strong>
+          <span style="font-size:11px;color:var(--light);display:block">${f.fechaVisita||f.timestamp?.slice(0,10)||''} · ${f.ninos?.length||0} niños · Puntaje: ${f.puntajeVulnerabilidad||'?'} (${f.nivelVulnerabilidad||'?'})</span>
+        </div>
+        <button onclick="compartirWhatsApp(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#25D366;color:white;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📲 WhatsApp</button>
+        <button onclick="eliminarFicha(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🗑️ Borrar</button>
       </div>
-      <button onclick="compartirWhatsApp(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#25D366;color:white;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">📲 WhatsApp</button>
-      <button onclick="eliminarFicha(${i})" style="padding:6px 12px;border-radius:16px;border:none;background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🗑️ Borrar</button>
+      <button onclick="editarFicha(${i})" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;border:2px solid #B45309;background:#FFFBEB;color:#B45309;font-size:12px;font-weight:700;cursor:pointer">✏️ Editar esta ficha</button>
     </div>`).join('');
+}
+
+// ── EDITAR FICHA GUARDADA ─────────────────────────────────────────────
+let editandoFichaIdx = null; // null = nueva ficha, número = editando ficha existente
+
+function editarFicha(idx) {
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
+  const f = fichas[idx];
+  if (!f) return;
+
+  const confirmar = confirm(`✏️ EDITAR FICHA\n\n📍 ${f.comunidad||'Sin comunidad'} · ${f.fechaVisita||''}\n\nSe abrirá la ficha para editar. Al terminar presiona "ACTUALIZAR FICHA" para guardar los cambios.\n\n¿Continuar?`);
+  if (!confirmar) return;
+
+  // Guardar índice de edición
+  editandoFichaIdx = idx;
+
+  // ── Resetear variables globales ──
+  // Mutar arrays/objects sin reasignar (algunos son const)
+  ninos.length = 0;
+  if (f.ninos) f.ninos.forEach(n => ninos.push(JSON.parse(JSON.stringify(n))));
+  famRows.length = 0;
+  if (f.famRows) f.famRows.forEach(r => famRows.push(JSON.parse(JSON.stringify(r))));
+  Object.keys(childData).forEach(k => delete childData[k]);
+  if (f.childData) Object.assign(childData, JSON.parse(JSON.stringify(f.childData)));
+  Object.keys(percVals).forEach(k => delete percVals[k]);
+  if (f.percVals) Object.assign(percVals, JSON.parse(JSON.stringify(f.percVals)));
+  sinMenores = f.sinMenores || false;
+  Object.keys(adultosSecData).forEach(k => delete adultosSecData[k]);
+  if (f.adultosSecData) Object.assign(adultosSecData, JSON.parse(JSON.stringify(f.adultosSecData)));
+  Object.keys(adultosData).forEach(k => delete adultosData[k]);
+  currentNino = 0;
+  currentAdulto = 0;
+  currentAdultoSec = 0;
+  saludLugarCadenado = '';
+
+  // ── Limpiar formulario ──
+  document.querySelectorAll('input[type=text],input[type=number],input[type=tel]').forEach(el => { el.value = ''; });
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('.opt').forEach(el => el.classList.remove('sel'));
+  document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+
+  // ── Restaurar campos de texto por ID ──
+  ['numEncuesta','comunidad','fechaVisita','totalPersonas','habitaciones',
+   'menores18','nombrePadre','cedulaPadre','telPadre','nombreMadre','cedulaMadre','telMadre',
+   'condSalud','cuandoBrigada','obsPrivadas','numVivienda'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && f[id] !== undefined) el.value = f[id];
+  });
+
+  // ── Encuestador ──
+  const encSel = document.getElementById('encuestador');
+  const encOtro = document.getElementById('encuestadorOtro');
+  if (encSel && f.encuestador) {
+    encSel.value = f.encuestador;
+    if (f.encuestador === '__otro__' && encOtro) {
+      encOtro.style.display = 'block';
+      encOtro.value = f.encuestadorNombre || '';
+    }
+  }
+
+  // ── Selects adicionales ──
+  ['nucleoFamiliar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && f[id] !== undefined) el.value = f[id];
+  });
+
+  // ── Radios de un valor ──
+  ['acceso','esShuar','shuar','ingreso','tipoVivienda','material','agua','aguaFund',
+   'excretas','electr','internet','peleas','alcohol','horasSolo','religion','congrega',
+   'perfil','confiable','ambienteVisita','chicha','chichaDetalle','comidas','frutas','sinComidaHogar'].forEach(name => {
+    if (f[name]) {
+      const el = document.querySelector(`input[name="${name}"][value="${CSS.escape(f[name])}"]`);
+      if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
+    }
+  });
+
+  // ── Checkboxes múltiples ──
+  ['fuente','apoyos','disciplina','prioridad','factoresR','comioAyer'].forEach(name => {
+    const valores = (f[name]||'').split('; ').map(v=>v.trim()).filter(Boolean);
+    valores.forEach(val => {
+      const el = document.querySelector(`input[name="${name}"][value="${CSS.escape(val)}"]`);
+      if (el) { el.checked = true; el.closest('.opt')?.classList.add('sel'); }
+    });
+  });
+
+  // ── Reconstruir tabla familiar ──
+  if (!famRows.length) for (let i=0;i<6;i++) famRows.push({nombre:'',miembro:'',edad:'',sexo:'',cedula:'',tel:'',nivel:''});
+  renderFamTable();
+
+  // ── Restaurar fecha (puede ser borrada por renderFamTable) ──
+  const feEl = document.getElementById('fechaVisita');
+  if (feEl && f.fechaVisita) feEl.value = f.fechaVisita;
+
+  // ── Reconstruir UI de niños y adultos ──
+  buildChildTabs();
+  try { aplicarSinMenores(); } catch(e) {}
+  buildAdultosNav();
+  buildPerception();
+
+  // ── Restaurar valores de percepción ──
+  if (f.percVals) {
+    Object.keys(f.percVals).forEach(key => {
+      const val = f.percVals[key];
+      if (val) {
+        const btn = document.querySelector(`.perc-btn[data-id="${key}"][data-val="${val}"]`);
+        if (btn) {
+          // Simular click para activar estilos
+          const row = btn.closest('.perc-row');
+          if (row) row.querySelectorAll('.perc-btn').forEach(b=>{ b.className='perc-btn'; });
+          btn.classList.add('p'+val);
+          percVals[key] = val;
+        }
+      }
+    });
+  }
+
+  // ── Restaurar datos de niños actuales (primer niño) ──
+  if (ninos.length > 0) {
+    setTimeout(() => {
+      try { loadChildData(0); } catch(e) {}
+    }, 100);
+  }
+
+  // ── Restaurar adultos sección (primer adulto) ──
+  if (adultosSecData && Object.keys(adultosSecData).length > 0) {
+    setTimeout(() => {
+      try { loadAdultoSecData(0); } catch(e) {}
+    }, 150);
+  }
+
+  // ── Mostrar banner de edición ──
+  const btnNueva = document.getElementById('btnNuevaEncuestaWrap');
+  if (btnNueva) btnNueva.style.display = 'none';
+
+  let bannerEdit = document.getElementById('bannerEdicion');
+  if (!bannerEdit) {
+    bannerEdit = document.createElement('div');
+    bannerEdit.id = 'bannerEdicion';
+    bannerEdit.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#B45309;color:white;text-align:center;padding:8px 12px;font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+    document.body.prepend(bannerEdit);
+  }
+  bannerEdit.innerHTML = `✏️ EDITANDO FICHA: ${f.comunidad||'Sin comunidad'} · ${f.fechaVisita||''} &nbsp; <span onclick="cancelarEdicion()" style="cursor:pointer;text-decoration:underline;font-size:12px">Cancelar</span>`;
+  bannerEdit.style.display = 'block';
+
+  // ── Ir al inicio del formulario ──
+  goTo(0);
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // ── Cambiar botón de guardar por "Actualizar" ──
+  setTimeout(() => actualizarBotonesGuardar(), 200);
+}
+
+function actualizarBotonesGuardar() {
+  // Buscar todos los botones que llaman a guardarFicha y cambiarlos temporalmente
+  document.querySelectorAll('button[onclick="guardarFicha()"]').forEach(btn => {
+    btn.textContent = '💾 ACTUALIZAR FICHA';
+    btn.style.background = '#B45309';
+    btn.setAttribute('onclick', 'actualizarFicha()');
+  });
+}
+
+function restaurarBotonesGuardar() {
+  document.querySelectorAll('button[onclick="actualizarFicha()"]').forEach(btn => {
+    btn.textContent = '💾 Guardar ficha completa';
+    btn.style.background = '';
+    btn.setAttribute('onclick', 'guardarFicha()');
+  });
+}
+
+function cancelarEdicion() {
+  editandoFichaIdx = null;
+  restaurarBotonesGuardar();
+  const banner = document.getElementById('bannerEdicion');
+  if (banner) banner.style.display = 'none';
+  nuevaEncuesta();
+}
+
+function actualizarFicha() {
+  if (editandoFichaIdx === null) { guardarFicha(); return; }
+  const fichas = JSON.parse(localStorage.getItem('fichas_shuar_v2')||'[]');
+  if (!fichas[editandoFichaIdx]) { alert('Error: ficha no encontrada.'); return; }
+
+  confirmarNumEncuesta();
+  const data = collectAllData();
+  const sc = calcScore();
+  data.puntajeVulnerabilidad = sc.score;
+  sugerirPrioridad(sc.score);
+  data.nivelVulnerabilidad = sc.lvl;
+  // Preservar el ID original
+  data.id = fichas[editandoFichaIdx].id || fichas[editandoFichaIdx].id;
+  data.editadoEn = new Date().toISOString();
+
+  fichas[editandoFichaIdx] = data;
+  localStorage.setItem('fichas_shuar_v2', JSON.stringify(fichas));
+
+  // Limpiar estado de edición
+  const idxGuardado = editandoFichaIdx;
+  editandoFichaIdx = null;
+  restaurarBotonesGuardar();
+  const banner = document.getElementById('bannerEdicion');
+  if (banner) banner.style.display = 'none';
+
+  showFichasGuardadas();
+  alert(`✅ Ficha actualizada\n\nFamilia: ${data.comunidad||'Sin comunidad'}\nPuntaje: ${sc.score} — ${sc.lvl}\n\nLos cambios han sido guardados correctamente.`);
+
+  // Volver a la lista
+  goTo(0);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────
